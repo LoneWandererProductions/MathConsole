@@ -59,7 +59,7 @@ namespace MathConsole
                 {
                     Command = "Save",
                     Description = "Save the results to path, with predefined name.",
-                    ParameterCount = 1
+                    ParameterCount = 0
                 }
             },
             {
@@ -68,7 +68,7 @@ namespace MathConsole
                 {
                     Command = "Save",
                     Description = "Save the results to path, with a user defined name.",
-                    ParameterCount = 2
+                    ParameterCount = 1
                 }
             }
         };
