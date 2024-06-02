@@ -96,11 +96,10 @@ namespace Interpreter
         /// <param name="com">Command Register</param>
         /// <param name="userSpace">UserSpace of the register</param>
         /// <param name="extension">Optional Extension Methods</param>
-        public void Initiate(Dictionary<int, InCommand> com, string userSpace, Dictionary<int, InCommand> extension = null)
+        public void Initiate(Dictionary<int, InCommand> com, string userSpace,
+            Dictionary<int, InCommand> extension = null)
         {
-            CollectedSpaces = new Dictionary<string, UserSpace>();
-            Log = new Dictionary<int, string>();
-            _count = -1;
+            ResetState();
 
             var use = new UserSpace { UserSpaceName = userSpace, Commands = com };
 
@@ -110,27 +109,26 @@ namespace Interpreter
             _interpret = new IrtPrompt(this);
             _interpret.Initiate(use);
             _interpret.SendLog += SendLog;
-            _interpret.SendCommand += SendCommand;
+            _interpret.sendCommand += SendCommand;
         }
 
         /// <inheritdoc />
         /// <summary>Start the Sender and Interpreter</summary>
         /// <param name="com">Command Register</param>
-        /// <param name="userSpace">Userspace of the register</param>
+        /// <param name="userSpace">UserSpace of the register</param>
         /// <param name="extension">Optional Extension Methods</param>
-        public void AddCommands(Dictionary<int, InCommand> com, string userSpace, Dictionary<int, InCommand> extension = null)
+        public void AddCommands(Dictionary<int, InCommand> com, string userSpace,
+            Dictionary<int, InCommand> extension = null)
         {
-            _interpret.SendLog += SendLog;
-
             if (CollectedSpaces.IsNullOrEmpty())
             {
-                _interpret.SendLog?.Invoke(this, IrtConst.ErrorNotInitialized);
+                SendLogs?.Invoke(this, IrtConst.ErrorNotInitialized);
                 return;
             }
 
-            var use = new UserSpace { UserSpaceName = userSpace, Commands = com };
-            //Upper is needed because of the way we compare commands in the Interpreter
-            CollectedSpaces.AddDistinct(userSpace.ToUpper(), use);
+            var use = CreateUserSpace(userSpace, com);
+            CollectedSpaces.AddDistinct(userSpace, use);
+            _interpret.SendLog += SendLog;
         }
 
         /// <inheritdoc />
@@ -190,14 +188,7 @@ namespace Interpreter
         /// <param name="e">Type</param>
         private void SendCommand(object sender, OutCommand e)
         {
-            if (_count == MaxLines)
-            {
-                Log.Remove(Log.Keys.First());
-            }
-
-            _count++;
-            Log.Add(_count, e.Command.ToString());
-
+            AddToLog(e.Command.ToString());
             SendCommands?.Invoke(nameof(Prompt), e);
         }
 
@@ -208,14 +199,7 @@ namespace Interpreter
         /// <param name="e">Type</param>
         private void SendLog(object sender, string e)
         {
-            if (_count == MaxLines)
-            {
-                Log.Remove(Log.Keys.First());
-            }
-
-            _count++;
-            Log.Add(_count, e);
-
+            AddToLog(e);
             SendLogs?.Invoke(nameof(Prompt), e);
         }
 
@@ -235,19 +219,53 @@ namespace Interpreter
 
             if (disposing)
             {
-                // free managed resources
                 _interpret = null;
                 CollectedSpaces = null;
                 Log = null;
-
-                if (_prompt?.IsActive ?? false)
-                {
-                    _prompt.Close();
-                }
+                _prompt?.Close();
             }
 
             Disposed = true;
         }
+
+        /// <summary>
+        ///     Adds to log.
+        /// </summary>
+        /// <param name="message">The message.</param>
+        private void AddToLog(string message)
+        {
+            if (_count == MaxLines)
+            {
+                Log.Remove(Log.Keys.First());
+            }
+
+            _count++;
+            Log.Add(_count, message);
+        }
+
+        /// <summary>
+        ///     Resets the state.
+        /// </summary>
+        private void ResetState()
+        {
+            CollectedSpaces = new Dictionary<string, UserSpace>();
+            Log = new Dictionary<int, string>();
+            _count = -1;
+        }
+
+        /// <summary>
+        ///     Creates the user space.
+        /// </summary>
+        /// <param name="userSpace">The user space.</param>
+        /// <param name="com">The COM.</param>
+        /// <returns>New UserSpace</returns>
+        private static UserSpace CreateUserSpace(string userSpace, Dictionary<int, InCommand> com)
+        {
+            var use = new UserSpace { UserSpaceName = userSpace, Commands = com };
+            CollectedSpaces.AddDistinct(userSpace.ToUpper(), use);
+            return use;
+        }
+
 
         /// <summary>
         ///     NOTE: Leave out the finalizer altogether if this class doesn't
