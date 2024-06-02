@@ -16,12 +16,13 @@ namespace MathConsole
         /// </summary>
         private static void Main()
         {
-            Console.WriteLine("Hello World!");
-
             _prompt = new Prompt();
             _prompt.SendLogs += SendLogs;
             _prompt.SendCommands += SendCommands;
             _prompt.Initiate(Namespaces.Statistics, "Statistics", Namespaces.ExtensionStatistics);
+
+            _prompt.Callback("Hello World!");
+
 
             while (true)
             {
@@ -29,14 +30,15 @@ namespace MathConsole
                 {
                     if (!_isEventTriggered)
                     {
-                        Console.WriteLine("Enter something: ");
+                        _prompt.Callback(Environment.NewLine);
+                        _prompt.Callback("Enter something: ");
                         var input = Console.ReadLine();
-                        Console.WriteLine("You entered: " + input);
+                        _prompt.Callback("You entered: " + input);
                         _prompt.StartConsole(input);
                     }
                     else
                     {
-                        Console.WriteLine("Event is processing. Please wait...");
+                        _prompt.Callback("Event is processing. Please wait...");
                     }
                 }
 
@@ -51,7 +53,13 @@ namespace MathConsole
         /// <param name="e">Type</param>
         private static void SendLogs(object sender, string e)
         {
-            Console.WriteLine(e);
+            lock (ConsoleLock)
+            {
+                _isEventTriggered = true;
+                Console.WriteLine(e);
+
+                _isEventTriggered = false;
+            }
         }
 
         /// <summary>
@@ -66,13 +74,13 @@ namespace MathConsole
                 _isEventTriggered = true;
 
                 // Simulate event processing
-                Console.WriteLine("\nEvent triggered. Processing...");
+                _prompt.Callback("\nEvent triggered. Processing...");
 
                 HandleCommands(e);
 
                 if(e.ExtensionUsed) HandleExtensionCommands(e);
 
-                Console.WriteLine("Event processing completed.");
+                _prompt.Callback("Event processing completed.");
 
                 _isEventTriggered = false;
             }
@@ -90,37 +98,31 @@ namespace MathConsole
             {
                 //Just show some stuff
                 case -1:
-                    //TODO
-                    Console.WriteLine("Caused an error...");
+                    _prompt.Callback("Caused an error...");
                     break;
 
                 case 0:
                     //TODO
-                    _prompt.Callbacks("");
                     break;
                 //close the window
                 case 1:
                     //TODO
-                    _prompt.Callbacks("");
                     break;
 
                 case 2:
                     //TODO
-                    _prompt.Callbacks("");
                     break;
 
                 case 3:
                     //TODO
-                    _prompt.Callbacks("");
                     break;
 
                 case 4:
                     //TODO
-                    _prompt.Callbacks("");
                     break;
                 case 99:
                     // Simulate some work
-                    Console.WriteLine("The application will close after a short delay.");
+                    _prompt.Callback("The application will close after a short delay.");
 
                     _prompt.Dispose();
                     // Introduce a small delay before closing
@@ -131,7 +133,7 @@ namespace MathConsole
 
                 default:
                     //TODO
-                    _prompt.Callbacks("");
+                    _prompt.CallbacksWindow("");
                     break;
             }
         }

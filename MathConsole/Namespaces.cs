@@ -1,6 +1,5 @@
 ﻿using Interpreter;
 using System.Collections.Generic;
-using System.IO;
 
 namespace MathConsole
 {

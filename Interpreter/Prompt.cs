@@ -107,10 +107,10 @@ namespace Interpreter
             //Upper is needed because of the way we compare commands in the Interpreter
             CollectedSpaces.AddDistinct(userSpace.ToUpper(), use);
 
-            _interpret = new IrtPrompt();
+            _interpret = new IrtPrompt(this);
             _interpret.Initiate(use);
-            _interpret.sendLog += SendLog;
-            _interpret.sendCommand += SendCommand;
+            _interpret.SendLog += SendLog;
+            _interpret.SendCommand += SendCommand;
         }
 
         /// <inheritdoc />
@@ -120,11 +120,11 @@ namespace Interpreter
         /// <param name="extension">Optional Extension Methods</param>
         public void AddCommands(Dictionary<int, InCommand> com, string userSpace, Dictionary<int, InCommand> extension = null)
         {
-            _interpret.sendLog += SendLog;
+            _interpret.SendLog += SendLog;
 
             if (CollectedSpaces.IsNullOrEmpty())
             {
-                _interpret.sendLog?.Invoke(this, IrtConst.ErrorNotInitialized);
+                _interpret.SendLog?.Invoke(this, IrtConst.ErrorNotInitialized);
                 return;
             }
 
@@ -156,13 +156,24 @@ namespace Interpreter
 
         /// <inheritdoc />
         /// <summary>
-        ///     Callback from the Outside
+        ///     Callback from the Outside, here for window
         /// </summary>
         /// <param name="message">Feedback Message for Display</param>
-        public void Callbacks(string message)
+        public void CallbacksWindow(string message)
         {
             _prompt?.FeedbackMessage(message);
         }
+
+        /// <inheritdoc />
+        /// <summary>
+        ///     Generic Callback from Outside, will appear in the window as SendLog Event
+        /// </summary>
+        /// <param name="message">Feedback Message for Display</param>
+        public void Callback(string message)
+        {
+            SendLogs?.Invoke(nameof(Callback), message);
+        }
+
 
         /// <summary>Switches the name spaces.</summary>
         /// <param name="space">The Namespace we would like to use.</param>

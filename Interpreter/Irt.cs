@@ -204,7 +204,7 @@ namespace Interpreter
             foreach (
                 var enums in
                 IrtConst.InternalCommands.Where(
-                    enums => input.StartsWith(enums.ToUpper(CultureInfo.InvariantCulture),
+                    enums => input.Equals(enums.ToUpper(CultureInfo.InvariantCulture),
                         StringComparison.Ordinal)))
             {
                 return enums;
