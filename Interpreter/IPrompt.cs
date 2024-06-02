@@ -31,7 +31,7 @@ namespace Interpreter
         void AddCommands(Dictionary<int, InCommand> com, string userSpace, Dictionary<int, InCommand> extension = null);
 
         /// <summary>
-        ///     Start the window.
+        ///     Start the window. If we want to use the included window.
         /// </summary>
         void StartWindow();
 

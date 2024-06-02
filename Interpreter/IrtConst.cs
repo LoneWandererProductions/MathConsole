@@ -52,6 +52,11 @@ namespace Interpreter
         internal const string InternalUse = "USE";
 
         /// <summary>
+        ///     The internal command Log (const). Value: "LOG".
+        /// </summary>
+        internal const string InternalLog = "LOG";
+
+        /// <summary>
         ///     The error no commands provided (const). Value: "No Commands were provided".
         /// </summary>
         internal const string ErrorNoCommandsProvided = "No Commands were provided";
@@ -175,6 +180,7 @@ namespace Interpreter
             InternalCommandList,
             InternalUsing,
             InternalUse,
+            InternalLog,
             InternalCommandContainer,
             InternalCommandBatchExecute
         };
@@ -197,6 +203,7 @@ namespace Interpreter
             InternalCommandList, " : List all external Commands", Environment.NewLine,
             InternalUsing, " : Current Commands available and the one currently in use", Environment.NewLine,
             InternalUse, " : Type use(namespace) to switch to command namespace", Environment.NewLine,
+            InternalLog, " : Enumerate all Log entries", Environment.NewLine,
             InternalCommandContainer,
             " : Holds a set of commands and executes them sequential, use Container{Command1; Command2; .... } and ; is the Separator that states that a new command follows."
         );

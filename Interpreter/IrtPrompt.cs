@@ -59,7 +59,7 @@ namespace Interpreter
             inputString = inputString.Trim().ToUpper(CultureInfo.CurrentCulture).ToUpper(CultureInfo.InvariantCulture);
 
             //handle File comments
-            if (inputString.StartsWith(IrtConst.CommentCommand))
+            if (inputString.StartsWith(IrtConst.CommentCommand, StringComparison.InvariantCultureIgnoreCase))
             {
                 Trace.WriteLine(inputString);
                 return;
@@ -165,6 +165,9 @@ namespace Interpreter
                 case IrtConst.InternalUse:
                     CommandUse(parameterPart);
                     break;
+                case IrtConst.InternalLog:
+                    CommandLog();
+                    break;
 
                 case IrtConst.InternalCommandContainer:
                     CommandContainer(inputString, parameterPart);
@@ -177,6 +180,7 @@ namespace Interpreter
                     break;
             }
         }
+
 
         /// <summary>
         ///     Return help for specific command
@@ -250,6 +254,18 @@ namespace Interpreter
         }
 
         /// <summary>
+        /// Commands the log.
+        /// </summary>
+        private void CommandLog()
+        {
+            foreach (var entry in ErrorLogging.Log)
+            {
+                OnStatus(string.Concat(entry, Environment.NewLine));
+            }
+        }
+
+
+        /// <summary>
         ///     Processes the container.
         /// </summary>
         /// <param name="inputString">The input string.</param>
@@ -318,7 +334,7 @@ namespace Interpreter
         /// <returns>Result of our Command</returns>
         private void SetResult(int key, List<string> parameter)
         {
-            var com = new OutCommand { Command = key, Parameter = parameter };
+            var com = new OutCommand { Command = key, Parameter = parameter, UsedNameSpace = _nameSpace};
 
             OnCommand(com);
         }
@@ -328,7 +344,7 @@ namespace Interpreter
         /// </summary>
         private void SetError()
         {
-            var com = new OutCommand { Command = IrtConst.ErrorParam, Parameter = null };
+            var com = new OutCommand { Command = IrtConst.ErrorParam, Parameter = null, UsedNameSpace = _nameSpace };
 
             OnCommand(com);
         }

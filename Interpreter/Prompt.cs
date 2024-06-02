@@ -135,7 +135,8 @@ namespace Interpreter
 
         /// <inheritdoc />
         /// <summary>
-        ///     Start a Window for the Input
+        ///     Start a Window for the Input.
+        ///     Included and optional
         /// </summary>
         public void StartWindow()
         {
@@ -248,29 +249,5 @@ namespace Interpreter
             // Finalizer calls Dispose(false)
             Dispose(false);
         }
-    }
-
-    /// <summary>
-    ///     Only simple Methods with Parameter that are not Collections for now
-    /// </summary>
-    public sealed class OutCommand
-    {
-        /// <summary>
-        ///     Gets or sets the command.
-        /// </summary>
-        public int Command { get; internal init; }
-
-        /// <summary>
-        ///     Gets or sets the parameter.
-        /// </summary>
-        public List<string> Parameter { get; internal init; }
-
-        /// <summary>
-        /// Gets a value indicating whether [extension used].
-        /// </summary>
-        /// <value>
-        ///   <c>true</c> if [extension used]; otherwise, <c>false</c>.
-        /// </value>
-        public bool ExtensionUsed { get; internal init; }
     }
 }
