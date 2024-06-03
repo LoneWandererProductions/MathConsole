@@ -152,9 +152,9 @@ namespace Interpreter
                 SetError();
                 return;
             }
-            else 
-            { 
-                key = (int)check; 
+            else
+            {
+                key = (int)check;
             }
 
             SetResult(key, parameter);
