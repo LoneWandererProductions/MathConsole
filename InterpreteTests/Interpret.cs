@@ -277,8 +277,8 @@ namespace InterpreteTests
                 _log.Contains("Basic prompt, Version : 0.3. Author: Peter Geinitz (Wayfarer), not context sensitive"),
                 "Help not displayed" + _log);
 
-            Assert.AreEqual(_prompt.Log[0], "0", "Correct Parameter");
-            Assert.AreEqual(_prompt.Log[1], "2", "Correct Parameter");
+            Assert.AreEqual(_prompt.Log[1], "0", "Correct Parameter");
+            Assert.AreEqual(_prompt.Log[3], "2", "Correct Parameter");
             _prompt.Dispose();
         }
 
@@ -301,8 +301,9 @@ namespace InterpreteTests
                 _log.Contains("Basic prompt, Version : 0.3. Author: Peter Geinitz (Wayfarer), not context sensitive"),
                 "Help not displayed" + _log);
 
-            Assert.AreEqual(_prompt.Log[0], "0", "Correct Parameter");
-            Assert.AreEqual(_prompt.Log[1], "2", "Correct Parameter");
+            Assert.AreEqual(_prompt.Log[1], "0", "Correct Parameter");
+            Assert.AreEqual(_prompt.Log[2], "Third()", "Correct Parameter");
+            Assert.AreEqual(_prompt.Log[3], "2", "Correct Parameter");
 
             if (File.Exists(Batch))
             {

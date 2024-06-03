@@ -231,7 +231,7 @@ namespace Interpreter
         ///     Adds to log.
         /// </summary>
         /// <param name="message">The message.</param>
-        private void AddToLog(string message)
+        internal void AddToLog(string message)
         {
             if (_count == MaxLines)
             {

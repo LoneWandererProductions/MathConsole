@@ -379,6 +379,8 @@ namespace Interpreter
         {
             foreach (var com in Irt.SplitParameter(parameterPart, IrtConst.NewCommand))
             {
+                //just because we run a container or a batch, we still have to log it
+                _prompt.AddToLog(com);
                 HandleInput(com);
             }
         }
