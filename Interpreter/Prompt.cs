@@ -127,7 +127,7 @@ namespace Interpreter
             }
 
             var use = CreateUserSpace(userSpace, com);
-            CollectedSpaces.AddDistinct(userSpace, use);
+            CollectedSpaces.AddDistinct(userSpace.ToUpper(), use);
             _interpret.SendLog += SendLog;
         }
 
