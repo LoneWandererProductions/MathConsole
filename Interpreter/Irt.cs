@@ -275,7 +275,7 @@ namespace Interpreter
         ///     The Command Id, identical, if there is no overload, new id, if there is an overload, -1 if something went
         ///     wrong <see cref="int" />.
         /// </returns>
-        internal static int CheckOverload(string command, int count, Dictionary<int, InCommand> commands)
+        internal static int? CheckOverload(string command, int count, Dictionary<int, InCommand> commands)
         {
             foreach (
                 var comm in commands.Where(com => command == com.Value.Command && com.Value.ParameterCount == count))
@@ -283,7 +283,7 @@ namespace Interpreter
                 return comm.Key;
             }
 
-            return IrtConst.ErrorParam;
+            return null;
         }
 
         /// <summary>

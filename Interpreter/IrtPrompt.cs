@@ -142,15 +142,19 @@ namespace Interpreter
             var parameter = Irt.SplitParameter(parameterPart, IrtConst.Splitter);
 
             //Check for overloads, get the Overload by Parameter Count, return -1 if we do not find a match
-            key = Irt.CheckOverload(_com[key].Command, parameter.Count, _com);
+            var check = Irt.CheckOverload(_com[key].Command, parameter.Count, _com);
 
             //Incorrect overload
-            if (key == IrtConst.ErrorParam)
+            if (check == null)
             {
                 var log = ErrorLogging.SetLastError(IrtConst.SyntaxError, 0);
                 OnStatus(log);
                 SetError();
                 return;
+            }
+            else 
+            { 
+                key = (int)check; 
             }
 
             SetResult(key, parameter);

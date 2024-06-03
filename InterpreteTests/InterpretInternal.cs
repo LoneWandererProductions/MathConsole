@@ -100,7 +100,7 @@ namespace InterpreteTests
             };
 
             var result = Irt.CheckOverload("command", 3, commands);
-            Assert.AreEqual(IrtConst.ErrorParam, result);
+            Assert.AreEqual(null, result);
         }
     }
 }
