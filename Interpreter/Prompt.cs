@@ -178,6 +178,9 @@ namespace Interpreter
         {
             var use = CollectedSpaces[space];
             _interpret.SwitchUserSpace(use);
+            var log = string.Concat(IrtConst.InformationNamespaceSwitch, use.UserSpaceName);
+            AddToLog(log);
+            SendLog(this, log);
         }
 
         /// <summary>

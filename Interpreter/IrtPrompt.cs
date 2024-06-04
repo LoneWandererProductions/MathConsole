@@ -88,8 +88,6 @@ namespace Interpreter
         {
             _com = use.Commands;
             _nameSpace = use.UserSpaceName;
-            var log = Logging.SetLastError(string.Concat(IrtConst.InformationNamespaceSwitch, use.UserSpaceName), 2);
-            OnStatus(log);
         }
 
         /// <summary>
@@ -283,6 +281,7 @@ namespace Interpreter
             }
 
             _prompt.SwitchNameSpaces(parameterPart);
+
         }
 
         /// <summary>
