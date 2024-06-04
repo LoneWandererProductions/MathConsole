@@ -177,9 +177,6 @@ namespace Interpreter
         {
             var use = CollectedSpaces[space];
             _interpret.SwitchUserSpace(use);
-            var log = string.Concat(IrtConst.InformationNamespaceSwitch, use.UserSpaceName);
-            AddToLog(log);
-            SendLog(this, log);
         }
 
         /// <summary>
@@ -189,7 +186,9 @@ namespace Interpreter
         /// <param name="e">Type</param>
         private void SendCommand(object sender, OutCommand e)
         {
-            AddToLog(e.Command.ToString());
+            if(e.Command == IrtConst.ErrorParam) AddToLog(e.ErrorMessage);
+            else AddToLog(e.Command.ToString());
+
             SendCommands?.Invoke(nameof(Prompt), e);
         }
 

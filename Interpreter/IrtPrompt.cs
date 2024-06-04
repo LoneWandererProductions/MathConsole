@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Net.NetworkInformation;
+using System.Runtime.Intrinsics.X86;
 
 namespace Interpreter
 {
@@ -281,6 +282,8 @@ namespace Interpreter
             }
 
             _prompt.SwitchNameSpaces(parameterPart);
+            var log = string.Concat(IrtConst.InformationNamespaceSwitch, parameterPart);
+            OnStatus(log);
 
         }
 

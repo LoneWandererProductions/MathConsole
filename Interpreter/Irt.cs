@@ -279,12 +279,24 @@ namespace Interpreter
         /// </returns>
         internal static int? CheckOverload(string command, int count, Dictionary<int, InCommand> commands)
         {
-            var matchingCommands = commands
-                .Where(com => com.Value.Command == command &&
-                              (count < 0 ? com.Value.ParameterCount >= count : com.Value.ParameterCount == count))
-                .Select(com => (int?)com.Key);
 
-            return matchingCommands.FirstOrDefault();
+            foreach (var comm in commands)
+            {
+                if (command == comm.Value.Command)
+                {
+                    if (comm.Value.ParameterCount < 0)
+                    {
+                        if(count >= Math.Abs(comm.Value.ParameterCount)) return comm.Key;
+                    }
+                    else
+                    {
+                        if (comm.Value.ParameterCount == count) return comm.Key;
+                    }
+                }
+
+            }
+
+            return null;
         }
 
         /// <summary>

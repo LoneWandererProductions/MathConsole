@@ -195,6 +195,72 @@ namespace InterpreteTests
             _prompt.Dispose();
         }
 
+
+        /// <summary>
+        /// Some basic tests, the interpreter should execute commands correctly.
+        /// </summary>
+        [TestMethod]
+        public void ConsoleInterpreterdxecuteCommands()
+        {
+            // Arrange
+            var prompt = new Prompt();
+            prompt.SendLogs += SendLogs;
+            prompt.SendCommands += SendCommands;
+            var commands = new Dictionary<int, InCommand>
+            {
+                { 0, new InCommand { Command = "First", ParameterCount = 2, Description = "Help First" } },
+                { 1, new InCommand { Command = "Second", ParameterCount = 3, Description = "Help Second" } },
+                { 2, new InCommand { Command = "Third", ParameterCount = 0, Description = "Special case no Parameter" } },
+                { 3, new InCommand { Command = "Fourth", ParameterCount = -2, Description = "Special case 2+ parameters" } }
+            };
+            prompt.Initiate(commands, "NameSpaceOne");
+
+            // Act
+            prompt.StartConsole("First(1,2)");
+
+            // Assert
+            Assert.AreEqual(0, _outCommand.Command, "Wrong Id: " + _outCommand.Command);
+            Assert.AreEqual(2, _outCommand.Parameter.Count, "Wrong Number: " + _outCommand.Parameter.Count);
+
+            // Act
+            prompt.StartConsole("Third(1,2)");
+
+            // Assert
+            Assert.AreEqual(-1, _outCommand.Command, "Wrong Id: " + _outCommand.Command);
+            Assert.AreEqual(null, _outCommand.Parameter, "Wrong Number: ");
+            Assert.IsTrue(_outCommand.ErrorMessage.Contains("Error in the Syntax: "), "Wrong or no error set: " + _outCommand.ErrorMessage);
+
+            // Act
+            prompt.StartConsole("Third");
+
+            // Assert
+            Assert.AreEqual(2, _outCommand.Command, "Wrong Id: " + _outCommand.Command);
+            Assert.AreEqual(0, _outCommand.Parameter.Count, "Wrong Number: " + _outCommand.Parameter.Count);
+
+            // Act
+            prompt.StartConsole("Fourth(2,2)");
+
+            // Assert
+            Assert.AreEqual(3, _outCommand.Command, "Wrong Id: " + _outCommand.Command);
+            Assert.AreEqual(2, _outCommand.Parameter.Count, "Wrong Number: " + _outCommand.Parameter.Count);
+
+            // Act
+            prompt.StartConsole("Fourth(2,2,3)");
+
+            // Assert
+            Assert.AreEqual(3, _outCommand.Command, "Wrong Id: " + _outCommand.Command);
+            Assert.AreEqual(3, _outCommand.Parameter.Count, "Wrong Number: " + _outCommand.Parameter.Count);
+
+
+            // Act
+            prompt.StartConsole("Fourth(2)");
+
+            // Assert
+            Assert.AreEqual(-1, _outCommand.Command, "Wrong Id: " + _outCommand.Command);
+            Assert.AreEqual(null, _outCommand.Parameter, "Wrong Number: ");
+            Assert.IsTrue(_outCommand.ErrorMessage.Contains("Error in the Syntax: "), "Wrong or no error set: " + _outCommand.ErrorMessage);
+        }
+
         /// <summary>
         ///     Check overload.
         /// </summary>
@@ -348,6 +414,7 @@ namespace InterpreteTests
         /// <param name="e">Type</param>
         private static void SendCommands(object sender, OutCommand e)
         {
+            if (e.Command == -1) _log = e.ErrorMessage;
             _outCommand = e;
         }
 
@@ -370,31 +437,13 @@ namespace InterpreteTests
         }
 
         /// <summary>
-        ///     Handles the input invalid command logs error.
-        /// </summary>
-        [TestMethod]
-        public void HandleInputInvalidCommandLogsError()
-        {
-            var logHandled = false;
-            _irtPrompt.SendLog += (_, e) =>
-            {
-                Assert.IsTrue(e.Contains(IrtConst.KeyWordNotFoundError));
-                logHandled = true;
-            };
-
-            _irtPrompt.HandleInput("INVALIDCOMMAND");
-
-            Assert.IsTrue(logHandled);
-        }
-
-        /// <summary>
         ///     Handles the input help command logs help.
         /// </summary>
         [TestMethod]
         public void HandleInputHelpCommandLogsHelp()
         {
             var logHandled = false;
-            _irtPrompt.SendLog += (sender, e) =>
+            _irtPrompt.SendInternaLog += (sender, e) =>
             {
                 Assert.AreEqual(IrtConst.HelpGeneric, e);
                 logHandled = true;
@@ -423,24 +472,6 @@ namespace InterpreteTests
             _irtPrompt.HandleInput("COMMAND2(PARAM1)");
 
             Assert.IsTrue(commandHandled);
-        }
-
-        /// <summary>
-        ///     Handles the input command with invalid parameters logs error.
-        /// </summary>
-        [TestMethod]
-        public void HandleInputCommandWithInvalidParametersLogsError()
-        {
-            var logHandled = false;
-            _irtPrompt.SendLog += (sender, e) =>
-            {
-                Assert.IsTrue(e.Contains(IrtConst.ParenthesisError));
-                logHandled = true;
-            };
-
-            _irtPrompt.HandleInput("COMMAND2(PARAM1");
-
-            Assert.IsTrue(logHandled);
         }
     }
 }
