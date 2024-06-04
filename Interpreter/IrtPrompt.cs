@@ -54,6 +54,11 @@ namespace Interpreter
         internal EventHandler<string> SendLog;
 
         /// <summary>
+        /// The original input string
+        /// </summary>
+        private string _inputString;
+
+        /// <summary>
         ///     Initializes a new instance of the <see cref="IrtPrompt" /> class.
         /// </summary>
         /// <param name="prompt">The prompt.</param>
@@ -70,7 +75,19 @@ namespace Interpreter
         {
             _com = use.Commands;
             _nameSpace = use.UserSpaceName;
-            var log = ErrorLogging.SetLastError(IrtConst.InformationStartup, 2);
+            var log = Logging.SetLastError(IrtConst.InformationStartup, 2);
+            OnStatus(log);
+        }
+
+        /// <summary>
+        /// Switches the user space.
+        /// </summary>
+        /// <param name="use">The use.</param>
+        internal void SwitchUserSpace(UserSpace use)
+        {
+            _com = use.Commands;
+            _nameSpace = use.UserSpaceName;
+            var log = Logging.SetLastError(string.Concat(IrtConst.InformationNamespaceSwitch, use.UserSpaceName), 2);
             OnStatus(log);
         }
 
@@ -81,6 +98,8 @@ namespace Interpreter
         /// <returns>Results of our commands</returns>
         internal void HandleInput(string inputString)
         {
+            //save a copy for debugging reasons and Log reasons to return the inputed string not the changed.
+            _inputString = inputString;
             //clean string, remove trailing whitespace
             inputString = inputString.Trim().ToUpper(CultureInfo.CurrentCulture).ToUpper(CultureInfo.InvariantCulture);
 
@@ -103,7 +122,7 @@ namespace Interpreter
 
             if (!string.IsNullOrEmpty(param))
             {
-                HandleInternalCommands(param, inputString);
+                HandleInternalCommands(param, _inputString);
                 return;
             }
 
@@ -121,8 +140,8 @@ namespace Interpreter
             //if key was not found bail
             if (key == IrtConst.ErrorParam)
             {
-                var log = ErrorLogging.SetLastError(IrtConst.KeyWordNotFoundError, 0);
-                OnStatus(string.Concat(log, inputString));
+                var log = Logging.SetLastError(IrtConst.KeyWordNotFoundError, 0);
+                OnStatus(string.Concat(log, _inputString));
                 SetError();
                 return;
             }
@@ -130,7 +149,7 @@ namespace Interpreter
             //Is Parameter count > 0 and parentheses correct?
             if (_com[key].ParameterCount != 0 && !Irt.SingleCheck(inputString))
             {
-                var log = ErrorLogging.SetLastError(IrtConst.ParenthesisError, 0);
+                var log = Logging.SetLastError(IrtConst.ParenthesisError, 0);
                 OnStatus(log);
                 SetError();
                 return;
@@ -147,8 +166,8 @@ namespace Interpreter
             //Incorrect overload
             if (check == null)
             {
-                var log = ErrorLogging.SetLastError(IrtConst.SyntaxError, 0);
-                OnStatus(log);
+                var log = Logging.SetLastError(IrtConst.SyntaxError, 0);
+                OnStatus(string.Concat(log, _inputString));
                 SetError();
                 return;
             }
@@ -170,7 +189,7 @@ namespace Interpreter
             //sure the beginning is like the Internal command but with some extras we do not like
             if (param == IrtConst.InternalCommandList && param != inputString)
             {
-                var log = ErrorLogging.SetLastError(IrtConst.SyntaxError, 0);
+                var log = Logging.SetLastError(IrtConst.SyntaxError, 0);
                 OnStatus(log);
                 SetError();
                 return;
@@ -244,7 +263,7 @@ namespace Interpreter
             //anything else error out
             if (key == IrtConst.ErrorParam)
             {
-                var log = ErrorLogging.SetLastError(string.Concat(IrtConst.KeyWordNotFoundError, parameterPart), 0);
+                var log = Logging.SetLastError(string.Concat(IrtConst.KeyWordNotFoundError, parameterPart), 0);
                 OnStatus(log);
                 SetError();
                 return;
@@ -298,7 +317,7 @@ namespace Interpreter
         /// </summary>
         private void CommandLogError()
         {
-            foreach (var entry in ErrorLogging.Log)
+            foreach (var entry in Logging.Log)
             {
                 OnStatus(string.Concat(entry, Environment.NewLine));
             }
@@ -310,7 +329,7 @@ namespace Interpreter
         private void CommandLogInfo()
         {
             var message = string.Concat(IrtConst.MessageLogStatistics, Environment.NewLine, IrtConst.MessageErrorCount,
-                ErrorLogging.Log.Count, Environment.NewLine, IrtConst.MessageLogCount, _log.Count);
+                Logging.Log.Count, Environment.NewLine, IrtConst.MessageLogCount, _log.Count);
 
             OnStatus(message);
         }
@@ -345,7 +364,7 @@ namespace Interpreter
             if (!check)
             {
                 {
-                    var log = ErrorLogging.SetLastError(IrtConst.ParenthesisError, 0);
+                    var log = Logging.SetLastError(IrtConst.ParenthesisError, 0);
                     OnStatus(log);
                     SetError();
                 }

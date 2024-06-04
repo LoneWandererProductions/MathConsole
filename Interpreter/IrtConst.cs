@@ -99,7 +99,7 @@ namespace Interpreter
         /// <summary>
         ///     The syntax error (const). Value: "Error in the Syntax".
         /// </summary>
-        internal const string SyntaxError = "Error in the Syntax";
+        internal const string SyntaxError = "Error in the Syntax: ";
 
         /// <summary>
         ///     The message info (const). Value: "Information: ".
@@ -145,6 +145,11 @@ namespace Interpreter
         ///     The information startup (const). Value: "Interpreter started up".
         /// </summary>
         internal const string InformationStartup = "Interpreter started up";
+
+        /// <summary>
+        ///     The information Namespace switch (const). Value: "Namespace switched to: ".
+        /// </summary>
+        internal const string InformationNamespaceSwitch = "Namespace switched to: ";
 
         /// <summary>
         ///     The format description (const). Value: " Description: ".

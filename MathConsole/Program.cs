@@ -20,6 +20,7 @@ namespace MathConsole
             _prompt.SendLogs += SendLogs;
             _prompt.SendCommands += SendCommands;
             _prompt.Initiate(Namespaces.Statistics, "Statistics", Namespaces.ExtensionStatistics);
+            _prompt.AddCommands(Namespaces.Matrix, "Matrix");
 
             _prompt.Callback("Hello World!");
 

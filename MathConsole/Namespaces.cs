@@ -72,5 +72,48 @@ namespace MathConsole
                 }
             }
         };
+
+        /// <summary>
+        ///     Our Command Input Register
+        /// </summary>
+        internal static readonly Dictionary<int, InCommand> Matrix = new()
+        {
+            {
+                0,
+                new InCommand
+                {
+                    Command = "Matrix",
+                    Description = "Load a matrix into the internal memory. First is id of the matrix, if id is equal, existing matrix will be overwriten, second, third, height, width, the rest matrix data as double. Min 7 Parameter",
+                    ParameterCount = -7
+                }
+            },
+            {
+                1,
+                new InCommand
+                {
+                    Command = "ListMatrix",
+                    Description = "Show all saved Matrizes with value.",
+                    ParameterCount = 0
+                }
+            },
+            {
+                2,
+                new InCommand
+                {
+                    Command = "SolveMatrix",
+                    Description = "Calculate some stuff for the Matrix with the Id as parameter.",
+                    ParameterCount = 1
+                }
+            },
+            {
+                3,
+                new InCommand
+                {
+                    Command = "Mulitply",
+                    Description = "Mulitply the Matrizes defined by id, min Parameter count is 2.",
+                    ParameterCount = -2
+                }
+            }
+        };
     }
 }
