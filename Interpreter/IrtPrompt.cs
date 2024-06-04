@@ -122,7 +122,7 @@ namespace Interpreter
 
             if (!string.IsNullOrEmpty(param))
             {
-                HandleInternalCommands(param, _inputString);
+                HandleInternalCommands(param, inputString);
                 return;
             }
 
