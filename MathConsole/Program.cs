@@ -24,17 +24,15 @@ namespace MathConsole
 
             _prompt.Callback("Hello World!");
 
-
             while (true)
             {
                 lock (ConsoleLock)
                 {
                     if (!_isEventTriggered)
                     {
-                        _prompt.Callback(Environment.NewLine);
                         _prompt.Callback("Enter something: ");
                         var input = Console.ReadLine();
-                        _prompt.Callback("You entered: " + input);
+
                         _prompt.StartConsole(input);
                     }
                     else
@@ -99,7 +97,7 @@ namespace MathConsole
             {
                 //Just show some stuff
                 case -1:
-                    _prompt.Callback("Caused an error...");
+                    _prompt.Callback(outCommand.ErrorMessage);
                     break;
 
                 case 0:

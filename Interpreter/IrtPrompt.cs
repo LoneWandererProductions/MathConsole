@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.Net.NetworkInformation;
 
 namespace Interpreter
 {
@@ -129,8 +130,7 @@ namespace Interpreter
             //check if Command Dictionary was empty
             if (_com == null)
             {
-                OnStatus(IrtConst.ErrorNoCommandsProvided);
-                SetError();
+                SetError(IrtConst.ErrorNoCommandsProvided);
                 return;
             }
 
@@ -141,8 +141,7 @@ namespace Interpreter
             if (key == IrtConst.ErrorParam)
             {
                 var log = Logging.SetLastError(IrtConst.KeyWordNotFoundError, 0);
-                OnStatus(string.Concat(log, _inputString));
-                SetError();
+                SetError(string.Concat(log, _inputString));
                 return;
             }
 
@@ -150,8 +149,7 @@ namespace Interpreter
             if (_com[key].ParameterCount != 0 && !Irt.SingleCheck(inputString))
             {
                 var log = Logging.SetLastError(IrtConst.ParenthesisError, 0);
-                OnStatus(log);
-                SetError();
+                SetError(log);
                 return;
             }
 
@@ -167,8 +165,7 @@ namespace Interpreter
             if (check == null)
             {
                 var log = Logging.SetLastError(IrtConst.SyntaxError, 0);
-                OnStatus(string.Concat(log, _inputString));
-                SetError();
+                SetError(log);
                 return;
             }
             else
@@ -190,8 +187,7 @@ namespace Interpreter
             if (param == IrtConst.InternalCommandList && param != inputString)
             {
                 var log = Logging.SetLastError(IrtConst.SyntaxError, 0);
-                OnStatus(log);
-                SetError();
+                SetError(log);
                 return;
             }
 
@@ -264,8 +260,7 @@ namespace Interpreter
             if (key == IrtConst.ErrorParam)
             {
                 var log = Logging.SetLastError(string.Concat(IrtConst.KeyWordNotFoundError, parameterPart), 0);
-                OnStatus(log);
-                SetError();
+                SetError(log);
                 return;
             }
 
@@ -365,8 +360,7 @@ namespace Interpreter
             {
                 {
                     var log = Logging.SetLastError(IrtConst.ParenthesisError, 0);
-                    OnStatus(log);
-                    SetError();
+                    SetError(log);
                 }
             }
 
@@ -386,8 +380,7 @@ namespace Interpreter
             //check if Command Dictionary was empty
             if (parameterPart?.Length == 0)
             {
-                OnStatus(IrtConst.ErrorFileNotFound);
-                SetError();
+                SetError(IrtConst.ErrorFileNotFound);
                 return;
             }
 
@@ -411,7 +404,7 @@ namespace Interpreter
         /// <summary>
         ///     Decide the appropriate Action by command
         /// </summary>
-        /// <param name="key"></param>
+        /// <param name="key">Id of command</param>
         /// <param name="parameter">List of Parameters</param>
         /// <returns>Result of our Command</returns>
         private void SetResult(int key, List<string> parameter)
@@ -424,10 +417,9 @@ namespace Interpreter
         /// <summary>
         ///     Set the error Status of the Output command
         /// </summary>
-        private void SetError()
+        private void SetError(string error)
         {
-            var com = new OutCommand { Command = IrtConst.ErrorParam, Parameter = null, UsedNameSpace = _nameSpace };
-
+            var com = new OutCommand { Command = IrtConst.ErrorParam, Parameter = null, UsedNameSpace = _nameSpace, ErrorMessage = error };
             OnCommand(com);
         }
 

@@ -40,5 +40,13 @@ namespace Interpreter
         ///     <c>true</c> if [extension used]; otherwise, <c>false</c>.
         /// </value>
         public bool ExtensionUsed { get; internal init; }
+
+        /// <summary>
+        /// Gets the error message.
+        /// </summary>
+        /// <value>
+        /// The error message.
+        /// </value>
+        public string ErrorMessage { get; internal init; }
     }
 }
