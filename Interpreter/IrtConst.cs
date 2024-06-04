@@ -52,6 +52,11 @@ namespace Interpreter
         internal const string InternalUse = "USE";
 
         /// <summary>
+        ///     The internal check, if Parameter is empty, since the brackets are expected. (const). Value: "()".
+        /// </summary>
+        internal static readonly string InternalEmptyParameter = string.Concat(BaseOpen, BaseClose);
+
+        /// <summary>
         ///     The internal command Log (const). Value: "LOG".
         /// </summary>
         internal const string InternalErrorLog = "LOG";

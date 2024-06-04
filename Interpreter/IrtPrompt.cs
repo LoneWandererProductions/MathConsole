@@ -244,7 +244,7 @@ namespace Interpreter
         private void CommandHelp(string parameterPart)
         {
             //Empty parameters
-            if (parameterPart == "()")
+            if (parameterPart == IrtConst.InternalEmptyParameter)
             {
                 OnStatus(IrtConst.HelpGeneric);
                 return;
