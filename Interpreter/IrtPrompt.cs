@@ -52,7 +52,7 @@ namespace Interpreter
         /// <summary>
         ///     Send selected Command to the Subscriber
         /// </summary>
-        internal EventHandler<string> SendLog;
+        internal EventHandler<string> SendInternaLog;
 
         /// <summary>
         /// The original input string
@@ -428,7 +428,7 @@ namespace Interpreter
         /// <param name="sendLog">Debug and Status Messages</param>
         private void OnStatus(string sendLog)
         {
-            SendLog?.Invoke(this, sendLog);
+            SendInternaLog?.Invoke(this, sendLog);
         }
 
         /// <summary>

@@ -108,7 +108,7 @@ namespace Interpreter
 
             _interpret = new IrtPrompt(this);
             _interpret.Initiate(use);
-            _interpret.SendLog += SendLog;
+            _interpret.SendInternaLog += SendLog;
             _interpret.sendCommand += SendCommand;
         }
 
@@ -128,7 +128,6 @@ namespace Interpreter
 
             var use = CreateUserSpace(userSpace, com);
             CollectedSpaces.AddDistinct(userSpace.ToUpper(), use);
-            _interpret.SendLog += SendLog;
         }
 
         /// <inheritdoc />
