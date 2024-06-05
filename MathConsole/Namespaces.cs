@@ -20,15 +20,6 @@ namespace MathConsole
                 }
             },
             {
-                99,
-                new InCommand
-                {
-                    Command = "Close",
-                    Description = "Close the prompt",
-                    ParameterCount = 0
-                }
-            },
-            {
                 1,
                 new InCommand
                 {

@@ -3,86 +3,126 @@ using Interpreter;
 using Mathematics;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 
 namespace MatrixPlugin
 {
     public static class MatrixHandler
     {
-        private static Dictionary<int, BaseMatrix> Matrix = new Dictionary<int, BaseMatrix>();
+        private static readonly Dictionary<int, BaseMatrix> Matrix = new();
 
         public static string HandleCommands(OutCommand outCommand)
         {
-            //TODO add switch for Namespace
-
             switch (outCommand.Command)
             {
                 case 0:
+                    // Set matrix
                     return SetMatrix(outCommand.Parameter);
                 case 1:
-                    //TODO
-                    break;
-
+                    // List matrix
+                    return ListMatrix();
                 case 2:
-                    //TODO
-                    break;
-
+                    // Solve matrix
+                    return SolveMatrix(outCommand.Parameter);
                 case 3:
-                    //TODO
-                    break;
-
+                    // Multiply
+                    return MultiplyMatrices(outCommand.Parameter);
                 case 4:
-                    //TODO
-                    break;
-
+                    // Sum
+                    return SumMatrices(outCommand.Parameter);
                 default:
-                    return string.Empty;
+                    return "Invalid command.";
             }
-
-            return string.Empty;
         }
 
-
-        public static string SetMatrix(List<string> parameter)
+        private static string SetMatrix(List<string> parameter)
         {
-            var collection = new List<int>();
-            bool check;
+            if (!int.TryParse(parameter[0], out int id)) return "Invalid parameter: id";
+            if (!int.TryParse(parameter[1], out int height)) return "Invalid parameter: height";
+            if (!int.TryParse(parameter[2], out int width)) return "Invalid parameter: width";
 
-            foreach (string param in parameter)
-            {
-                check = int.TryParse(param, out int number);
-
-                if (!check) return "Matrix could not be added, parameter was not an int value.";
-
-                collection.Add(number);
-            }
-
-            if (collection.Count % 2 == 0) return "Matrix could not be added, wrong number of parameters.";
-
-            var id = collection[0];
-            var height = collection[1];
-            var width = collection[2];
-
-            if(height * width < (collection.Count -3)) return "Matrix could not be added, not enough valued provided to fill up the matrix.";
+            if (height * width != (parameter.Count - 3)) return "Mismatch between matrix size and provided values.";
 
             var matrix = new BaseMatrix(height, width);
+            int count = 0;
 
-            var count = -1;
-
-            for (int i = 3; i < collection.Count; i++)
+            for (int i = 3; i < parameter.Count; i++)
             {
-                var element = collection[i];
+                if (!double.TryParse(parameter[i], out var number)) return $"Invalid number: {parameter[i]}";
+
+                int x = count % width;
+                int y = count / width;
+
+                matrix.Matrix[x, y] = number;
                 count++;
-
-                var x = count % width;
-                var y = count / width;
-
-                matrix.Matrix[x, y] = element;
             }
 
-            //overwrite existing matrix
-            Matrix.AddDistinct(id, matrix);
+            Matrix[id] = matrix;
+            return $"Matrix added at Position: {id}";
+        }
 
-            return "Matrix added at Position:" + id;
+        private static string ListMatrix()
+        {
+            return Matrix.Aggregate(string.Empty, (current, matrix) =>
+                $"{current}Id: {matrix.Key} : {matrix.Value}{Environment.NewLine}");
+        }
+
+        private static string SolveMatrix(IEnumerable<string> outCommandParameter)
+        {
+            string id = outCommandParameter.First();
+            if (!int.TryParse(id, out int number)) return $"Invalid parameter: {id}";
+
+            if (!Matrix.ContainsKey(number)) return "Requested Matrix does not exist.";
+
+            var matrix = Matrix[number];
+            var result = $"Inverse Matrix: {Environment.NewLine}";
+
+            try
+            {
+                result += matrix.Inverse().ToString();
+            }
+            catch (NotImplementedException ex)
+            {
+                Trace.WriteLine(ex);
+                return "Matrix inversion not implemented.";
+            }
+
+            try
+            {
+                var (l, u) = matrix.LuDecomposition();
+                result += $"{Environment.NewLine}L Matrix: {l}{Environment.NewLine}U Matrix: {u}";
+            }
+            catch (NotImplementedException ex)
+            {
+                Trace.WriteLine(ex);
+                return "LU decomposition not implemented.";
+            }
+
+            try
+            {
+                var determinant = matrix.Determinant();
+                result += $"{Environment.NewLine}Determinant: {determinant}";
+            }
+            catch (ArithmeticException ex)
+            {
+                Trace.WriteLine(ex);
+                return "Matrix determinant calculation failed.";
+            }
+
+            return result;
+        }
+
+        private static string MultiplyMatrices(List<string> parameter)
+        {
+            // Implementation for multiplying matrices (case 3)
+            return "Multiply matrices not implemented yet.";
+        }
+
+        private static string SumMatrices(List<string> parameter)
+        {
+            // Implementation for summing matrices (case 4)
+            return "Sum matrices not implemented yet.";
         }
     }
 }
