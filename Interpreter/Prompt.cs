@@ -176,7 +176,7 @@ namespace Interpreter
         internal void SwitchNameSpaces(string space)
         {
             var use = CollectedSpaces[space];
-            _interpret.SwitchUserSpace(use);
+            IrtPrompt.SwitchUserSpace(use);
         }
 
         /// <summary>

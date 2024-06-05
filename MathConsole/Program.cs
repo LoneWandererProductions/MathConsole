@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using Interpreter;
+using MatrixPlugin;
 
 namespace MathConsole
 {
@@ -91,48 +92,32 @@ namespace MathConsole
         /// <param name="outCommand">The out command.</param>
         private static void HandleCommands(OutCommand outCommand)
         {
-            //TODO add switch for Namespace
+            if(outCommand.Command == -1) _prompt.Callback(outCommand.ErrorMessage);
+            if (outCommand.Command == 99)
+            {
+                // Simulate some work
+                _prompt.Callback("The application will close after a short delay.");
 
-            switch (outCommand.Command)
+                _prompt.Dispose();
+                // Introduce a small delay before closing
+                Thread.Sleep(3000); // Delay for 3000 milliseconds (3 seconds)
+                                    // Close the console application
+                Environment.Exit(0);
+            }
+            switch (outCommand.UsedNameSpace)
             {
                 //Just show some stuff
-                case -1:
-                    _prompt.Callback(outCommand.ErrorMessage);
+                case "Statistics":
+                    _prompt.Callback("Not yet Implemented.");
                     break;
 
-                case 0:
-                    //TODO
+                case "Matrix":
+                    var result = MatrixHandler.HandleCommands(outCommand);
+                    _prompt.Callback(result);
                     break;
-                //close the window
-                case 1:
-                    //TODO
-                    break;
-
-                case 2:
-                    //TODO
-                    break;
-
-                case 3:
-                    //TODO
-                    break;
-
-                case 4:
-                    //TODO
-                    break;
-                case 99:
-                    // Simulate some work
-                    _prompt.Callback("The application will close after a short delay.");
-
-                    _prompt.Dispose();
-                    // Introduce a small delay before closing
-                    Thread.Sleep(3000); // Delay for 3000 milliseconds (3 seconds)
-                    // Close the console application
-                    Environment.Exit(0);
-                    break;
-
                 default:
                     //TODO
-                    _prompt.CallbacksWindow("");
+                    _prompt.CallbacksWindow("No Namepace found.");
                     break;
             }
         }

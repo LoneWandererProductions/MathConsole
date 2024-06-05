@@ -7,6 +7,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Interpreter\Interpreter.csproj" />
+    <ProjectReference Include="..\MatrixPlugin\MatrixPlugin.csproj" />
   </ItemGroup>
 
 </Project>

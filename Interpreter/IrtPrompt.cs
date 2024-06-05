@@ -85,7 +85,7 @@ namespace Interpreter
         /// Switches the user space.
         /// </summary>
         /// <param name="use">The use.</param>
-        internal void SwitchUserSpace(UserSpace use)
+        internal static void SwitchUserSpace(UserSpace use)
         {
             _com = use.Commands;
             _nameSpace = use.UserSpaceName;
