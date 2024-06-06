@@ -104,6 +104,24 @@ namespace MathConsole
                     Description = "Mulitply the Matrizes defined by id, min Parameter count is 2.",
                     ParameterCount = -2
                 }
+            },
+            {
+                4,
+                new InCommand
+                {
+                    Command = "Add",
+                    Description = "Mulitply the Matrizes defined by id, min Parameter count is 2.",
+                    ParameterCount = -2
+                }
+            },
+            {
+                5,
+                new InCommand
+                {
+                    Command = "Substract",
+                    Description = "Mulitply the Matrizes defined by id, min Parameter count is 2.",
+                    ParameterCount = -2
+                }
             }
         };
     }

@@ -1,5 +1,4 @@
-﻿using ExtendedSystemObjects;
-using Interpreter;
+﻿using Interpreter;
 using Mathematics;
 using System;
 using System.Collections.Generic;
@@ -19,18 +18,27 @@ namespace MatrixPlugin
                 case 0:
                     // Set matrix
                     return SetMatrix(outCommand.Parameter);
+
                 case 1:
                     // List matrix
                     return ListMatrix();
+
                 case 2:
                     // Solve matrix
                     return SolveMatrix(outCommand.Parameter);
+
                 case 3:
                     // Multiply
                     return MultiplyMatrices(outCommand.Parameter);
+
                 case 4:
                     // Sum
                     return SumMatrices(outCommand.Parameter);
+
+                case 5:
+                    // Substract
+                    return SubstractMatrices(outCommand.Parameter);
+
                 default:
                     return "Invalid command.";
             }
@@ -85,7 +93,7 @@ namespace MatrixPlugin
             catch (NotImplementedException ex)
             {
                 Trace.WriteLine(ex);
-                return "Matrix inversion not implemented.";
+                return "Matrix inversion not implemented for non Cubic Matrices.";
             }
 
             try
@@ -96,7 +104,7 @@ namespace MatrixPlugin
             catch (NotImplementedException ex)
             {
                 Trace.WriteLine(ex);
-                return "LU decomposition not implemented.";
+                return "LU decomposition not implemented for non Cubic Matrices.";
             }
 
             try
@@ -115,14 +123,54 @@ namespace MatrixPlugin
 
         private static string MultiplyMatrices(List<string> parameter)
         {
-            // Implementation for multiplying matrices (case 3)
-            return "Multiply matrices not implemented yet.";
+            BaseMatrix matrix = null;
+
+            for (int i = 0; i < parameter.Count; i++)
+            {
+                if (!int.TryParse(parameter[i], out var number)) return $"Invalid number: {parameter[i]}";
+
+                try
+                {
+                    if (i == 0) matrix = Matrix[number];
+                    else matrix *= Matrix[number];
+                }
+                catch (ArithmeticException ex)
+                {
+                    return $"Error multiplying matrices: {ex.Message}";
+                }
+            }
+            return matrix?.ToString() ?? "No matrices provided for multiplication.";
         }
 
         private static string SumMatrices(List<string> parameter)
         {
-            // Implementation for summing matrices (case 4)
-            return "Sum matrices not implemented yet.";
+            return PerformOperation(parameter, (a, b) => a + b, "sum");
+        }
+
+        private static string SubstractMatrices(List<string> parameter)
+        {
+            return PerformOperation(parameter, (a, b) => a - b, "subtraction");
+        }
+
+        private static string PerformOperation(List<string> parameter, Func<BaseMatrix, BaseMatrix, BaseMatrix> operation, string operationName)
+        {
+            BaseMatrix matrix = null;
+
+            for (int i = 0; i < parameter.Count; i++)
+            {
+                if (!int.TryParse(parameter[i], out var number)) return $"Invalid number: {parameter[i]}";
+
+                try
+                {
+                    if (i == 0) matrix = Matrix[number];
+                    else matrix = operation(matrix, Matrix[number]);
+                }
+                catch (ArithmeticException ex)
+                {
+                    return $"Error performing {operationName} operation: {ex.Message}";
+                }
+            }
+            return matrix?.ToString() ?? $"No matrices provided for {operationName}.";
         }
     }
 }

@@ -195,7 +195,6 @@ namespace InterpreteTests
             _prompt.Dispose();
         }
 
-
         /// <summary>
         /// Some basic tests, the interpreter should execute commands correctly.
         /// </summary>
@@ -250,7 +249,6 @@ namespace InterpreteTests
             // Assert
             Assert.AreEqual(3, _outCommand.Command, "Wrong Id: " + _outCommand.Command);
             Assert.AreEqual(3, _outCommand.Parameter.Count, "Wrong Number: " + _outCommand.Parameter.Count);
-
 
             // Act
             prompt.StartConsole("Fourth(2)");

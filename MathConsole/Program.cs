@@ -1,7 +1,7 @@
-﻿using System;
-using System.Threading;
-using Interpreter;
+﻿using Interpreter;
 using MatrixPlugin;
+using System;
+using System.Threading;
 
 namespace MathConsole
 {
@@ -78,7 +78,7 @@ namespace MathConsole
 
                 HandleCommands(e);
 
-                if(e.ExtensionUsed) HandleExtensionCommands(e);
+                if (e.ExtensionUsed) HandleExtensionCommands(e);
 
                 _prompt.Callback("Event processing completed.");
 
@@ -92,7 +92,7 @@ namespace MathConsole
         /// <param name="outCommand">The out command.</param>
         private static void HandleCommands(OutCommand outCommand)
         {
-            if(outCommand.Command == -1) _prompt.Callback(outCommand.ErrorMessage);
+            if (outCommand.Command == -1) _prompt.Callback(outCommand.ErrorMessage);
             if (outCommand.Command == 99)
             {
                 // Simulate some work
@@ -115,6 +115,7 @@ namespace MathConsole
                     var result = MatrixHandler.HandleCommands(outCommand);
                     _prompt.Callback(result);
                     break;
+
                 default:
                     //TODO
                     _prompt.CallbacksWindow("No Namepace found.");
