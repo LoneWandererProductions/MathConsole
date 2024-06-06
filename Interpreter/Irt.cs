@@ -201,8 +201,9 @@ namespace Interpreter
         ///     For Internal Commands
         /// </summary>
         /// <param name="input">Command String</param>
+        /// <param name="commands">Always Internal Commands, but switches between Commands and Extensions</param>
         /// <returns>If internal Command was used</returns>
-        internal static string CheckInternalCommands(string input)
+        internal static string CheckInternalCommands(string input, IEnumerable<string> commands)
         {
             if (input.Contains(IrtConst.AdvancedOpen))
             {
@@ -225,8 +226,8 @@ namespace Interpreter
                 }
             }
 
-            foreach (var command in IrtConst.InternalCommands.Where(command =>
-                         string.Equals(input, command.ToUpper(CultureInfo.InvariantCulture), StringComparison.Ordinal)))
+            foreach (var command in commands.Where(command =>
+                string.Equals(input, command.ToUpper(CultureInfo.InvariantCulture), StringComparison.Ordinal)))
             {
                 return command;
             }
@@ -279,21 +280,16 @@ namespace Interpreter
         /// </returns>
         internal static int? CheckOverload(string command, int count, Dictionary<int, InCommand> commands)
         {
-
-            foreach (var comm in commands)
+            foreach (var (key, value) in commands.Where(comm => command == comm.Value.Command))
             {
-                if (command == comm.Value.Command)
+                if (value.ParameterCount < 0)
                 {
-                    if (comm.Value.ParameterCount < 0)
-                    {
-                        if(count >= Math.Abs(comm.Value.ParameterCount)) return comm.Key;
-                    }
-                    else
-                    {
-                        if (comm.Value.ParameterCount == count) return comm.Key;
-                    }
+                    if (count >= Math.Abs(value.ParameterCount)) return key;
                 }
-
+                else
+                {
+                    if (value.ParameterCount == count) return key;
+                }
             }
 
             return null;
@@ -309,6 +305,84 @@ namespace Interpreter
         private static bool StartsAndEndsWith(string input, char start, char end)
         {
             return input.Length > 1 && input[0] == start && input[^1] == end;
+        }
+
+        /// <summary>
+        /// Checks for extension.
+        /// </summary>
+        /// <param name="input">The input.</param>
+        /// <param name="nameSpace">The name space.</param>
+        /// <param name="extensionCommands">The extension commands.</param>
+        /// <returns>Status and Extension Commands</returns>
+        internal static (ExtensionCommands Extension, int Status) CheckForExtension(string input, string nameSpace, Dictionary<int, InCommand> extensionCommands)
+        {
+            var exCommand = new ExtensionCommands();
+
+            // Find periods that are not inside {} or ()
+            const string pattern = @"\.(?![^{}]*\})(?![^(]*\))";
+            var regex = new Regex(pattern);
+
+            // Split the input based on the regex pattern
+            var result = regex.Split(input);
+
+            // Determine the split result and handle accordingly
+            return result.Length switch
+            {
+                1 => (null, IrtConst.NoSplitOccurred), // No split occurred
+                > 2 => (null, IrtConst.Error),         // More than one extension found, more are not planned yet
+                _ => ProcessExtension(result[1], nameSpace, extensionCommands, exCommand) // Process the extension
+            };
+        }
+
+        /// <summary>
+        /// Processes the extension.
+        /// </summary>
+        /// <param name="extension">The extension.</param>
+        /// <param name="nameSpace">The name space.</param>
+        /// <param name="extensionCommands">The extension commands.</param>
+        /// <param name="exCommand">The ex command.</param>
+        /// <returns>Status and Extension Commands</returns>
+        private static (ExtensionCommands Extension, int Status) ProcessExtension(string extension, string nameSpace, Dictionary<int, InCommand> extensionCommands, ExtensionCommands exCommand)
+        {
+            var param = CheckInternalCommands(extension, IrtConst.InternalExtensionCommands);
+
+            if (!string.IsNullOrEmpty(param))
+            {
+                var parameters = ExtractParameters(param, extension);
+                exCommand.ExtensionNameSpace = IrtConst.InternalNameSpace;
+                exCommand.ExtensionParameter = parameters;
+                exCommand.InternalCommand = param;
+
+                // TODO: Check if Parentheses are correct and Parameter Count
+                return (exCommand, IrtConst.InternalExtensionFound);
+            }
+
+            var key = CheckForKeyWord(extension, extensionCommands);
+            if (key == IrtConst.ErrorParam)
+            {
+                return (null, IrtConst.Error);
+            }
+
+            var command = extensionCommands[key].Command.ToUpper(CultureInfo.InvariantCulture);
+            var commandParameters = ExtractParameters(command, extension);
+            exCommand.ExtensionNameSpace = nameSpace;
+            exCommand.ExtensionCommand = key;
+            exCommand.ExtensionParameter = commandParameters;
+
+            // TODO: Check if Parentheses are correct and Parameter Count
+            return (exCommand, IrtConst.NamespaceExtensionFound);
+        }
+
+        /// <summary>
+        /// Extracts the parameters.
+        /// </summary>
+        /// <param name="command">The command.</param>
+        /// <param name="extension">The extension.</param>
+        /// <returns>cleaned Parameter</returns>
+        private static List<string> ExtractParameters(string command, string extension)
+        {
+            var parameterPart = RemoveWord(command, extension);
+            return SplitParameter(parameterPart, IrtConst.Splitter);
         }
     }
 }

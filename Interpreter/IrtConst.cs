@@ -42,9 +42,19 @@ namespace Interpreter
         internal const string InternalCommandList = "LIST";
 
         /// <summary>
+        ///     The internal Namespace (const). Value: "INTERNAL".
+        /// </summary>
+        internal const string InternalNameSpace = "INTERNAL";
+
+        /// <summary>
         ///     The internal command using (const). Value: "USING".
         /// </summary>
         internal const string InternalUsing = "USING";
+
+        /// <summary>
+        ///     The internal extension command use (const). Value: "Use".
+        /// </summary>
+        internal const string InternalExtensionUse = "USE";
 
         /// <summary>
         ///     The internal command use (const). Value: "USE".
@@ -207,6 +217,26 @@ namespace Interpreter
         internal const string CommentCommand = "--";
 
         /// <summary>
+        /// The no split occurred. (const). Value: "2".
+        /// </summary>
+        internal const int NoSplitOccurred = 0;
+
+        /// <summary>
+        /// The error. (const). Value: "-1".
+        /// </summary>
+        internal const int Error = -1;
+
+        /// <summary>
+        /// The internal extension found. (const). Value: "1".
+        /// </summary>
+        internal const int InternalExtensionFound = 1;
+
+        /// <summary>
+        /// The namespace extension found. (const). Value: "2".
+        /// </summary>
+        internal const int NamespaceExtensionFound = 2;
+
+        /// <summary>
         ///     The internal commands
         /// </summary>
         internal static readonly List<string> InternalCommands = new()
@@ -220,6 +250,14 @@ namespace Interpreter
             InternalLogFull,
             InternalCommandContainer,
             InternalCommandBatchExecute
+        };
+
+        /// <summary>
+        ///     The internal Extension commands
+        /// </summary>
+        internal static readonly List<string> InternalExtensionCommands = new()
+        {
+            InternalExtensionUse
         };
 
         /// <summary>

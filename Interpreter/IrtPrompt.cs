@@ -10,8 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
-using System.Net.NetworkInformation;
-using System.Runtime.Intrinsics.X86;
 
 namespace Interpreter
 {
@@ -24,6 +22,11 @@ namespace Interpreter
         ///     Command Register
         /// </summary>
         private static Dictionary<int, InCommand> _com;
+
+        /// <summary>
+        ///     Extension Command Register
+        /// </summary>
+        private static Dictionary<int, InCommand> _extension;
 
         /// <summary>
         ///     Namespace of Commands
@@ -53,7 +56,7 @@ namespace Interpreter
         /// <summary>
         ///     Send selected Command to the Subscriber
         /// </summary>
-        internal EventHandler<string> SendInternaLog;
+        internal EventHandler<string> SendInternalLog;
 
         /// <summary>
         /// The original input string
@@ -76,6 +79,7 @@ namespace Interpreter
         internal void Initiate(UserSpace use)
         {
             _com = use.Commands;
+            _extension = use.ExtensionCommands;
             _nameSpace = use.UserSpaceName;
             var log = Logging.SetLastError(IrtConst.InformationStartup, 2);
             OnStatus(log);
@@ -88,6 +92,7 @@ namespace Interpreter
         internal static void SwitchUserSpace(UserSpace use)
         {
             _com = use.Commands;
+            _extension = use.ExtensionCommands;
             _nameSpace = use.UserSpaceName;
         }
 
@@ -98,81 +103,144 @@ namespace Interpreter
         /// <returns>Results of our commands</returns>
         internal void HandleInput(string inputString)
         {
-            //save a copy for debugging reasons and Log reasons to return the inputed string not the changed.
+            // Save a copy for debugging and logging reasons
             _inputString = inputString;
-            //clean string, remove trailing whitespace
-            inputString = inputString.Trim().ToUpper(CultureInfo.CurrentCulture).ToUpper(CultureInfo.InvariantCulture);
 
-            //handle File comments
-            if (inputString.StartsWith(IrtConst.CommentCommand, StringComparison.InvariantCultureIgnoreCase))
+            // Clean the input string
+            inputString = CleanInputString(inputString);
+
+            // Check for extension methods
+            var extensionResult = Irt.CheckForExtension(_inputString, _nameSpace, _extension);
+
+            // Handle file comments
+            if (IsCommentCommand(inputString))
             {
                 Trace.WriteLine(inputString);
                 return;
             }
 
-            //Help definition
-            if (inputString.Equals(IrtConst.InternalCommandHelp, StringComparison.InvariantCultureIgnoreCase))
+            // Handle help command
+            if (IsHelpCommand(inputString))
             {
                 OnStatus(IrtConst.HelpGeneric);
                 return;
             }
 
-            //check if it is an internal Command
-            var param = Irt.CheckInternalCommands(inputString);
-
+            // Handle internal commands
+            var param = Irt.CheckInternalCommands(inputString, IrtConst.InternalCommands);
             if (!string.IsNullOrEmpty(param))
             {
                 HandleInternalCommands(param, inputString);
                 return;
             }
 
-            //check if Command Dictionary was empty
+            // Check if command dictionary is empty
             if (_com == null)
             {
                 SetError(IrtConst.ErrorNoCommandsProvided);
                 return;
             }
 
-            //Get the Id of the Command Dictionary
+            // Get the command key from the dictionary
             var key = Irt.CheckForKeyWord(inputString, _com);
 
-            //if key was not found bail
+            // Handle case where key is not found
             if (key == IrtConst.ErrorParam)
             {
-                var log = Logging.SetLastError(IrtConst.KeyWordNotFoundError, 0);
-                SetError(string.Concat(log, _inputString));
+                SetErrorWithLog(IrtConst.KeyWordNotFoundError, _inputString);
                 return;
             }
 
-            //Is Parameter count > 0 and parentheses correct?
-            if (_com[key].ParameterCount != 0 && !Irt.SingleCheck(inputString))
+            // Validate parameter count and parentheses
+            if (!ValidateParameters(inputString, key))
             {
-                var log = Logging.SetLastError(IrtConst.ParenthesisError, 0);
-                SetError(log);
                 return;
             }
 
-            var parameterPart = Irt.RemoveWord(_com[key].Command.ToUpper(CultureInfo.InvariantCulture), inputString);
-            //Remove Parenthesis and split
-            parameterPart = Irt.RemoveParenthesis(parameterPart, IrtConst.BaseClose, IrtConst.BaseOpen);
+            // Process parameters and handle overloads
+            var parameterPart = ProcessParameters(inputString, key);
             var parameter = Irt.SplitParameter(parameterPart, IrtConst.Splitter);
-
-            //Check for overloads, get the Overload by Parameter Count, return -1 if we do not find a match
             var check = Irt.CheckOverload(_com[key].Command, parameter.Count, _com);
 
-            //Incorrect overload
             if (check == null)
             {
-                var log = Logging.SetLastError(IrtConst.SyntaxError, 0);
-                SetError(log);
+                SetErrorWithLog(IrtConst.SyntaxError);
                 return;
             }
-            else
-            {
-                key = (int)check;
-            }
 
-            SetResult(key, parameter);
+            SetResult((int)check, parameter);
+        }
+
+        /// <summary>
+        /// Cleans the input string.
+        /// </summary>
+        /// <param name="input">The input.</param>
+        /// <returns></returns>
+        private static string CleanInputString(string input)
+        {
+            return input.Trim().ToUpper(CultureInfo.CurrentCulture).ToUpper(CultureInfo.InvariantCulture);
+        }
+
+        /// <summary>
+        /// Determines whether [is comment command] [the specified input].
+        /// </summary>
+        /// <param name="input">The input.</param>
+        /// <returns>
+        ///   <c>true</c> if [is comment command] [the specified input]; otherwise, <c>false</c>.
+        /// </returns>
+        private static bool IsCommentCommand(string input)
+        {
+            return input.StartsWith(IrtConst.CommentCommand, StringComparison.InvariantCultureIgnoreCase);
+        }
+
+        /// <summary>
+        /// Determines whether [is help command] [the specified input].
+        /// </summary>
+        /// <param name="input">The input.</param>
+        /// <returns>
+        ///   <c>true</c> if [is help command] [the specified input]; otherwise, <c>false</c>.
+        /// </returns>
+        private static bool IsHelpCommand(string input)
+        {
+            return input.Equals(IrtConst.InternalCommandHelp, StringComparison.InvariantCultureIgnoreCase);
+        }
+
+        /// <summary>
+        /// Sets the error with log.
+        /// </summary>
+        /// <param name="errorMessage">The error message.</param>
+        /// <param name="additionalInfo">The additional information.</param>
+        private void SetErrorWithLog(string errorMessage, string additionalInfo = "")
+        {
+            var log = Logging.SetLastError(errorMessage, 0);
+            SetError(string.Concat(log, additionalInfo));
+        }
+
+        /// <summary>
+        /// Validates the parameters.
+        /// </summary>
+        /// <param name="input">The input.</param>
+        /// <param name="key">The key.</param>
+        /// <returns>Check if Parameter is valid</returns>
+        private bool ValidateParameters(string input, int key)
+        {
+            if (_com[key].ParameterCount == 0 || Irt.SingleCheck(input)) return true;
+
+            SetErrorWithLog(IrtConst.ParenthesisError);
+            return false;
+        }
+
+        /// <summary>
+        /// Processes the parameters.
+        /// </summary>
+        /// <param name="input">The input.</param>
+        /// <param name="key">The key.</param>
+        /// <returns>return Parameter</returns>
+        private static string ProcessParameters(string input, int key)
+        {
+            var command = _com[key].Command.ToUpper(CultureInfo.InvariantCulture);
+            var parameterPart = Irt.RemoveWord(command, input);
+            return Irt.RemoveParenthesis(parameterPart, IrtConst.BaseClose, IrtConst.BaseOpen);
         }
 
         /// <summary>
@@ -431,7 +499,7 @@ namespace Interpreter
         /// <param name="sendLog">Debug and Status Messages</param>
         private void OnStatus(string sendLog)
         {
-            SendInternaLog?.Invoke(this, sendLog);
+            SendInternalLog?.Invoke(this, sendLog);
         }
 
         /// <summary>

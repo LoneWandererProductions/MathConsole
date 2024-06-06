@@ -441,7 +441,7 @@ namespace InterpreteTests
         public void HandleInputHelpCommandLogsHelp()
         {
             var logHandled = false;
-            _irtPrompt.SendInternaLog += (sender, e) =>
+            _irtPrompt.SendInternalLog += (sender, e) =>
             {
                 Assert.AreEqual(IrtConst.HelpGeneric, e);
                 logHandled = true;

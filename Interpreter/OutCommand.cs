@@ -48,5 +48,14 @@ namespace Interpreter
         /// The error message.
         /// </value>
         public string ErrorMessage { get; internal init; }
+
+        /// <summary>
+        /// Gets the extension command.
+        /// only relevant if ExtensionUsed is true
+        /// </summary>
+        /// <value>
+        /// The extension command.
+        /// </value>
+        public ExtensionCommands ExtensionCommand{ get; internal init; }
     }
 }

@@ -108,7 +108,7 @@ namespace Interpreter
 
             _interpret = new IrtPrompt(this);
             _interpret.Initiate(use);
-            _interpret.SendInternaLog += SendLog;
+            _interpret.SendInternalLog += SendLog;
             _interpret.sendCommand += SendCommand;
         }
 
