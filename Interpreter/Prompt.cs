@@ -186,8 +186,7 @@ namespace Interpreter
         /// <param name="e">Type</param>
         private void SendCommand(object sender, OutCommand e)
         {
-            if(e.Command == IrtConst.ErrorParam) AddToLog(e.ErrorMessage);
-            else AddToLog(e.Command.ToString());
+            AddToLog(e.Command == IrtConst.ErrorParam ? e.ErrorMessage : e.Command.ToString());
 
             SendCommands?.Invoke(nameof(Prompt), e);
         }
@@ -212,10 +211,7 @@ namespace Interpreter
         /// </param>
         private void Dispose(bool disposing)
         {
-            if (Disposed)
-            {
-                return;
-            }
+            if (Disposed) return;
 
             if (disposing)
             {
@@ -234,10 +230,7 @@ namespace Interpreter
         /// <param name="message">The message.</param>
         internal void AddToLog(string message)
         {
-            if (_count == MaxLines)
-            {
-                Log.Remove(Log.Keys.First());
-            }
+            if (_count == MaxLines) Log.Remove(Log.Keys.First());
 
             _count++;
             Log.Add(_count, message);

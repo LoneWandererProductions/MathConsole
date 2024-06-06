@@ -1,7 +1,7 @@
+using System.Collections.Generic;
 using Interpreter;
 using MatrixPlugin;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Collections.Generic;
 
 namespace FunctionTest
 {
@@ -21,7 +21,7 @@ namespace FunctionTest
             };
 
             // Act
-            string result = MatrixHandler.HandleCommands(com);
+            var result = MatrixHandler.HandleCommands(com);
 
             // Assert
             Assert.AreEqual("Matrix added at Position: 1", result);
@@ -40,7 +40,7 @@ namespace FunctionTest
             };
 
             // Act
-            string result = MatrixHandler.HandleCommands(com);
+            var result = MatrixHandler.HandleCommands(com);
 
             // Assert
             Assert.AreEqual("Invalid parameter: id", result);

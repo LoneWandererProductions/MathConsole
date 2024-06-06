@@ -1,5 +1,5 @@
-﻿using Interpreter;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Interpreter;
 
 namespace MathConsole
 {
@@ -74,7 +74,8 @@ namespace MathConsole
                 new InCommand
                 {
                     Command = "Matrix",
-                    Description = "Load a matrix into the internal memory. First is id of the matrix, if id is equal, existing matrix will be overwriten, second, third, height, width, the rest matrix data as double. Min 7 Parameter",
+                    Description =
+                        "Load a matrix into the internal memory. First is id of the matrix, if id is equal, existing matrix will be overwriten, second, third, height, width, the rest matrix data as double. Min 7 Parameter",
                     ParameterCount = -7
                 }
             },

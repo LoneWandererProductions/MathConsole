@@ -196,7 +196,7 @@ namespace InterpreteTests
         }
 
         /// <summary>
-        /// Some basic tests, the interpreter should execute commands correctly.
+        ///     Some basic tests, the interpreter should execute commands correctly.
         /// </summary>
         [TestMethod]
         public void ConsoleInterpreterdxecuteCommands()
@@ -209,8 +209,15 @@ namespace InterpreteTests
             {
                 { 0, new InCommand { Command = "First", ParameterCount = 2, Description = "Help First" } },
                 { 1, new InCommand { Command = "Second", ParameterCount = 3, Description = "Help Second" } },
-                { 2, new InCommand { Command = "Third", ParameterCount = 0, Description = "Special case no Parameter" } },
-                { 3, new InCommand { Command = "Fourth", ParameterCount = -2, Description = "Special case 2+ parameters" } }
+                {
+                    2,
+                    new InCommand { Command = "Third", ParameterCount = 0, Description = "Special case no Parameter" }
+                },
+                {
+                    3,
+                    new InCommand
+                        { Command = "Fourth", ParameterCount = -2, Description = "Special case 2+ parameters" }
+                }
             };
             prompt.Initiate(commands, "NameSpaceOne");
 
@@ -227,7 +234,8 @@ namespace InterpreteTests
             // Assert
             Assert.AreEqual(-1, _outCommand.Command, "Wrong Id: " + _outCommand.Command);
             Assert.AreEqual(null, _outCommand.Parameter, "Wrong Number: ");
-            Assert.IsTrue(_outCommand.ErrorMessage.Contains("Error in the Syntax: "), "Wrong or no error set: " + _outCommand.ErrorMessage);
+            Assert.IsTrue(_outCommand.ErrorMessage.Contains("Error in the Syntax: "),
+                "Wrong or no error set: " + _outCommand.ErrorMessage);
 
             // Act
             prompt.StartConsole("Third");
@@ -256,7 +264,8 @@ namespace InterpreteTests
             // Assert
             Assert.AreEqual(-1, _outCommand.Command, "Wrong Id: " + _outCommand.Command);
             Assert.AreEqual(null, _outCommand.Parameter, "Wrong Number: ");
-            Assert.IsTrue(_outCommand.ErrorMessage.Contains("Error in the Syntax: "), "Wrong or no error set: " + _outCommand.ErrorMessage);
+            Assert.IsTrue(_outCommand.ErrorMessage.Contains("Error in the Syntax: "),
+                "Wrong or no error set: " + _outCommand.ErrorMessage);
         }
 
         /// <summary>
@@ -369,10 +378,7 @@ namespace InterpreteTests
             Assert.AreEqual(_prompt.Log[2], "Third()", "Correct Parameter");
             Assert.AreEqual(_prompt.Log[3], "2", "Correct Parameter");
 
-            if (File.Exists(Batch))
-            {
-                File.Delete(Batch);
-            }
+            if (File.Exists(Batch)) File.Delete(Batch);
 
             _prompt.Dispose();
         }
@@ -382,10 +388,7 @@ namespace InterpreteTests
         /// </summary>
         private static void CreateFile()
         {
-            if (File.Exists(Batch))
-            {
-                File.Delete(Batch);
-            }
+            if (File.Exists(Batch)) File.Delete(Batch);
 
             // Create a file to write to.
             using var sw = File.CreateText(Batch);

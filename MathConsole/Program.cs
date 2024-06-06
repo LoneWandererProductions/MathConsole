@@ -1,7 +1,7 @@
-﻿using Interpreter;
-using MatrixPlugin;
-using System;
+﻿using System;
 using System.Threading;
+using Interpreter;
+using MatrixPlugin;
 
 namespace MathConsole
 {
@@ -9,11 +9,11 @@ namespace MathConsole
     {
         private static Prompt _prompt;
 
-        private static readonly object ConsoleLock = new object();
+        private static readonly object ConsoleLock = new();
         private static bool _isEventTriggered;
 
         /// <summary>
-        /// Defines the entry point of the application.
+        ///     Defines the entry point of the application.
         /// </summary>
         private static void Main()
         {
@@ -87,7 +87,7 @@ namespace MathConsole
         }
 
         /// <summary>
-        /// Handles the commands.
+        ///     Handles the commands.
         /// </summary>
         /// <param name="outCommand">The out command.</param>
         private static void HandleCommands(OutCommand outCommand)
@@ -101,9 +101,10 @@ namespace MathConsole
                 _prompt.Dispose();
                 // Introduce a small delay before closing
                 Thread.Sleep(3000); // Delay for 3000 milliseconds (3 seconds)
-                                    // Close the console application
+                // Close the console application
                 Environment.Exit(0);
             }
+
             switch (outCommand.UsedNameSpace)
             {
                 //Just show some stuff

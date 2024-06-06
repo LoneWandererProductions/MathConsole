@@ -42,20 +42,20 @@ namespace Interpreter
         public bool ExtensionUsed { get; internal init; }
 
         /// <summary>
-        /// Gets the error message.
+        ///     Gets the error message.
         /// </summary>
         /// <value>
-        /// The error message.
+        ///     The error message.
         /// </value>
         public string ErrorMessage { get; internal init; }
 
         /// <summary>
-        /// Gets the extension command.
-        /// only relevant if ExtensionUsed is true
+        ///     Gets the extension command.
+        ///     only relevant if ExtensionUsed is true
         /// </summary>
         /// <value>
-        /// The extension command.
+        ///     The extension command.
         /// </value>
-        public ExtensionCommands ExtensionCommand{ get; internal init; }
+        public ExtensionCommands ExtensionCommand { get; internal init; }
     }
 }

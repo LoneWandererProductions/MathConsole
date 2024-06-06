@@ -82,15 +82,10 @@ namespace Mathematics
                 double sum = 0;
 
                 for (var i = 0; i < triangle.VertexCount; i++)
-                {
-                    sum += (triangle[i].X * triangle[(i + 1) % triangle.VertexCount].Y) -
-                           (triangle[i].Y * triangle[(i + 1) % triangle.VertexCount].X);
-                }
+                    sum += triangle[i].X * triangle[(i + 1) % triangle.VertexCount].Y -
+                           triangle[i].Y * triangle[(i + 1) % triangle.VertexCount].X;
 
-                if (sum >= 0)
-                {
-                    continue;
-                }
+                if (sum >= 0) continue;
 
                 lst.Add(triangle);
             }
@@ -109,7 +104,7 @@ namespace Mathematics
             lst.AddRange(triangles
                 .Select(triangle => new[]
                 {
-                    Projection3DCamera.ProjectionTo3D(triangle[0]), 
+                    Projection3DCamera.ProjectionTo3D(triangle[0]),
                     Projection3DCamera.ProjectionTo3D(triangle[1]),
                     Projection3DCamera.ProjectionTo3D(triangle[2])
                 }).Select(array => new PolyTriangle(array)));

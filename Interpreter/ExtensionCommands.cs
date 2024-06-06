@@ -11,7 +11,7 @@ using System.Collections.Generic;
 namespace Interpreter
 {
     /// <summary>
-    /// Extensions for the existing commands
+    ///     Extensions for the existing commands
     /// </summary>
     public sealed class ExtensionCommands
     {
@@ -22,18 +22,18 @@ namespace Interpreter
         ///     The used name space.
         /// </value>
         /// <summary>
-        /// Gets the error message.
+        ///     Gets the error message.
         /// </summary>
         /// <value>
-        /// The error message.
+        ///     The error message.
         /// </value>
-        public string ExtensionError{ get; internal init; }
+        public string ExtensionError { get; internal init; }
 
         /// <summary>
-        /// Gets the used name space.
+        ///     Gets the used name space.
         /// </summary>
         /// <value>
-        /// The used name space.
+        ///     The used name space.
         /// </value>
         public string ExtensionNameSpace { get; internal set; }
 
@@ -48,10 +48,10 @@ namespace Interpreter
         public List<string> ExtensionParameter { get; internal set; }
 
         /// <summary>
-        /// Gets or sets the internal command.
+        ///     Gets or sets the internal command.
         /// </summary>
         /// <value>
-        /// The internal command.
+        ///     The internal command.
         /// </value>
         public string InternalCommand { get; set; }
     }

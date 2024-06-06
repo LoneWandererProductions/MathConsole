@@ -32,10 +32,10 @@ namespace Interpreter
         internal Dictionary<int, InCommand> Commands { get; init; }
 
         /// <summary>
-        /// Gets or sets the extension commands.
+        ///     Gets or sets the extension commands.
         /// </summary>
         /// <value>
-        /// The extension commands.
+        ///     The extension commands.
         /// </value>
         internal Dictionary<int, InCommand> ExtensionCommands { get; init; }
     }

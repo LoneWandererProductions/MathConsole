@@ -34,9 +34,24 @@ namespace Interpreter
         private static string _nameSpace;
 
         /// <summary>
+        ///     The log
+        /// </summary>
+        private readonly Dictionary<int, string> _log;
+
+        /// <summary>
+        ///     The prompt
+        /// </summary>
+        private readonly Prompt _prompt;
+
+        /// <summary>
         ///     The send logs
         /// </summary>
         private readonly EventHandler<string> _sendLogs;
+
+        /// <summary>
+        ///     The original input string
+        /// </summary>
+        private string _inputString;
 
         /// <summary>
         ///     Send selected Command to the Subscriber
@@ -44,24 +59,9 @@ namespace Interpreter
         internal EventHandler<OutCommand> sendCommand;
 
         /// <summary>
-        /// The prompt
-        /// </summary>
-        private readonly Prompt _prompt;
-
-        /// <summary>
-        ///     The log
-        /// </summary>
-        private readonly Dictionary<int, string> _log;
-
-        /// <summary>
         ///     Send selected Command to the Subscriber
         /// </summary>
         internal EventHandler<string> SendInternalLog;
-
-        /// <summary>
-        /// The original input string
-        /// </summary>
-        private string _inputString;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="IrtPrompt" /> class.
@@ -86,7 +86,7 @@ namespace Interpreter
         }
 
         /// <summary>
-        /// Switches the user space.
+        ///     Switches the user space.
         /// </summary>
         /// <param name="use">The use.</param>
         internal static void SwitchUserSpace(UserSpace use)
@@ -152,10 +152,7 @@ namespace Interpreter
             }
 
             // Validate parameter count and parentheses
-            if (!ValidateParameters(inputString, key))
-            {
-                return;
-            }
+            if (!ValidateParameters(inputString, key)) return;
 
             // Process parameters and handle overloads
             var parameterPart = ProcessParameters(inputString, key);
@@ -172,7 +169,7 @@ namespace Interpreter
         }
 
         /// <summary>
-        /// Cleans the input string.
+        ///     Cleans the input string.
         /// </summary>
         /// <param name="input">The input.</param>
         /// <returns></returns>
@@ -182,11 +179,11 @@ namespace Interpreter
         }
 
         /// <summary>
-        /// Determines whether [is comment command] [the specified input].
+        ///     Determines whether [is comment command] [the specified input].
         /// </summary>
         /// <param name="input">The input.</param>
         /// <returns>
-        ///   <c>true</c> if [is comment command] [the specified input]; otherwise, <c>false</c>.
+        ///     <c>true</c> if [is comment command] [the specified input]; otherwise, <c>false</c>.
         /// </returns>
         private static bool IsCommentCommand(string input)
         {
@@ -194,11 +191,11 @@ namespace Interpreter
         }
 
         /// <summary>
-        /// Determines whether [is help command] [the specified input].
+        ///     Determines whether [is help command] [the specified input].
         /// </summary>
         /// <param name="input">The input.</param>
         /// <returns>
-        ///   <c>true</c> if [is help command] [the specified input]; otherwise, <c>false</c>.
+        ///     <c>true</c> if [is help command] [the specified input]; otherwise, <c>false</c>.
         /// </returns>
         private static bool IsHelpCommand(string input)
         {
@@ -206,7 +203,7 @@ namespace Interpreter
         }
 
         /// <summary>
-        /// Sets the error with log.
+        ///     Sets the error with log.
         /// </summary>
         /// <param name="errorMessage">The error message.</param>
         /// <param name="additionalInfo">The additional information.</param>
@@ -217,7 +214,7 @@ namespace Interpreter
         }
 
         /// <summary>
-        /// Validates the parameters.
+        ///     Validates the parameters.
         /// </summary>
         /// <param name="input">The input.</param>
         /// <param name="key">The key.</param>
@@ -231,7 +228,7 @@ namespace Interpreter
         }
 
         /// <summary>
-        /// Processes the parameters.
+        ///     Processes the parameters.
         /// </summary>
         /// <param name="input">The input.</param>
         /// <param name="key">The key.</param>
@@ -352,7 +349,6 @@ namespace Interpreter
             _prompt.SwitchNameSpaces(parameterPart);
             var log = string.Concat(IrtConst.InformationNamespaceSwitch, parameterPart);
             OnStatus(log);
-
         }
 
         /// <summary>
@@ -360,10 +356,7 @@ namespace Interpreter
         /// </summary>
         private void CommandList()
         {
-            foreach (var com in _com.Values)
-            {
-                OnStatus(string.Concat(com.Command, Environment.NewLine, com.Description));
-            }
+            foreach (var com in _com.Values) OnStatus(string.Concat(com.Command, Environment.NewLine, com.Description));
         }
 
         /// <summary>Display all using and the Current in Use.</summary>
@@ -371,10 +364,7 @@ namespace Interpreter
         private void CommandUsing(string nameSpace)
         {
             OnStatus(string.Concat(IrtConst.Active, nameSpace, Environment.NewLine));
-            foreach (var key in _prompt.CollectedSpaces.Keys)
-            {
-                OnStatus(string.Concat(key, Environment.NewLine));
-            }
+            foreach (var key in _prompt.CollectedSpaces.Keys) OnStatus(string.Concat(key, Environment.NewLine));
         }
 
         /// <summary>
@@ -382,10 +372,7 @@ namespace Interpreter
         /// </summary>
         private void CommandLogError()
         {
-            foreach (var entry in Logging.Log)
-            {
-                OnStatus(string.Concat(entry, Environment.NewLine));
-            }
+            foreach (var entry in Logging.Log) OnStatus(string.Concat(entry, Environment.NewLine));
         }
 
         /// <summary>
@@ -404,10 +391,7 @@ namespace Interpreter
         /// </summary>
         private void CommandLogFull()
         {
-            foreach (var entry in new List<string>(_log.Values))
-            {
-                _sendLogs.Invoke(this, entry);
-            }
+            foreach (var entry in new List<string>(_log.Values)) _sendLogs.Invoke(this, entry);
         }
 
         /// <summary>
@@ -428,10 +412,8 @@ namespace Interpreter
 
             if (!check)
             {
-                {
-                    var log = Logging.SetLastError(IrtConst.ParenthesisError, 0);
-                    SetError(log);
-                }
+                var log = Logging.SetLastError(IrtConst.ParenthesisError, 0);
+                SetError(log);
             }
 
             GenerateCommands(parameterPart);
@@ -489,7 +471,8 @@ namespace Interpreter
         /// </summary>
         private void SetError(string error)
         {
-            var com = new OutCommand { Command = IrtConst.ErrorParam, Parameter = null, UsedNameSpace = _nameSpace, ErrorMessage = error };
+            var com = new OutCommand
+                { Command = IrtConst.ErrorParam, Parameter = null, UsedNameSpace = _nameSpace, ErrorMessage = error };
             OnCommand(com);
         }
 

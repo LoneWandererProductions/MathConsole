@@ -1,9 +1,9 @@
-﻿using Interpreter;
-using Mathematics;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using Interpreter;
+using Mathematics;
 
 namespace MatrixPlugin
 {
@@ -46,21 +46,21 @@ namespace MatrixPlugin
 
         private static string SetMatrix(List<string> parameter)
         {
-            if (!int.TryParse(parameter[0], out int id)) return "Invalid parameter: id";
-            if (!int.TryParse(parameter[1], out int height)) return "Invalid parameter: height";
-            if (!int.TryParse(parameter[2], out int width)) return "Invalid parameter: width";
+            if (!int.TryParse(parameter[0], out var id)) return "Invalid parameter: id";
+            if (!int.TryParse(parameter[1], out var height)) return "Invalid parameter: height";
+            if (!int.TryParse(parameter[2], out var width)) return "Invalid parameter: width";
 
-            if (height * width != (parameter.Count - 3)) return "Mismatch between matrix size and provided values.";
+            if (height * width != parameter.Count - 3) return "Mismatch between matrix size and provided values.";
 
             var matrix = new BaseMatrix(height, width);
-            int count = 0;
+            var count = 0;
 
-            for (int i = 3; i < parameter.Count; i++)
+            for (var i = 3; i < parameter.Count; i++)
             {
                 if (!double.TryParse(parameter[i], out var number)) return $"Invalid number: {parameter[i]}";
 
-                int x = count % width;
-                int y = count / width;
+                var x = count % width;
+                var y = count / width;
 
                 matrix.Matrix[x, y] = number;
                 count++;
@@ -78,8 +78,8 @@ namespace MatrixPlugin
 
         private static string SolveMatrix(IEnumerable<string> outCommandParameter)
         {
-            string id = outCommandParameter.First();
-            if (!int.TryParse(id, out int number)) return $"Invalid parameter: {id}";
+            var id = outCommandParameter.First();
+            if (!int.TryParse(id, out var number)) return $"Invalid parameter: {id}";
 
             if (!Matrix.ContainsKey(number)) return "Requested Matrix does not exist.";
 
@@ -125,7 +125,7 @@ namespace MatrixPlugin
         {
             BaseMatrix matrix = null;
 
-            for (int i = 0; i < parameter.Count; i++)
+            for (var i = 0; i < parameter.Count; i++)
             {
                 if (!int.TryParse(parameter[i], out var number)) return $"Invalid number: {parameter[i]}";
 
@@ -139,6 +139,7 @@ namespace MatrixPlugin
                     return $"Error multiplying matrices: {ex.Message}";
                 }
             }
+
             return matrix?.ToString() ?? "No matrices provided for multiplication.";
         }
 
@@ -152,11 +153,12 @@ namespace MatrixPlugin
             return PerformOperation(parameter, (a, b) => a - b, "subtraction");
         }
 
-        private static string PerformOperation(List<string> parameter, Func<BaseMatrix, BaseMatrix, BaseMatrix> operation, string operationName)
+        private static string PerformOperation(List<string> parameter,
+            Func<BaseMatrix, BaseMatrix, BaseMatrix> operation, string operationName)
         {
             BaseMatrix matrix = null;
 
-            for (int i = 0; i < parameter.Count; i++)
+            for (var i = 0; i < parameter.Count; i++)
             {
                 if (!int.TryParse(parameter[i], out var number)) return $"Invalid number: {parameter[i]}";
 
@@ -170,6 +172,7 @@ namespace MatrixPlugin
                     return $"Error performing {operationName} operation: {ex.Message}";
                 }
             }
+
             return matrix?.ToString() ?? $"No matrices provided for {operationName}.";
         }
     }

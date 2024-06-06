@@ -33,10 +33,7 @@ namespace DataFormatter
         public static List<List<string>> ReadCsv(string filepath, char separator)
         {
             var lst = ReadText.ReadFile(filepath);
-            if (lst == null)
-            {
-                return null;
-            }
+            if (lst == null) return null;
 
             var enums = new List<List<string>>(lst.Count);
 

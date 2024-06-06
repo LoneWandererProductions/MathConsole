@@ -70,10 +70,7 @@ namespace Mathematics
         /// <value>
         ///     The null point.
         /// </value>
-        public static Coordinate2D NullPoint
-        {
-            get;
-        } = new(0, 0);
+        public static Coordinate2D NullPoint { get; } = new(0, 0);
 
         /// <summary>
         ///     Gets the identifier of the Coordinate in the 2D System.
@@ -201,7 +198,7 @@ namespace Mathematics
         /// <returns>The id of the coordinate</returns>
         private static int CalculateId(int x, int y, int width)
         {
-            return (y * width) + x;
+            return y * width + x;
         }
 
         /// <summary>

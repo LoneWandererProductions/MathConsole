@@ -62,11 +62,6 @@ namespace Interpreter
         internal const string InternalUse = "USE";
 
         /// <summary>
-        ///     The internal check, if Parameter is empty, since the brackets are expected. (const). Value: "()".
-        /// </summary>
-        internal static readonly string InternalEmptyParameter = string.Concat(BaseOpen, BaseClose);
-
-        /// <summary>
         ///     The internal command Log (const). Value: "LOG".
         /// </summary>
         internal const string InternalErrorLog = "LOG";
@@ -217,24 +212,29 @@ namespace Interpreter
         internal const string CommentCommand = "--";
 
         /// <summary>
-        /// The no split occurred. (const). Value: "2".
+        ///     The no split occurred. (const). Value: "2".
         /// </summary>
         internal const int NoSplitOccurred = 0;
 
         /// <summary>
-        /// The error. (const). Value: "-1".
+        ///     The error. (const). Value: "-1".
         /// </summary>
         internal const int Error = -1;
 
         /// <summary>
-        /// The internal extension found. (const). Value: "1".
+        ///     The internal extension found. (const). Value: "1".
         /// </summary>
         internal const int InternalExtensionFound = 1;
 
         /// <summary>
-        /// The namespace extension found. (const). Value: "2".
+        ///     The namespace extension found. (const). Value: "2".
         /// </summary>
         internal const int NamespaceExtensionFound = 2;
+
+        /// <summary>
+        ///     The internal check, if Parameter is empty, since the brackets are expected. (const). Value: "()".
+        /// </summary>
+        internal static readonly string InternalEmptyParameter = string.Concat(BaseOpen, BaseClose);
 
         /// <summary>
         ///     The internal commands
