@@ -365,6 +365,12 @@ namespace Interpreter
                 return (null, IrtConst.Error);
             }
 
+            // Validate parameter count and parentheses
+            if (!ValidateParameters(extension,key, extensionCommands))
+            {
+                return (null, IrtConst.Error);
+            }
+
             var command = extensionCommands[key].Command.ToUpper(CultureInfo.InvariantCulture);
             var commandParameters = ExtractParameters(command, extension);
             exCommand.ExtensionNameSpace = nameSpace;
@@ -385,6 +391,11 @@ namespace Interpreter
         {
             var parameterPart = RemoveWord(command, extension);
             return SplitParameter(parameterPart, IrtConst.Splitter);
+        }
+
+        private static bool ValidateParameters(string input, int key, Dictionary<int, InCommand> com)
+        {
+            return com[key].ParameterCount == 0 || SingleCheck(input);
         }
     }
 }

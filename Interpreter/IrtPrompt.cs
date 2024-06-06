@@ -255,6 +255,8 @@ namespace Interpreter
                 return;
             }
 
+            //Todo add check for Parenthesis
+
             var parameterPart = Irt.RemoveWord(param.ToUpper(CultureInfo.InvariantCulture), inputString);
 
             switch (param)
@@ -363,8 +365,8 @@ namespace Interpreter
         /// <param name="nameSpace">The name space.</param>
         private void CommandUsing(string nameSpace)
         {
-            OnStatus(string.Concat(IrtConst.Active, nameSpace, Environment.NewLine));
-            foreach (var key in _prompt.CollectedSpaces.Keys) OnStatus(string.Concat(key, Environment.NewLine));
+            OnStatus(string.Concat(IrtConst.Active, nameSpace));
+            foreach (var key in _prompt.CollectedSpaces.Keys) OnStatus(key);
         }
 
         /// <summary>
