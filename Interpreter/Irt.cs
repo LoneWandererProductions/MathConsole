@@ -186,12 +186,31 @@ namespace Interpreter
         /// <returns>Id of Register used</returns>
         internal static int CheckForKeyWord(string input, Dictionary<int, InCommand> com)
         {
-            foreach (
-                var word in
-                com.Where(word => input.StartsWith(word.Value.Command.ToUpper(CultureInfo.InvariantCulture),
-                    StringComparison.Ordinal)))
+            if (input.Contains(IrtConst.AdvancedOpen))
             {
-                return word.Key;
+                var index = input.IndexOf(IrtConst.AdvancedOpen);
+
+                if (index >= 0)
+                {
+                    input = input[..index];
+                    input = input.Trim();
+                }
+            }
+            else if (input.Contains(IrtConst.BaseOpen))
+            {
+                var index = input.IndexOf(IrtConst.BaseOpen);
+
+                if (index >= 0)
+                {
+                    input = input[..index];
+                    input = input.Trim();
+                }
+            }
+
+            foreach (var (key, inCommand) in com)
+            {
+                if (string.Equals(input, inCommand.Command.ToUpper(CultureInfo.InvariantCulture), StringComparison.Ordinal)) return
+                    key;
             }
 
             return IrtConst.ErrorParam;
@@ -393,6 +412,13 @@ namespace Interpreter
             return SplitParameter(parameterPart, IrtConst.Splitter);
         }
 
+        /// <summary>
+        /// Validates the parameters.
+        /// </summary>
+        /// <param name="input">The input.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="com">The COM.</param>
+        /// <returns>If Parameters are correct</returns>
         private static bool ValidateParameters(string input, int key, Dictionary<int, InCommand> com)
         {
             return com[key].ParameterCount == 0 || SingleCheck(input);

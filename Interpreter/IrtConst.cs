@@ -237,22 +237,6 @@ namespace Interpreter
         internal static readonly string InternalEmptyParameter = string.Concat(BaseOpen, BaseClose);
 
         /// <summary>
-        ///     The internal commands
-        /// </summary>
-        internal static readonly List<string> InternalCommands = new()
-        {
-            InternalCommandHelp,
-            InternalCommandList,
-            InternalUsing,
-            InternalUse,
-            InternalErrorLog,
-            InternalLogInfo,
-            InternalLogFull,
-            InternalCommandContainer,
-            InternalCommandBatchExecute
-        };
-
-        /// <summary>
         ///     The internal Extension commands
         /// </summary>
         internal static readonly List<string> InternalExtensionCommands = new()
@@ -284,5 +268,90 @@ namespace Interpreter
             InternalCommandContainer,
             " : Holds a set of commands and executes them sequential, use Container{Command1; Command2; .... } and ; is the Separator that states that a new command follows."
         );
+
+        internal static readonly Dictionary<int, InCommand> InternCommands = new()
+        {
+            {
+                0,
+                new InCommand
+                {
+                    Command = InternalCommandHelp,
+                    Description = "Help : List all external Commands",
+                    ParameterCount = 0
+                }
+            },
+            {
+                1,
+                new InCommand
+                {
+                    Command = InternalCommandList,
+                    Description = "List: Calculate the statistic data for the loaded file.",
+                    ParameterCount = 0
+                }
+            },
+            {
+                2,
+                new InCommand
+                {
+                    Command = InternalUsing,
+                    Description = "Using : Current Commands available and the one currently in use.",
+                    ParameterCount = 0
+                }
+            },
+            {
+                3,
+                new InCommand
+                {
+                    Command = InternalUse,
+                    Description = "Use : Type use(namespace) to switch to command namespace",
+                    ParameterCount = 1
+                }
+            },
+            {
+                4,
+                new InCommand
+                {
+                    Command = InternalLogInfo,
+                    Description = "Loginfo : statistics about the current log",
+                    ParameterCount = 0
+                }
+            },
+            {
+                5,
+                new InCommand
+                {
+                    Command = InternalErrorLog,
+                    Description = "Log : Enumerate all Error Log entries.",
+                    ParameterCount = 0
+                }
+            },
+            {
+                6,
+                new InCommand
+                {
+                    Command = InternalLogFull,
+                    Description = "Logfull : Enumerate full Log",
+                    ParameterCount = 0
+                }
+            },
+            {
+                7,
+                new InCommand
+                {
+                    Command = InternalCommandContainer,
+                    Description = "Container : Holds a set of commands and executes them sequential, use Container{Command1; Command2; .... } and ; is the Separator that states that a new command follows.",
+                    ParameterCount = 0
+                }
+            },
+            {
+                8,
+                new InCommand
+                {
+                    Command = InternalCommandBatchExecute,
+                    Description = "Batchexecute : Loads a file and executes the commands in it, similar to Container.",
+                    ParameterCount = 1
+                }
+            }
+        };
     }
 }

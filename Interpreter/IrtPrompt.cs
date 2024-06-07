@@ -126,15 +126,28 @@ namespace Interpreter
                 return;
             }
 
-            // Handle internal commands
-            var param = Irt.CheckInternalCommands(inputString, IrtConst.InternalCommands);
-            if (!string.IsNullOrEmpty(param))
+            // Get the command key from the dictionary
+            var key = Irt.CheckForKeyWord(inputString, IrtConst.InternCommands);
+
+            (int Status, string Parameter) parameterPart;
+
+            List<string> parameter;
+
+            //check if we use an internal Command
+            if (key != IrtConst.ErrorParam)
             {
-                HandleInternalCommands(param, inputString);
+                // Validate parameter count and parentheses
+                if (!ValidateParameters(inputString, key, IrtConst.InternCommands)) return;
+                // Process parameters and handle overloads
+                parameterPart = ProcessParameters(inputString, key, IrtConst.InternCommands);
+
+                parameter = parameterPart.Status == 1 ? Irt.SplitParameter(parameterPart.Parameter, IrtConst.Splitter) : new List<string> {parameterPart.Parameter};
+
+                HandleInternalCommands(IrtConst.InternCommands[key].Command, parameter);
                 return;
             }
 
-            // Check if command dictionary is empty
+            // Check if command dictionary is empty, if not check our loaded Commands
             if (_com == null)
             {
                 SetError(IrtConst.ErrorNoCommandsProvided);
@@ -142,7 +155,7 @@ namespace Interpreter
             }
 
             // Get the command key from the dictionary
-            var key = Irt.CheckForKeyWord(inputString, _com);
+            key = Irt.CheckForKeyWord(inputString, _com);
 
             // Handle case where key is not found
             if (key == IrtConst.ErrorParam)
@@ -152,11 +165,11 @@ namespace Interpreter
             }
 
             // Validate parameter count and parentheses
-            if (!ValidateParameters(inputString, key)) return;
+            if (!ValidateParameters(inputString, key, _com)) return;
 
             // Process parameters and handle overloads
-            var parameterPart = ProcessParameters(inputString, key);
-            var parameter = Irt.SplitParameter(parameterPart, IrtConst.Splitter);
+            parameterPart = ProcessParameters(inputString, key, _com);
+            parameter = parameterPart.Status == 1 ? Irt.SplitParameter(parameterPart.Parameter, IrtConst.Splitter) : new List<string> { parameterPart.Parameter };
             var check = Irt.CheckOverload(_com[key].Command, parameter.Count, _com);
 
             if (check == null)
@@ -199,6 +212,7 @@ namespace Interpreter
         /// </returns>
         private static bool IsHelpCommand(string input)
         {
+            input = input.Replace(IrtConst.BaseOpen.ToString(), string.Empty).Replace(IrtConst.BaseClose.ToString(), string.Empty);
             return input.Equals(IrtConst.InternalCommandHelp, StringComparison.InvariantCultureIgnoreCase);
         }
 
@@ -218,10 +232,11 @@ namespace Interpreter
         /// </summary>
         /// <param name="input">The input.</param>
         /// <param name="key">The key.</param>
+        /// <param name="commands">The current Commands</param>
         /// <returns>Check if Parameter is valid</returns>
-        private bool ValidateParameters(string input, int key)
+        private bool ValidateParameters(string input, int key, IReadOnlyDictionary<int, InCommand> commands)
         {
-            if (_com[key].ParameterCount == 0 || Irt.SingleCheck(input)) return true;
+            if (commands[key].ParameterCount == 0 || Irt.SingleCheck(input)) return true;
 
             SetErrorWithLog(IrtConst.ParenthesisError);
             return false;
@@ -232,37 +247,30 @@ namespace Interpreter
         /// </summary>
         /// <param name="input">The input.</param>
         /// <param name="key">The key.</param>
+        /// <param name="commands">The commands in use.</param>
         /// <returns>return Parameter</returns>
-        private static string ProcessParameters(string input, int key)
+        private static (int Status, string Parameter) ProcessParameters(string input, int key, IReadOnlyDictionary<int, InCommand> commands)
         {
-            var command = _com[key].Command.ToUpper(CultureInfo.InvariantCulture);
+            var command = commands[key].Command.ToUpper(CultureInfo.InvariantCulture);
+
             var parameterPart = Irt.RemoveWord(command, input);
-            return Irt.RemoveParenthesis(parameterPart, IrtConst.BaseClose, IrtConst.BaseOpen);
+            //Check if we have a Container or Batch at Hand or a normal Handler
+            return parameterPart.StartsWith(IrtConst.AdvancedOpen) ? new ValueTuple<int, string>(0, parameterPart) : new ValueTuple<int, string>(1, Irt.RemoveParenthesis(parameterPart, IrtConst.BaseClose, IrtConst.BaseOpen));
         }
 
         /// <summary>
         ///     For Internal Commands
         /// </summary>
         /// <param name="param">Parameter of the internal Command.</param>
-        /// <param name="inputString">Input string</param>
-        private void HandleInternalCommands(string param, string inputString)
+        /// <param name="parameter"></param>
+        private void HandleInternalCommands(string param, IReadOnlyList<string> parameter)
         {
-            //sure the beginning is like the Internal command but with some extras we do not like
-            if (param == IrtConst.InternalCommandList && param != inputString)
-            {
-                var log = Logging.SetLastError(IrtConst.SyntaxError, 0);
-                SetError(log);
-                return;
-            }
-
-            //Todo add check for Parenthesis
-
-            var parameterPart = Irt.RemoveWord(param.ToUpper(CultureInfo.InvariantCulture), inputString);
+            //TODO add more checks for Parameter
 
             switch (param)
             {
                 case IrtConst.InternalCommandHelp:
-                    CommandHelp(parameterPart);
+                    CommandHelp(parameter[0]);
                     break;
 
                 case IrtConst.InternalCommandList:
@@ -274,7 +282,7 @@ namespace Interpreter
                     break;
 
                 case IrtConst.InternalUse:
-                    CommandUse(parameterPart);
+                    CommandUse(parameter[0]);
                     break;
 
                 case IrtConst.InternalErrorLog:
@@ -290,11 +298,11 @@ namespace Interpreter
                     break;
 
                 case IrtConst.InternalCommandContainer:
-                    CommandContainer(inputString, parameterPart);
+                    CommandContainer(param, parameter[0]);
                     break;
 
                 case IrtConst.InternalCommandBatchExecute:
-                    CommandBatchExecute(parameterPart);
+                    CommandBatchExecute(parameter[0]);
                     break;
 
                 default:
