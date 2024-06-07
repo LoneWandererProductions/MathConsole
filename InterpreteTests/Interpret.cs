@@ -426,7 +426,7 @@ namespace InterpreteTests
         public void HandleInputValidCommandNoParameters_Success()
         {
             var commandHandled = false;
-            _irtPrompt.sendCommand += (sender, e) =>
+            _irtPrompt.SendCommand += (sender, e) =>
             {
                 Assert.AreEqual(1, e.Command);
                 commandHandled = true;
@@ -462,7 +462,7 @@ namespace InterpreteTests
         public void HandleInputCommandWithParametersSuccess()
         {
             var commandHandled = false;
-            _irtPrompt.sendCommand += (sender, e) =>
+            _irtPrompt.SendCommand += (sender, e) =>
             {
                 Assert.AreEqual(2, e.Command);
                 Assert.AreEqual(1, e.Parameter.Count);

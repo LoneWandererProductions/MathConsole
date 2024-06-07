@@ -34,19 +34,9 @@ namespace Interpreter
         private static string _nameSpace;
 
         /// <summary>
-        ///     The log
-        /// </summary>
-        private readonly Dictionary<int, string> _log;
-
-        /// <summary>
         ///     The prompt
         /// </summary>
         private readonly Prompt _prompt;
-
-        /// <summary>
-        ///     The send logs
-        /// </summary>
-        private readonly EventHandler<string> _sendLogs;
 
         /// <summary>
         ///     The original input string
@@ -56,31 +46,43 @@ namespace Interpreter
         /// <summary>
         ///     Send selected Command to the Subscriber
         /// </summary>
-        internal EventHandler<OutCommand> sendCommand;
+        internal event EventHandler<OutCommand> SendCommand;
 
         /// <summary>
         ///     Send selected Command to the Subscriber
         /// </summary>
-        internal EventHandler<string> SendInternalLog;
+        internal event EventHandler<string> SendInternalLog;
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="IrtPrompt" /> class.
+        /// The irt internal
+        /// </summary>
+        private IrtInternal _irtInternal;
+
+        /// <summary>
+        /// The log
+        /// </summary>
+        internal Dictionary<int, string> Log;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IrtPrompt" /> class.
         /// </summary>
         /// <param name="prompt">The prompt.</param>
         public IrtPrompt(Prompt prompt)
         {
-            _log = prompt.Log;
-            _sendLogs = prompt.SendLogs;
             _prompt = prompt;
         }
 
-        /// <summary>Get the Engine Running</summary>
+        /// <summary>
+        /// Get the Engine Running
+        /// </summary>
         /// <param name="use">The Command Structure</param>
         internal void Initiate(UserSpace use)
         {
             _com = use.Commands;
             _extension = use.ExtensionCommands;
             _nameSpace = use.UserSpaceName;
+            _irtInternal = new IrtInternal(use.Commands, this, use.UserSpaceName);
+            Log = new Dictionary<int, string>();
             var log = Logging.SetLastError(IrtConst.InformationStartup, 2);
             OnStatus(log);
         }
@@ -103,73 +105,62 @@ namespace Interpreter
         /// <returns>Results of our commands</returns>
         internal void HandleInput(string inputString)
         {
-            // Save a copy for debugging and logging reasons
             _inputString = inputString;
 
-            // Clean the input string
             inputString = CleanInputString(inputString);
 
-            // Check for extension methods
-            var extensionResult = Irt.CheckForExtension(_inputString, _nameSpace, _extension);
+            var extensionResult = IrtExtension.CheckForExtension(_inputString, _nameSpace, _extension);
 
-            // Handle file comments
             if (IsCommentCommand(inputString))
             {
                 Trace.WriteLine(inputString);
                 return;
             }
 
-            // Handle help command
             if (IsHelpCommand(inputString))
             {
                 OnStatus(IrtConst.HelpGeneric);
                 return;
             }
 
-            // Get the command key from the dictionary
             var key = Irt.CheckForKeyWord(inputString, IrtConst.InternCommands);
 
             (int Status, string Parameter) parameterPart;
-
             List<string> parameter;
 
-            //check if we use an internal Command
             if (key != IrtConst.ErrorParam)
             {
-                // Validate parameter count and parentheses
                 if (!ValidateParameters(inputString, key, IrtConst.InternCommands)) return;
-                // Process parameters and handle overloads
+
                 parameterPart = ProcessParameters(inputString, key, IrtConst.InternCommands);
+                parameter = parameterPart.Status == 1
+                    ? Irt.SplitParameter(parameterPart.Parameter, IrtConst.Splitter)
+                    : new List<string> { parameterPart.Parameter };
 
-                parameter = parameterPart.Status == 1 ? Irt.SplitParameter(parameterPart.Parameter, IrtConst.Splitter) : new List<string> {parameterPart.Parameter};
-
-                HandleInternalCommands(IrtConst.InternCommands[key].Command, parameter);
+                _irtInternal.HandleInternalCommands(IrtConst.InternCommands[key].Command, parameter, _prompt);
                 return;
             }
 
-            // Check if command dictionary is empty, if not check our loaded Commands
             if (_com == null)
             {
                 SetError(IrtConst.ErrorNoCommandsProvided);
                 return;
             }
 
-            // Get the command key from the dictionary
             key = Irt.CheckForKeyWord(inputString, _com);
 
-            // Handle case where key is not found
             if (key == IrtConst.ErrorParam)
             {
                 SetErrorWithLog(IrtConst.KeyWordNotFoundError, _inputString);
                 return;
             }
 
-            // Validate parameter count and parentheses
             if (!ValidateParameters(inputString, key, _com)) return;
 
-            // Process parameters and handle overloads
             parameterPart = ProcessParameters(inputString, key, _com);
-            parameter = parameterPart.Status == 1 ? Irt.SplitParameter(parameterPart.Parameter, IrtConst.Splitter) : new List<string> { parameterPart.Parameter };
+            parameter = parameterPart.Status == 1
+                ? Irt.SplitParameter(parameterPart.Parameter, IrtConst.Splitter)
+                : new List<string> { parameterPart.Parameter };
             var check = Irt.CheckOverload(_com[key].Command, parameter.Count, _com);
 
             if (check == null)
@@ -254,213 +245,9 @@ namespace Interpreter
             var command = commands[key].Command.ToUpper(CultureInfo.InvariantCulture);
 
             var parameterPart = Irt.RemoveWord(command, input);
-            //Check if we have a Container or Batch at Hand or a normal Handler
-            return parameterPart.StartsWith(IrtConst.AdvancedOpen) ? new ValueTuple<int, string>(0, parameterPart) : new ValueTuple<int, string>(1, Irt.RemoveParenthesis(parameterPart, IrtConst.BaseClose, IrtConst.BaseOpen));
-        }
-
-        /// <summary>
-        ///     For Internal Commands
-        /// </summary>
-        /// <param name="param">Parameter of the internal Command.</param>
-        /// <param name="parameter"></param>
-        private void HandleInternalCommands(string param, IReadOnlyList<string> parameter)
-        {
-            //TODO add more checks for Parameter
-
-            switch (param)
-            {
-                case IrtConst.InternalCommandHelp:
-                    CommandHelp(parameter[0]);
-                    break;
-
-                case IrtConst.InternalCommandList:
-                    CommandList();
-                    break;
-
-                case IrtConst.InternalUsing:
-                    CommandUsing(_nameSpace);
-                    break;
-
-                case IrtConst.InternalUse:
-                    CommandUse(parameter[0]);
-                    break;
-
-                case IrtConst.InternalErrorLog:
-                    CommandLogError();
-                    break;
-
-                case IrtConst.InternalLogInfo:
-                    CommandLogInfo();
-                    break;
-
-                case IrtConst.InternalLogFull:
-                    CommandLogFull();
-                    break;
-
-                case IrtConst.InternalCommandContainer:
-                    CommandContainer(param, parameter[0]);
-                    break;
-
-                case IrtConst.InternalCommandBatchExecute:
-                    CommandBatchExecute(parameter[0]);
-                    break;
-
-                default:
-                    OnStatus(string.Concat(IrtConst.KeyWordNotFoundError, param));
-                    break;
-            }
-        }
-
-        /// <summary>
-        ///     Return help for specific command
-        /// </summary>
-        /// <param name="parameterPart">Parameter about what we want help about</param>
-        private void CommandHelp(string parameterPart)
-        {
-            //Empty parameters
-            if (parameterPart == IrtConst.InternalEmptyParameter)
-            {
-                OnStatus(IrtConst.HelpGeneric);
-                return;
-            }
-
-            //Remove Parenthesis
-            parameterPart = Irt.RemoveParenthesis(parameterPart, IrtConst.BaseClose, IrtConst.BaseOpen);
-
-            //Get the Id
-            var key = Irt.CheckForKeyWord(parameterPart, _com);
-
-            //anything else error out
-            if (key == IrtConst.ErrorParam)
-            {
-                var log = Logging.SetLastError(string.Concat(IrtConst.KeyWordNotFoundError, parameterPart), 0);
-                SetError(log);
-                return;
-            }
-
-            OnStatus(string.Concat(_com[key].Command, IrtConst.FormatDescription, _com[key].Description,
-                IrtConst.FormatCount,
-                _com[key].ParameterCount));
-        }
-
-        /// <summary>Command to switch between using.</summary>
-        /// <param name="parameterPart">The parameter part.</param>
-        private void CommandUse(string parameterPart)
-        {
-            //Remove Parenthesis and split
-            parameterPart = Irt.RemoveParenthesis(parameterPart, IrtConst.BaseClose, IrtConst.BaseOpen);
-
-            if (!_prompt.CollectedSpaces.ContainsKey(parameterPart))
-            {
-                OnStatus(IrtConst.ErrorUserSpaceNotFound);
-                return;
-            }
-
-            _prompt.SwitchNameSpaces(parameterPart);
-            var log = string.Concat(IrtConst.InformationNamespaceSwitch, parameterPart);
-            OnStatus(log);
-        }
-
-        /// <summary>
-        ///     List all available Commands
-        /// </summary>
-        private void CommandList()
-        {
-            foreach (var com in _com.Values) OnStatus(string.Concat(com.Command, Environment.NewLine, com.Description));
-        }
-
-        /// <summary>Display all using and the Current in Use.</summary>
-        /// <param name="nameSpace">The name space.</param>
-        private void CommandUsing(string nameSpace)
-        {
-            OnStatus(string.Concat(IrtConst.Active, nameSpace));
-            foreach (var key in _prompt.CollectedSpaces.Keys) OnStatus(key);
-        }
-
-        /// <summary>
-        ///     Commands the log.
-        /// </summary>
-        private void CommandLogError()
-        {
-            foreach (var entry in Logging.Log) OnStatus(string.Concat(entry, Environment.NewLine));
-        }
-
-        /// <summary>
-        ///     Commands the log information.
-        /// </summary>
-        private void CommandLogInfo()
-        {
-            var message = string.Concat(IrtConst.MessageLogStatistics, Environment.NewLine, IrtConst.MessageErrorCount,
-                Logging.Log.Count, Environment.NewLine, IrtConst.MessageLogCount, _log.Count);
-
-            OnStatus(message);
-        }
-
-        /// <summary>
-        ///     Commands the log full.
-        /// </summary>
-        private void CommandLogFull()
-        {
-            foreach (var entry in new List<string>(_log.Values)) _sendLogs.Invoke(this, entry);
-        }
-
-        /// <summary>
-        ///     Processes the container.
-        /// </summary>
-        /// <param name="inputString">The input string.</param>
-        /// <param name="parameterPart">Parameter Part.</param>
-        private void CommandContainer(string inputString, string parameterPart)
-        {
-            char[] openParenthesis = { IrtConst.BaseOpen, IrtConst.AdvancedOpen };
-            char[] closeParenthesis = { IrtConst.BaseClose, IrtConst.AdvancedClose };
-
-            var check = Irt.CheckMultiple(inputString, openParenthesis, closeParenthesis);
-
-            //Remove outer and first Parenthesis
-            parameterPart = Irt.RemoveLastOccurrence(parameterPart, IrtConst.AdvancedClose);
-            parameterPart = Irt.RemoveFirstOccurrence(parameterPart, IrtConst.AdvancedOpen);
-
-            if (!check)
-            {
-                var log = Logging.SetLastError(IrtConst.ParenthesisError, 0);
-                SetError(log);
-            }
-
-            GenerateCommands(parameterPart);
-        }
-
-        /// <summary>
-        ///     Batch execute of Commands in a file.
-        /// </summary>
-        /// <param name="parameterPart">The Parameter.</param>
-        private void CommandBatchExecute(string parameterPart)
-        {
-            //Remove Parenthesis
-            parameterPart = Irt.RemoveParenthesis(parameterPart, IrtConst.BaseClose, IrtConst.BaseOpen);
-            parameterPart = IrtHelper.ReadBatchFile(parameterPart);
-
-            //check if Command Dictionary was empty
-            if (parameterPart?.Length == 0)
-            {
-                SetError(IrtConst.ErrorFileNotFound);
-                return;
-            }
-
-            GenerateCommands(parameterPart);
-        }
-
-        /// <summary>
-        ///     Generates the commands.
-        /// </summary>
-        /// <param name="parameterPart">The parameter part.</param>
-        private void GenerateCommands(string parameterPart)
-        {
-            foreach (var com in Irt.SplitParameter(parameterPart, IrtConst.NewCommand))
-            {
-                //just because we run a container or a batch, we still have to log it
-                _prompt.AddToLog(com);
-                HandleInput(com);
-            }
+            return parameterPart.StartsWith(IrtConst.AdvancedOpen)
+                ? (0, parameterPart)
+                : (1, Irt.RemoveParenthesis(parameterPart, IrtConst.BaseClose, IrtConst.BaseOpen));
         }
 
         /// <summary>
@@ -482,7 +269,8 @@ namespace Interpreter
         private void SetError(string error)
         {
             var com = new OutCommand
-                { Command = IrtConst.ErrorParam, Parameter = null, UsedNameSpace = _nameSpace, ErrorMessage = error };
+            { Command = IrtConst.ErrorParam, Parameter = null, UsedNameSpace = _nameSpace, ErrorMessage = error };
+
             OnCommand(com);
         }
 
@@ -501,7 +289,7 @@ namespace Interpreter
         /// <param name="outCommand">Selected User Command</param>
         private void OnCommand(OutCommand outCommand)
         {
-            sendCommand?.Invoke(this, outCommand);
+            SendCommand?.Invoke(this, outCommand);
         }
     }
 }
