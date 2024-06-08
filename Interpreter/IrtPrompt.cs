@@ -183,10 +183,10 @@ namespace Interpreter
         ///     Cleans the input string.
         /// </summary>
         /// <param name="input">The input.</param>
-        /// <returns></returns>
+        /// <returns>Mostly cleaned Input string and all Uppercase.</returns>
         private static string CleanInputString(string input)
         {
-            return input.Trim().ToUpper(CultureInfo.CurrentCulture).ToUpper(CultureInfo.InvariantCulture);
+            return Irt.WellFormedParenthesis(input).ToUpper(CultureInfo.CurrentCulture).ToUpper(CultureInfo.InvariantCulture);
         }
 
         /// <summary>

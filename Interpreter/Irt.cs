@@ -236,15 +236,15 @@ namespace Interpreter
 
         /// <summary>
         ///     Makes the Parenthesis well formed e.g.
-        ///     (),() and not like () ,   ()
+        ///     (),() and not like () ,   (), also handles all cases for {}
         ///     Not yet in use
         /// </summary>
         /// <param name="input">The input string.</param>
-        /// <returns>Well formed Parenthesis</returns>
+        /// <returns>Well formed string with Parenthesis</returns>
         internal static string WellFormedParenthesis(string input)
         {
-            string regex = Regex.Replace(input, IrtConst.RegexParenthesisWellFormedPatternBefore, string.Empty);
-            return Regex.Replace(regex, IrtConst.RegexParenthesisWellFormedPatternAfter, string.Empty);
+            var regex = Regex.Replace(input, IrtConst.RegexParenthesisWellFormedPatternLeft, string.Empty);
+            return Regex.Replace(regex, IrtConst.RegexParenthesisWellFormedPatternRight, string.Empty);
         }
 
         /// <summary>

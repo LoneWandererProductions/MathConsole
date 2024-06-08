@@ -5,6 +5,9 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace FunctionTest
 {
+    /// <summary>
+    /// Some basic function checks
+    /// </summary>
     [TestClass]
     public class FunctionTests
     {

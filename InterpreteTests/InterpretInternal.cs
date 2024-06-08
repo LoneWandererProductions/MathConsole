@@ -118,6 +118,16 @@ namespace InterpreteTests
 
             // Assert
             Assert.AreEqual(expected, result);
+
+            // Arrange
+            input = " text {   internal(12 ,,,44   ) ,  internal4(      ,5)   }  ";
+            expected = " text{   internal(12 ,,,44   ),  internal4(      ,5)}";
+
+            // Act
+            result = Irt.WellFormedParenthesis(input);
+
+            // Assert
+            Assert.AreEqual(expected, result);
         }
     }
 }
