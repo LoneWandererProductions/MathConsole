@@ -102,5 +102,22 @@ namespace InterpreteTests
             var result = Irt.CheckOverload("command", 3, commands);
             Assert.AreEqual(null, result);
         }
+
+        /// <summary>
+        /// Wells the formed parenthesis removes well formed parenthesis.
+        /// </summary>
+        [TestMethod]
+        public void WellFormedParenthesisRemovesWellFormedParenthesis()
+        {
+            // Arrange
+            var input = "text ) ( , ) txt ) ( , ( more text";
+            var expected = "text )( , )txt )( ,( more text";
+
+            // Act
+            var result = Irt.WellFormedParenthesis(input);
+
+            // Assert
+            Assert.AreEqual(expected, result);
+        }
     }
 }

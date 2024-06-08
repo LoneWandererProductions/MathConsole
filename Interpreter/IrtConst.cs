@@ -22,12 +22,17 @@ namespace Interpreter
         internal const string RegexParenthesisOutsidePattern = @"\.(?![^{}]*\})(?![^(]*\))";
 
         /// <summary>
-        ///     Regex Pattern, Checks if string has well formed Parenthesis, (const). Value: @"\)(\s*,\s*)\(".
+        ///     Regex Pattern, Checks if string has well formed Parenthesis 1. step, (const). Value:@"\s*([(){}])\s*".
         /// </summary>
-        internal const string RegexParenthesisWellFormedPattern = @"\)(\s*,\s*)\(";
+        internal const string RegexParenthesisWellFormedPatternBefore = @"\s+(?=[({])";
 
         /// <summary>
-        ///     Separator (const). Value: " , ".
+        /// The regex parenthesis well formed pattern after
+        /// </summary>
+        internal const string RegexParenthesisWellFormedPatternAfter = @"(?<=[)}])\s+";
+
+        /// <summary>
+        ///     Separator (const). Value: ", ".
         /// </summary>
         internal const string Separator = " , ";
 

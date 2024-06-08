@@ -69,7 +69,7 @@ namespace Interpreter
         /// <param name="parameter"></param>
         private void HandleInternalCommands(string param, IReadOnlyList<string> parameter)
         {
-            //TODO add more checks for Parameter
+            string batch;
 
             switch (param)
             {
@@ -102,11 +102,13 @@ namespace Interpreter
                     break;
 
                 case IrtConst.InternalCommandContainer:
-                    CommandContainer(param, parameter[0]);
+                    batch = Irt.WellFormedParenthesis(parameter[0]);
+                    CommandContainer(param, batch);
                     break;
 
                 case IrtConst.InternalCommandBatchExecute:
-                    CommandBatchExecute(parameter[0]);
+                    batch = Irt.WellFormedParenthesis(parameter[0]);
+                    CommandBatchExecute(batch);
                     break;
 
                 default:

@@ -8,8 +8,11 @@ namespace FunctionTest
     [TestClass]
     public class FunctionTests
     {
+        /// <summary>
+        /// Sets the matrix valid input returns success message.
+        /// </summary>
         [TestMethod]
-        public void SetMatrix_ValidInput_ReturnsSuccessMessage()
+        public void SetMatrixValidInputReturnsSuccessMessage()
         {
             // Arrange
             var parameter = new List<string> { "1", "2", "2", "1", "2", "3", "4" };
@@ -27,8 +30,11 @@ namespace FunctionTest
             Assert.AreEqual("Matrix added at Position: 1", result);
         }
 
+        /// <summary>
+        /// Sets the matrix invalid parameter returns error message.
+        /// </summary>
         [TestMethod]
-        public void SetMatrix_InvalidParameter_ReturnsErrorMessage()
+        public void SetMatrixInvalidParameterReturnsErrorMessage()
         {
             // Arrange
             var parameter = new List<string> { "one", "2", "2", "1", "2", "3", "4" };

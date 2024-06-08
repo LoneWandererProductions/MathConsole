@@ -209,49 +209,12 @@ namespace Interpreter
 
             foreach (var (key, inCommand) in com)
             {
-                if (string.Equals(input, inCommand.Command.ToUpper(CultureInfo.InvariantCulture), StringComparison.Ordinal)) return
-                    key;
+                if (string.Equals(input, inCommand.Command.ToUpper(CultureInfo.InvariantCulture), StringComparison.Ordinal))
+                    return
+                        key;
             }
 
             return IrtConst.ErrorParam;
-        }
-
-        /// <summary>
-        ///     For Internal Commands
-        /// </summary>
-        /// <param name="input">Command String</param>
-        /// <param name="commands">Always Internal Commands, but switches between Commands and Extensions</param>
-        /// <returns>If internal Command was used</returns>
-        internal static string CheckInternalCommands(string input, IEnumerable<string> commands)
-        {
-            if (input.Contains(IrtConst.AdvancedOpen))
-            {
-                var index = input.IndexOf(IrtConst.AdvancedOpen);
-
-                if (index >= 0)
-                {
-                    input = input[..index];
-                    input = input.Trim();
-                }
-            }
-            else if (input.Contains(IrtConst.BaseOpen))
-            {
-                var index = input.IndexOf(IrtConst.BaseOpen);
-
-                if (index >= 0)
-                {
-                    input = input[..index];
-                    input = input.Trim();
-                }
-            }
-
-            foreach (var command in commands.Where(command =>
-                         string.Equals(input, command.ToUpper(CultureInfo.InvariantCulture), StringComparison.Ordinal)))
-            {
-                return command;
-            }
-
-            return string.Empty;
         }
 
         /// <summary>
@@ -278,11 +241,10 @@ namespace Interpreter
         /// </summary>
         /// <param name="input">The input string.</param>
         /// <returns>Well formed Parenthesis</returns>
-        // ReSharper disable once UnusedMember.Global, for future uses
         internal static string WellFormedParenthesis(string input)
         {
-            var regex = new Regex(IrtConst.RegexParenthesisWellFormedPattern);
-            return regex.Replace(input, string.Empty);
+            string regex = Regex.Replace(input, IrtConst.RegexParenthesisWellFormedPatternBefore, string.Empty);
+            return Regex.Replace(regex, IrtConst.RegexParenthesisWellFormedPatternAfter, string.Empty);
         }
 
         /// <summary>
@@ -325,7 +287,5 @@ namespace Interpreter
         {
             return input.Length > 1 && input[0] == start && input[^1] == end;
         }
-
-
     }
 }
