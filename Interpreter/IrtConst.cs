@@ -17,6 +17,16 @@ namespace Interpreter
     internal static class IrtConst
     {
         /// <summary>
+        ///     Regex Pattern, Find periods that are not inside {} or (), (const). Value: @"\.(?![^{}]*\})(?![^(]*\))".
+        /// </summary>
+        internal const string RegexParenthesisOutsidePattern = @"\.(?![^{}]*\})(?![^(]*\))";
+
+        /// <summary>
+        ///     Regex Pattern, Checks if string has well formed Parenthesis, (const). Value: @"\)(\s*,\s*)\(".
+        /// </summary>
+        internal const string RegexParenthesisWellFormedPattern = @"\)(\s*,\s*)\(";
+
+        /// <summary>
         ///     Separator (const). Value: " , ".
         /// </summary>
         internal const string Separator = " , ";
@@ -54,7 +64,7 @@ namespace Interpreter
         /// <summary>
         ///     The internal extension command use (const). Value: "Use".
         /// </summary>
-        internal const string InternalExtensionUse = "USE";
+        private const string InternalExtensionUse = "USE";
 
         /// <summary>
         ///     The internal command use (const). Value: "USE".
@@ -239,36 +249,43 @@ namespace Interpreter
         /// <summary>
         ///     The internal Extension commands
         /// </summary>
-        internal static readonly List<string> InternalExtensionCommands = new()
+        internal static readonly Dictionary<int, InCommand> InternalExtensionCommands = new()
         {
-            InternalExtensionUse
+            {
+                0,
+                new InCommand
+                {
+                    Command = InternalExtensionUse,
+                    Description = "use(parameter) : use the provided parameter as Userspace, if it exists.",
+                    ParameterCount = 1
+                }
+            }
         };
 
         /// <summary>
         ///     Basic internal Help
         /// </summary>
-        internal static readonly string HelpGeneric = string.Concat(
+        internal static readonly string HelpGeneric = string.Join(
+            Environment.NewLine,
             "Basic prompt, Version : 0.3. Author: Peter Geinitz (Wayfarer), not context sensitive",
-            Environment.NewLine,
             "Type Help or Help(Keyword) for a specific help",
-            Environment.NewLine,
             "Basic Syntax: Verb (Parameter, ...)",
-            Environment.NewLine,
             "Basic Syntax: Verb (Parameter, ...)",
-            Environment.NewLine,
             "System Commands:",
-            Environment.NewLine,
-            InternalCommandHelp, " : Basic help and specific help for provided Commands", Environment.NewLine,
-            InternalCommandList, " : List all external Commands", Environment.NewLine,
-            InternalUsing, " : Current Commands available and the one currently in use", Environment.NewLine,
-            InternalUse, " : Type use(namespace) to switch to command namespace", Environment.NewLine,
-            InternalLogInfo, " : statistics about the current log", Environment.NewLine,
-            InternalErrorLog, " : Enumerate all Error Log entries", Environment.NewLine,
-            InternalLogFull, " : Enumerate full Log", Environment.NewLine,
-            InternalCommandContainer,
-            " : Holds a set of commands and executes them sequential, use Container{Command1; Command2; .... } and ; is the Separator that states that a new command follows."
+            $"{InternalCommandHelp} : Basic help and specific help for provided Commands",
+            $"{InternalCommandList} : List all external Commands",
+            $"{InternalUsing} : Current Commands available and the one currently in use",
+            $"{InternalUse} : Type use(namespace) to switch to command namespace",
+            $"{InternalLogInfo} : Statistics about the current log",
+            $"{InternalErrorLog} : Enumerate all Error Log entries",
+            $"{InternalLogFull} : Enumerate full Log",
+            $"{InternalCommandContainer} : Holds a set of commands and executes them sequentially, use Container{{Command1; Command2; .... }}; ';' is the separator that indicates a new command follows."
         );
 
+
+        /// <summary>
+        /// The Dictionary for internal commands
+        /// </summary>
         internal static readonly Dictionary<int, InCommand> InternCommands = new()
         {
             {

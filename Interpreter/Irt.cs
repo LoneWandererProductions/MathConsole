@@ -281,7 +281,7 @@ namespace Interpreter
         // ReSharper disable once UnusedMember.Global, for future uses
         internal static string WellFormedParenthesis(string input)
         {
-            var regex = new Regex(@"\)(\s*,\s*)\(");
+            var regex = new Regex(IrtConst.RegexParenthesisWellFormedPattern);
             return regex.Replace(input, string.Empty);
         }
 

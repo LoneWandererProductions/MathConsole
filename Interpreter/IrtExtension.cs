@@ -15,7 +15,7 @@ namespace Interpreter
     /// <summary>
     /// Handle the Extensions
     /// </summary>
-    internal static class IrtExtension
+    internal sealed class IrtExtension
     {
         /// <summary>
         ///     Checks for extension.
@@ -24,14 +24,13 @@ namespace Interpreter
         /// <param name="nameSpace">The name space.</param>
         /// <param name="extensionCommands">The extension commands.</param>
         /// <returns>Status and Extension Commands</returns>
-        internal static (ExtensionCommands Extension, int Status) CheckForExtension(string input, string nameSpace,
+        internal (ExtensionCommands Extension, int Status) CheckForExtension(string input, string nameSpace,
             Dictionary<int, InCommand> extensionCommands)
         {
             var exCommand = new ExtensionCommands();
 
             // Find periods that are not inside {} or ()
-            const string pattern = @"\.(?![^{}]*\})(?![^(]*\))";
-            var regex = new Regex(pattern);
+            var regex = new Regex(IrtConst.RegexParenthesisOutsidePattern);
 
             // Split the input based on the regex pattern
             var result = regex.Split(input);
@@ -56,7 +55,9 @@ namespace Interpreter
         private static (ExtensionCommands Extension, int Status) ProcessExtension(string extension, string nameSpace,
             Dictionary<int, InCommand> extensionCommands, ExtensionCommands exCommand)
         {
-            var param = Irt.CheckInternalCommands(extension, IrtConst.InternalExtensionCommands);
+            //todo improve
+            //var param = Irt.CheckInternalCommands(extension, IrtConst.InternalExtensionCommands);
+            var param = string.Empty;
 
             if (!string.IsNullOrEmpty(param))
             {
@@ -110,7 +111,7 @@ namespace Interpreter
         /// <param name="key">The key.</param>
         /// <param name="com">The COM.</param>
         /// <returns>If Parameters are correct</returns>
-        private static bool ValidateParameters(string input, int key, Dictionary<int, InCommand> com)
+        private static bool ValidateParameters(string input, int key, IReadOnlyDictionary<int, InCommand> com)
         {
             return com[key].ParameterCount == 0 || Irt.SingleCheck(input);
         }

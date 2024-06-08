@@ -64,6 +64,11 @@ namespace Interpreter
         internal Dictionary<int, string> Log;
 
         /// <summary>
+        /// The irt extension
+        /// </summary>
+        private IrtExtension _IrtExtension;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="IrtPrompt" /> class.
         /// </summary>
         /// <param name="prompt">The prompt.</param>
@@ -82,6 +87,7 @@ namespace Interpreter
             _extension = use.ExtensionCommands;
             _nameSpace = use.UserSpaceName;
             _irtInternal = new IrtInternal(use.Commands, this, use.UserSpaceName);
+            _IrtExtension = new IrtExtension();
             Log = new Dictionary<int, string>();
             var log = Logging.SetLastError(IrtConst.InformationStartup, 2);
             OnStatus(log);
@@ -109,7 +115,8 @@ namespace Interpreter
 
             inputString = CleanInputString(inputString);
 
-            var extensionResult = IrtExtension.CheckForExtension(_inputString, _nameSpace, _extension);
+            var extensionResult = _IrtExtension.CheckForExtension(_inputString, IrtConst.InternalNameSpace, IrtConst.InternalExtensionCommands);
+            extensionResult = _IrtExtension.CheckForExtension(_inputString, _nameSpace, _extension);
 
             if (IsCommentCommand(inputString))
             {
