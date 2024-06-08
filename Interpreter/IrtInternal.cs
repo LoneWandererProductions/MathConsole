@@ -55,7 +55,7 @@ namespace Interpreter
         /// <param name="command">The command.</param>
         /// <param name="parameter">The parameter.</param>
         /// <param name="prompt">The prompt.</param>
-        internal void HandleInternalCommands(string command, List<string> parameter, Prompt prompt)
+        internal void HandleInternalCommands(int command, List<string> parameter, Prompt prompt)
         {
             _prompt = prompt;
 
@@ -65,50 +65,50 @@ namespace Interpreter
         /// <summary>
         ///     For Internal Commands
         /// </summary>
-        /// <param name="param">Parameter of the internal Command.</param>
+        /// <param name="command">Key of the command</param>
         /// <param name="parameter"></param>
-        private void HandleInternalCommands(string param, IReadOnlyList<string> parameter)
+        private void HandleInternalCommands(int command, IReadOnlyList<string> parameter)
         {
-            switch (param)
+            switch (command)
             {
-                case IrtConst.InternalCommandHelp:
+                case 0:
                     CommandHelp(parameter[0]);
                     break;
 
-                case IrtConst.InternalCommandList:
+                case 1:
                     CommandList();
                     break;
 
-                case IrtConst.InternalUsing:
+                case 2:
                     CommandUsing(_nameSpace);
                     break;
 
-                case IrtConst.InternalUse:
+                case 3:
                     CommandUse(parameter[0]);
                     break;
 
-                case IrtConst.InternalErrorLog:
+                case 5:
                     CommandLogError();
                     break;
 
-                case IrtConst.InternalLogInfo:
+                case 4:
                     CommandLogInfo();
                     break;
 
-                case IrtConst.InternalLogFull:
+                case 6:
                     CommandLogFull();
                     break;
 
-                case IrtConst.InternalCommandContainer:
-                    CommandContainer(param, parameter[0]);
+                case 7:
+                    CommandContainer(parameter[0]);
                     break;
 
-                case IrtConst.InternalCommandBatchExecute:
+                case 8:
                     CommandBatchExecute(parameter[0]);
                     break;
 
                 default:
-                    OnStatus(string.Concat(IrtConst.KeyWordNotFoundError, param));
+                    OnStatus(string.Concat(IrtConst.KeyWordNotFoundError, command));
                     break;
             }
         }
@@ -202,22 +202,11 @@ namespace Interpreter
         /// <summary>
         ///     Processes the container.
         /// </summary>
-        /// <param name="inputString">The input string.</param>
         /// <param name="parameterPart">Parameter Part.</param>
-        private void CommandContainer(string inputString, string parameterPart)
+        private void CommandContainer(string parameterPart)
         {
-            var openParenthesis = new[] { IrtConst.BaseOpen, IrtConst.AdvancedOpen };
-            var closeParenthesis = new[] { IrtConst.BaseClose, IrtConst.AdvancedClose };
-
-            var isValid = Irt.CheckMultiple(inputString, openParenthesis, closeParenthesis);
             parameterPart = Irt.RemoveLastOccurrence(parameterPart, IrtConst.AdvancedClose);
             parameterPart = Irt.RemoveFirstOccurrence(parameterPart, IrtConst.AdvancedOpen);
-
-            if (!isValid)
-            {
-                SetError(Logging.SetLastError(IrtConst.ParenthesisError, 0));
-                return;
-            }
 
             GenerateCommands(parameterPart);
         }

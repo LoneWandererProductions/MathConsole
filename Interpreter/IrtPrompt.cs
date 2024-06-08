@@ -115,6 +115,18 @@ namespace Interpreter
 
             inputString = CleanInputString(inputString);
 
+            var openParenthesis = new[] { IrtConst.BaseOpen, IrtConst.AdvancedOpen };
+            var closeParenthesis = new[] { IrtConst.BaseClose, IrtConst.AdvancedClose };
+
+            //check if all the Parenthesis are actual in place
+            var isValid = Irt.CheckMultiple(_inputString, openParenthesis, closeParenthesis);
+
+            if (!isValid)
+            {
+                SetError(Logging.SetLastError(IrtConst.ParenthesisError, 0));
+                return;
+            }
+
             var extensionResult = _IrtExtension.CheckForExtension(_inputString, IrtConst.InternalNameSpace, IrtConst.InternalExtensionCommands);
             extensionResult = _IrtExtension.CheckForExtension(_inputString, _nameSpace, _extension);
 
@@ -144,7 +156,7 @@ namespace Interpreter
                     ? Irt.SplitParameter(parameterPart.Parameter, IrtConst.Splitter)
                     : new List<string> { parameterPart.Parameter };
 
-                _irtInternal.HandleInternalCommands(IrtConst.InternCommands[key].Command, parameter, _prompt);
+                _irtInternal.HandleInternalCommands(key, parameter, _prompt);
                 return;
             }
 
