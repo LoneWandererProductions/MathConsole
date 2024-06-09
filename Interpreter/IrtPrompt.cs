@@ -121,8 +121,24 @@ namespace Interpreter
                 return;
             }
 
-            var extensionResult = _IrtExtension.CheckForExtension(_inputString, IrtConst.InternalNameSpace, IrtConst.InternalExtensionCommands);
-            extensionResult = _IrtExtension.CheckForExtension(_inputString, _nameSpace, _extension);
+            var extensionResult = _IrtExtension.CheckForExtension(_inputString, IrtConst.InternalNameSpace, IrtConst.InternalExtensionCommands, true);
+            if(extensionResult.Status == IrtConst.Error) extensionResult = _IrtExtension.CheckForExtension(_inputString, _nameSpace, _extension, false);
+
+            if (extensionResult.Status !=  IrtConst.NoSplitOccurred)
+            {
+                if(extensionResult.Status == IrtConst.Error)
+                {
+                    //handle
+
+                }
+
+                if (extensionResult.Status == IrtConst.ParameterMismatch)
+                {
+                    //handle
+                }
+
+
+            }
 
             if (IsCommentCommand(inputString))
             {
@@ -171,9 +187,12 @@ namespace Interpreter
             if (!ValidateParameters(inputString, key, _com)) return;
 
             parameterPart = ProcessParameters(inputString, key, _com);
+
             parameter = parameterPart.Status == 1
                 ? Irt.SplitParameter(parameterPart.Parameter, IrtConst.Splitter)
                 : new List<string> { parameterPart.Parameter };
+
+            //check for Parameter Overload
             var check = Irt.CheckOverload(_com[key].Command, parameter.Count, _com);
 
             if (check == null)

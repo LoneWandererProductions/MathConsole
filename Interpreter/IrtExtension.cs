@@ -18,14 +18,17 @@ namespace Interpreter
     internal sealed class IrtExtension
     {
         /// <summary>
-        ///     Checks for extension.
+        /// Checks for extension.
         /// </summary>
         /// <param name="input">The input.</param>
         /// <param name="nameSpace">The name space.</param>
         /// <param name="extensionCommands">The extension commands.</param>
-        /// <returns>Status and Extension Commands</returns>
+        /// <param name="internExtension">if set to <c>true</c> [intern extension].</param>
+        /// <returns>
+        /// Status and Extension Commands
+        /// </returns>
         internal (ExtensionCommands Extension, int Status) CheckForExtension(string input, string nameSpace,
-            Dictionary<int, InCommand> extensionCommands)
+            Dictionary<int, InCommand> extensionCommands, bool internExtension)
         {
             var exCommand = new ExtensionCommands();
 
@@ -36,40 +39,31 @@ namespace Interpreter
             var result = regex.Split(input);
 
             // Determine the split result and handle accordingly
-            return result.Length switch
+            switch (result.Length)
             {
-                1 => (null, IrtConst.NoSplitOccurred), // No split occurred
-                > 2 => (null, IrtConst.Error), // More than one extension found, more are not planned yet
-                _ => ProcessExtension(result[1], nameSpace, extensionCommands, exCommand) // Process the extension
-            };
+                case 1:
+                    return (null, IrtConst.NoSplitOccurred);
+                case > 2:
+                    return (null, IrtConst.Error);
+                default:
+                    return ProcessExtension(result[1], nameSpace, extensionCommands, exCommand, internExtension);
+            }
         }
 
         /// <summary>
-        ///     Processes the extension.
+        /// Processes the extension.
         /// </summary>
         /// <param name="extension">The extension.</param>
         /// <param name="nameSpace">The name space.</param>
         /// <param name="extensionCommands">The extension commands.</param>
         /// <param name="exCommand">The ex command.</param>
-        /// <returns>Status and Extension Commands</returns>
+        /// <param name="internExtension">if set to <c>true</c> [intern extension].</param>
+        /// <returns>
+        /// Status and Extension Commands
+        /// </returns>
         private static (ExtensionCommands Extension, int Status) ProcessExtension(string extension, string nameSpace,
-            Dictionary<int, InCommand> extensionCommands, ExtensionCommands exCommand)
+            Dictionary<int, InCommand> extensionCommands, ExtensionCommands exCommand, bool internExtension)
         {
-            //todo improve
-            //var param = Irt.CheckInternalCommands(extension, IrtConst.InternalExtensionCommands);
-            var param = string.Empty;
-
-            if (!string.IsNullOrEmpty(param))
-            {
-                var parameters = ExtractParameters(param, extension);
-                exCommand.ExtensionNameSpace = IrtConst.InternalNameSpace;
-                exCommand.ExtensionParameter = parameters;
-                exCommand.InternalCommand = param;
-
-                // TODO: Check if Parentheses are correct and Parameter Count
-                return (exCommand, IrtConst.InternalExtensionFound);
-            }
-
             var key = Irt.CheckForKeyWord(extension, extensionCommands);
             if (key == IrtConst.ErrorParam)
             {
@@ -82,14 +76,18 @@ namespace Interpreter
                 return (null, IrtConst.Error);
             }
 
-            var command = extensionCommands[key].Command.ToUpper(CultureInfo.InvariantCulture);
+            var command = extensionCommands[key].Command;
             var commandParameters = ExtractParameters(command, extension);
+
+            //check for Parameter Overload
+            var check = Irt.CheckOverload(extensionCommands[key].Command, exCommand.ExtensionParameter.Count, extensionCommands);
+            if (check == null) return (null, IrtConst.ParameterMismatch);
+
             exCommand.ExtensionNameSpace = nameSpace;
             exCommand.ExtensionCommand = key;
             exCommand.ExtensionParameter = commandParameters;
 
-            // TODO: Check if Parentheses are correct and Parameter Count
-            return (exCommand, IrtConst.NamespaceExtensionFound);
+            return internExtension ? (exCommand, IrtConst.InternalExtensionFound) : (exCommand, IrtConst.CustomExtensionFound);
         }
 
         /// <summary>

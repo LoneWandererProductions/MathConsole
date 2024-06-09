@@ -236,15 +236,21 @@ namespace Interpreter
         /// </summary>
         internal const int Error = -1;
 
-        /// <summary>
-        ///     The internal extension found. (const). Value: "1".
-        /// </summary>
-        internal const int InternalExtensionFound = 1;
 
         /// <summary>
-        ///     The namespace extension found. (const). Value: "2".
+        ///     The extension has a Parameter mismatch. (const). Value: "2".
         /// </summary>
-        internal const int NamespaceExtensionFound = 2;
+        internal const int ParameterMismatch = 2;
+
+        /// <summary>
+        ///     The custom extension found. (const). Value: "3".
+        /// </summary>
+        internal const int CustomExtensionFound = 3;
+
+        /// <summary>
+        ///     The Internal extension found. (const). Value: "4".
+        /// </summary>
+        internal const int InternalExtensionFound = 4;
 
         /// <summary>
         ///     The internal check, if Parameter is empty, since the brackets are expected. (const). Value: "()".
