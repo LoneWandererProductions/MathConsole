@@ -219,7 +219,8 @@ namespace Interpreter
 
             foreach (var (key, inCommand) in com)
             {
-                if (string.Equals(input.ToUpper(), inCommand.Command.ToUpper(CultureInfo.InvariantCulture), StringComparison.Ordinal))
+                if (string.Equals(input.ToUpper(), inCommand.Command.ToUpper(CultureInfo.InvariantCulture),
+                        StringComparison.Ordinal))
                     return
                         key;
             }
@@ -244,7 +245,10 @@ namespace Interpreter
             paramLst = paramLst.Where(element => !string.IsNullOrEmpty(element)).ToList();
 
             //remove all empty Parameters
-            return (from item in paramLst let result = Regex.Replace(item, IrtConst.RegexRemoveWhiteSpace, string.Empty) where result != IrtConst.EmptyParameter select item).ToList();
+            return (from item in paramLst
+                let result = Regex.Replace(item, IrtConst.RegexRemoveWhiteSpace, string.Empty)
+                where result != IrtConst.EmptyParameter
+                select item).ToList();
         }
 
         /// <summary>

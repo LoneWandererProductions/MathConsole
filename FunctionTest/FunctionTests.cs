@@ -6,13 +6,13 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace FunctionTest
 {
     /// <summary>
-    /// Some basic function checks
+    ///     Some basic function checks
     /// </summary>
     [TestClass]
     public class FunctionTests
     {
         /// <summary>
-        /// Sets the matrix valid input returns success message.
+        ///     Sets the matrix valid input returns success message.
         /// </summary>
         [TestMethod]
         public void SetMatrixValidInputReturnsSuccessMessage()
@@ -34,7 +34,7 @@ namespace FunctionTest
         }
 
         /// <summary>
-        /// Sets the matrix invalid parameter returns error message.
+        ///     Sets the matrix invalid parameter returns error message.
         /// </summary>
         [TestMethod]
         public void SetMatrixInvalidParameterReturnsErrorMessage()

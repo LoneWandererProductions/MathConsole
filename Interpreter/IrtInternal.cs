@@ -12,32 +12,32 @@ using System.Collections.Generic;
 namespace Interpreter
 {
     /// <summary>
-    /// Instance to handle all internal Commands
+    ///     Instance to handle all internal Commands
     /// </summary>
     internal sealed class IrtInternal
     {
         /// <summary>
-        /// The name space
+        ///     The name space
         /// </summary>
         private static string _nameSpace;
 
         /// <summary>
-        /// The prompt
+        ///     The prompt
         /// </summary>
         private static Prompt _prompt;
 
         /// <summary>
-        /// The irt prompt
-        /// </summary>
-        private readonly IrtPrompt _irtPrompt;
-
-        /// <summary>
-        /// The commands
+        ///     The commands
         /// </summary>
         private readonly Dictionary<int, InCommand> _commands;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="IrtInternal"/> class.
+        ///     The irt prompt
+        /// </summary>
+        private readonly IrtPrompt _irtPrompt;
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="IrtInternal" /> class.
         /// </summary>
         /// <param name="commands">The commands.</param>
         /// <param name="irtPrompt">The irt prompt.</param>
@@ -50,7 +50,7 @@ namespace Interpreter
         }
 
         /// <summary>
-        /// Handles the internal commands.
+        ///     Handles the internal commands.
         /// </summary>
         /// <param name="command">The command.</param>
         /// <param name="parameter">The parameter.</param>
@@ -135,7 +135,8 @@ namespace Interpreter
             }
 
             var commandInfo = _commands[key];
-            OnStatus($"{commandInfo.Command}{IrtConst.FormatDescription}{commandInfo.Description}{IrtConst.FormatCount}{commandInfo.ParameterCount}");
+            OnStatus(
+                $"{commandInfo.Command}{IrtConst.FormatDescription}{commandInfo.Description}{IrtConst.FormatCount}{commandInfo.ParameterCount}");
         }
 
         /// <summary>Command to switch between using.</summary>
@@ -186,7 +187,8 @@ namespace Interpreter
         /// </summary>
         private void CommandLogInfo()
         {
-            var message = $"{IrtConst.MessageLogStatistics}{Environment.NewLine}{IrtConst.MessageErrorCount}{Logging.Log.Count}{Environment.NewLine}{IrtConst.MessageLogCount}{_prompt.Log.Count}";
+            var message =
+                $"{IrtConst.MessageLogStatistics}{Environment.NewLine}{IrtConst.MessageErrorCount}{Logging.Log.Count}{Environment.NewLine}{IrtConst.MessageLogCount}{_prompt.Log.Count}";
             OnStatus(message);
         }
 
@@ -244,7 +246,7 @@ namespace Interpreter
         }
 
         /// <summary>
-        /// Sets the error.
+        ///     Sets the error.
         /// </summary>
         /// <param name="error">The error.</param>
         private void SetError(string error)

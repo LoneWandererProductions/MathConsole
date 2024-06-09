@@ -44,6 +44,25 @@ namespace Interpreter
         private string _inputString;
 
         /// <summary>
+        ///     The irt extension
+        /// </summary>
+        private IrtExtension _irtExtension;
+
+        /// <summary>
+        ///     The irt internal
+        /// </summary>
+        private IrtInternal _irtInternal;
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="IrtPrompt" /> class.
+        /// </summary>
+        /// <param name="prompt">The prompt.</param>
+        public IrtPrompt(Prompt prompt)
+        {
+            _prompt = prompt;
+        }
+
+        /// <summary>
         ///     Send selected Command to the Subscriber
         /// </summary>
         internal event EventHandler<OutCommand> SendCommand;
@@ -54,31 +73,7 @@ namespace Interpreter
         internal event EventHandler<string> SendInternalLog;
 
         /// <summary>
-        /// The irt internal
-        /// </summary>
-        private IrtInternal _irtInternal;
-
-        /// <summary>
-        /// The log
-        /// </summary>
-        internal Dictionary<int, string> Log;
-
-        /// <summary>
-        /// The irt extension
-        /// </summary>
-        private IrtExtension _IrtExtension;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="IrtPrompt" /> class.
-        /// </summary>
-        /// <param name="prompt">The prompt.</param>
-        public IrtPrompt(Prompt prompt)
-        {
-            _prompt = prompt;
-        }
-
-        /// <summary>
-        /// Get the Engine Running
+        ///     Get the Engine Running
         /// </summary>
         /// <param name="use">The Command Structure</param>
         internal void Initiate(UserSpace use)
@@ -87,8 +82,7 @@ namespace Interpreter
             _extension = use.ExtensionCommands;
             _nameSpace = use.UserSpaceName;
             _irtInternal = new IrtInternal(use.Commands, this, use.UserSpaceName);
-            _IrtExtension = new IrtExtension();
-            Log = new Dictionary<int, string>();
+            _irtExtension = new IrtExtension();
             var log = Logging.SetLastError(IrtConst.InformationStartup, 2);
             OnStatus(log);
         }
@@ -121,23 +115,22 @@ namespace Interpreter
                 return;
             }
 
-            var extensionResult = _IrtExtension.CheckForExtension(_inputString, IrtConst.InternalNameSpace, IrtConst.InternalExtensionCommands);
-            if(extensionResult.Status == IrtConst.Error) extensionResult = _IrtExtension.CheckForExtension(_inputString, _nameSpace, _extension);
+            var extensionResult = _irtExtension.CheckForExtension(_inputString, IrtConst.InternalNameSpace,
+                IrtConst.InternalExtensionCommands);
+            if (extensionResult.Status == IrtConst.Error)
+                extensionResult = _irtExtension.CheckForExtension(_inputString, _nameSpace, _extension);
 
-            if (extensionResult.Status !=  IrtConst.NoSplitOccurred)
+            if (extensionResult.Status != IrtConst.NoSplitOccurred)
             {
-                if(extensionResult.Status == IrtConst.Error)
+                if (extensionResult.Status == IrtConst.Error)
                 {
                     //handle
-
                 }
 
                 if (extensionResult.Status == IrtConst.ParameterMismatch)
                 {
                     //handle
                 }
-
-
             }
 
             if (IsCommentCommand(inputString))
@@ -211,7 +204,8 @@ namespace Interpreter
         /// <returns>Mostly cleaned Input string and all Uppercase.</returns>
         private static bool CleanInputString(ref string input)
         {
-            input = Irt.WellFormedParenthesis(input).ToUpper(CultureInfo.CurrentCulture).ToUpper(CultureInfo.InvariantCulture);
+            input = Irt.WellFormedParenthesis(input).ToUpper(CultureInfo.CurrentCulture)
+                .ToUpper(CultureInfo.InvariantCulture);
 
             var openParenthesis = new[] { IrtConst.BaseOpen, IrtConst.AdvancedOpen };
             var closeParenthesis = new[] { IrtConst.BaseClose, IrtConst.AdvancedClose };
@@ -241,7 +235,8 @@ namespace Interpreter
         /// </returns>
         private static bool IsHelpCommand(string input)
         {
-            input = input.Replace(IrtConst.BaseOpen.ToString(), string.Empty).Replace(IrtConst.BaseClose.ToString(), string.Empty);
+            input = input.Replace(IrtConst.BaseOpen.ToString(), string.Empty)
+                .Replace(IrtConst.BaseClose.ToString(), string.Empty);
             return input.Equals(IrtConst.InternalCommandHelp, StringComparison.InvariantCultureIgnoreCase);
         }
 
@@ -278,7 +273,8 @@ namespace Interpreter
         /// <param name="key">The key.</param>
         /// <param name="commands">The commands in use.</param>
         /// <returns>return Parameter</returns>
-        private static (int Status, string Parameter) ProcessParameters(string input, int key, IReadOnlyDictionary<int, InCommand> commands)
+        private static (int Status, string Parameter) ProcessParameters(string input, int key,
+            IReadOnlyDictionary<int, InCommand> commands)
         {
             var command = commands[key].Command.ToUpper(CultureInfo.InvariantCulture);
 
@@ -307,7 +303,7 @@ namespace Interpreter
         private void SetError(string error)
         {
             var com = new OutCommand
-            { Command = IrtConst.ErrorParam, Parameter = null, UsedNameSpace = _nameSpace, ErrorMessage = error };
+                { Command = IrtConst.ErrorParam, Parameter = null, UsedNameSpace = _nameSpace, ErrorMessage = error };
 
             OnCommand(com);
         }

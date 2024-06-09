@@ -12,18 +12,18 @@ using System.Text.RegularExpressions;
 namespace Interpreter
 {
     /// <summary>
-    /// Handle the Extensions
+    ///     Handle the Extensions
     /// </summary>
     internal sealed class IrtExtension
     {
         /// <summary>
-        /// Checks for extension.
+        ///     Checks for extension.
         /// </summary>
         /// <param name="input">The input.</param>
         /// <param name="nameSpace">The name space.</param>
         /// <param name="extensionCommands">The extension commands.</param>
         /// <returns>
-        /// Status and Extension Commands
+        ///     Status and Extension Commands
         /// </returns>
         internal (ExtensionCommands Extension, int Status) CheckForExtension(string input, string nameSpace,
             Dictionary<int, InCommand> extensionCommands)
@@ -49,30 +49,24 @@ namespace Interpreter
         }
 
         /// <summary>
-        /// Processes the extension.
+        ///     Processes the extension.
         /// </summary>
         /// <param name="extension">The extension.</param>
         /// <param name="nameSpace">The name space.</param>
         /// <param name="extensionCommands">The extension commands.</param>
         /// <param name="exCommand">The ex command.</param>
         /// <returns>
-        /// Status and Extension Commands
+        ///     Status and Extension Commands
         /// </returns>
         private static (ExtensionCommands Extension, int Status) ProcessExtension(string extension, string nameSpace,
             Dictionary<int, InCommand> extensionCommands, ExtensionCommands exCommand)
         {
             var key = Irt.CheckForKeyWord(extension, extensionCommands);
 
-            if (key == IrtConst.ErrorParam)
-            {
-                return (null, IrtConst.Error);
-            }
+            if (key == IrtConst.ErrorParam) return (null, IrtConst.Error);
 
             // Validate parameter count and parentheses
-            if (!ValidateParameters(extension, key, extensionCommands))
-            {
-                return (null, IrtConst.Error);
-            }
+            if (!ValidateParameters(extension, key, extensionCommands)) return (null, IrtConst.Error);
 
             var command = extensionCommands[key].Command;
             var commandParameters = ExtractParameters(command, extension);
@@ -101,7 +95,7 @@ namespace Interpreter
         }
 
         /// <summary>
-        /// Validates the parameters.
+        ///     Validates the parameters.
         /// </summary>
         /// <param name="input">The input.</param>
         /// <param name="key">The key.</param>

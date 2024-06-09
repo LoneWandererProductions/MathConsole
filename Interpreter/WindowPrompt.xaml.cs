@@ -2,7 +2,7 @@
  * COPYRIGHT:   See COPYING in the top level directory
  * PROJECT:     Interpreter
  * FILE:        Interpreter/WindowPrompt.cs
- * PURPOSE:     Graphical Frontend for the INput
+ * PURPOSE:     Graphical Frontend for the Input
  * PROGRAMER:   Peter Geinitz (Wayfarer)
  */
 

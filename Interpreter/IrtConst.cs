@@ -24,15 +24,15 @@ namespace Interpreter
         /// <summary>
         ///     Regex Pattern to remove whitespace before '(' and '{', (const). Value: @"\s*([(){}])\s*".
         /// </summary>
-        internal const string RegexParenthesisWellFormedPatternLeft= @"\s+(?=[({])";
+        internal const string RegexParenthesisWellFormedPatternLeft = @"\s+(?=[({])";
 
         /// <summary>
-        ///  Regex  Pattern to remove whitespace after ')' and '}', (const). Value:  @"(?&lt;=[)}])\s+".
+        ///     Regex  Pattern to remove whitespace after ')' and '}', (const). Value:  @"(?&lt;=[)}])\s+".
         /// </summary>
         internal const string RegexParenthesisWellFormedPatternRight = @"(?<=[)}])\s+";
 
         /// <summary>
-        ///  Regex  Pattern to remove all whitespace, (const). Value:  @"\s+".
+        ///     Regex  Pattern to remove all whitespace, (const). Value:  @"\s+".
         /// </summary>
         internal const string RegexRemoveWhiteSpace = @"\s+";
 
@@ -285,7 +285,8 @@ namespace Interpreter
                 new InCommand
                 {
                     Command = InternalHelpExtension,
-                    Description = "help(parameter) : displays the help for the command and asks if you want to execute it.",
+                    Description =
+                        "help(parameter) : displays the help for the command and asks if you want to execute it.",
                     ParameterCount = 0
                 }
             }
@@ -313,7 +314,7 @@ namespace Interpreter
 
 
         /// <summary>
-        /// The Dictionary for internal commands
+        ///     The Dictionary for internal commands
         /// </summary>
         internal static readonly Dictionary<int, InCommand> InternCommands = new()
         {
@@ -385,7 +386,8 @@ namespace Interpreter
                 new InCommand
                 {
                     Command = InternalCommandContainer,
-                    Description = "Container : Holds a set of commands and executes them sequential, use Container{Command1; Command2; .... } and ; is the Separator that states that a new command follows.",
+                    Description =
+                        "Container : Holds a set of commands and executes them sequential, use Container{Command1; Command2; .... } and ; is the Separator that states that a new command follows.",
                     ParameterCount = 0
                 }
             },

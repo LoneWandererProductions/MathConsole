@@ -104,7 +104,7 @@ namespace InterpreteTests
         }
 
         /// <summary>
-        /// Wells the formed parenthesis removes well formed parenthesis.
+        ///     Wells the formed parenthesis removes well formed parenthesis.
         /// </summary>
         [TestMethod]
         public void WellFormedParenthesisRemovesWellFormedParenthesis()
@@ -132,7 +132,7 @@ namespace InterpreteTests
 
 
         /// <summary>
-        /// Wells the formed parenthesis removes well formed parenthesis.
+        ///     Wells the formed parenthesis removes well formed parenthesis.
         /// </summary>
         [TestMethod]
         public void InternalExtensionTest()
@@ -148,7 +148,8 @@ namespace InterpreteTests
             Assert.AreEqual(expected, result);
 
             // Act
-            var extensions = ext.CheckForExtension(result, IrtConst.InternalNameSpace, IrtConst.InternalExtensionCommands);
+            var extensions =
+                ext.CheckForExtension(result, IrtConst.InternalNameSpace, IrtConst.InternalExtensionCommands);
             // Assert
             Assert.AreEqual(-1, extensions.Status, "Not handled correctly");
 
