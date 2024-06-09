@@ -186,7 +186,7 @@ namespace Interpreter
         /// </summary>
         private void CommandLogInfo()
         {
-            var message = $"{IrtConst.MessageLogStatistics}{Environment.NewLine}{IrtConst.MessageErrorCount}{Logging.Log.Count}{Environment.NewLine}{IrtConst.MessageLogCount}{_irtPrompt.Log.Count}";
+            var message = $"{IrtConst.MessageLogStatistics}{Environment.NewLine}{IrtConst.MessageErrorCount}{Logging.Log.Count}{Environment.NewLine}{IrtConst.MessageLogCount}{_prompt.Log.Count}";
             OnStatus(message);
         }
 
@@ -195,7 +195,7 @@ namespace Interpreter
         /// </summary>
         private void CommandLogFull()
         {
-            foreach (var entry in new List<string>(_irtPrompt.Log.Values))
+            foreach (var entry in new List<string>(_prompt.Log.Values))
                 _prompt.SendLogs?.Invoke(nameof(IrtInternal), entry);
         }
 

@@ -121,8 +121,8 @@ namespace Interpreter
                 return;
             }
 
-            var extensionResult = _IrtExtension.CheckForExtension(_inputString, IrtConst.InternalNameSpace, IrtConst.InternalExtensionCommands, true);
-            if(extensionResult.Status == IrtConst.Error) extensionResult = _IrtExtension.CheckForExtension(_inputString, _nameSpace, _extension, false);
+            var extensionResult = _IrtExtension.CheckForExtension(_inputString, IrtConst.InternalNameSpace, IrtConst.InternalExtensionCommands);
+            if(extensionResult.Status == IrtConst.Error) extensionResult = _IrtExtension.CheckForExtension(_inputString, _nameSpace, _extension);
 
             if (extensionResult.Status !=  IrtConst.NoSplitOccurred)
             {

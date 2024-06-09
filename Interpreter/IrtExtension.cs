@@ -7,7 +7,6 @@
  */
 
 using System.Collections.Generic;
-using System.Globalization;
 using System.Text.RegularExpressions;
 
 namespace Interpreter
@@ -23,12 +22,11 @@ namespace Interpreter
         /// <param name="input">The input.</param>
         /// <param name="nameSpace">The name space.</param>
         /// <param name="extensionCommands">The extension commands.</param>
-        /// <param name="internExtension">if set to <c>true</c> [intern extension].</param>
         /// <returns>
         /// Status and Extension Commands
         /// </returns>
         internal (ExtensionCommands Extension, int Status) CheckForExtension(string input, string nameSpace,
-            Dictionary<int, InCommand> extensionCommands, bool internExtension)
+            Dictionary<int, InCommand> extensionCommands)
         {
             var exCommand = new ExtensionCommands();
 
@@ -46,7 +44,7 @@ namespace Interpreter
                 case > 2:
                     return (null, IrtConst.Error);
                 default:
-                    return ProcessExtension(result[1], nameSpace, extensionCommands, exCommand, internExtension);
+                    return ProcessExtension(result[1], nameSpace, extensionCommands, exCommand);
             }
         }
 
@@ -57,14 +55,14 @@ namespace Interpreter
         /// <param name="nameSpace">The name space.</param>
         /// <param name="extensionCommands">The extension commands.</param>
         /// <param name="exCommand">The ex command.</param>
-        /// <param name="internExtension">if set to <c>true</c> [intern extension].</param>
         /// <returns>
         /// Status and Extension Commands
         /// </returns>
         private static (ExtensionCommands Extension, int Status) ProcessExtension(string extension, string nameSpace,
-            Dictionary<int, InCommand> extensionCommands, ExtensionCommands exCommand, bool internExtension)
+            Dictionary<int, InCommand> extensionCommands, ExtensionCommands exCommand)
         {
             var key = Irt.CheckForKeyWord(extension, extensionCommands);
+
             if (key == IrtConst.ErrorParam)
             {
                 return (null, IrtConst.Error);
@@ -80,14 +78,14 @@ namespace Interpreter
             var commandParameters = ExtractParameters(command, extension);
 
             //check for Parameter Overload
-            var check = Irt.CheckOverload(extensionCommands[key].Command, exCommand.ExtensionParameter.Count, extensionCommands);
+            var check = Irt.CheckOverload(extensionCommands[key].Command, commandParameters.Count, extensionCommands);
             if (check == null) return (null, IrtConst.ParameterMismatch);
 
             exCommand.ExtensionNameSpace = nameSpace;
             exCommand.ExtensionCommand = key;
             exCommand.ExtensionParameter = commandParameters;
 
-            return internExtension ? (exCommand, IrtConst.InternalExtensionFound) : (exCommand, IrtConst.CustomExtensionFound);
+            return (exCommand, IrtConst.ExtensionFound);
         }
 
         /// <summary>

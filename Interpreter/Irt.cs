@@ -174,8 +174,18 @@ namespace Interpreter
         /// <returns>Parameter Part without the Keyword at the front</returns>
         internal static string RemoveWord(string remove, string target)
         {
-            target = target.Replace(remove, string.Empty);
-            return target.Trim();
+            // Find the index of remove in target, ignoring case
+            var index = target.IndexOf(remove, StringComparison.OrdinalIgnoreCase);
+
+            // If remove is found, remove it from target
+            if (index >= 0)
+            {
+                target = target.Remove(index, remove.Length);
+            }
+
+            target = target.Trim();
+
+            return target;
         }
 
         /// <summary>
@@ -209,7 +219,7 @@ namespace Interpreter
 
             foreach (var (key, inCommand) in com)
             {
-                if (string.Equals(input, inCommand.Command.ToUpper(CultureInfo.InvariantCulture), StringComparison.Ordinal))
+                if (string.Equals(input.ToUpper(), inCommand.Command.ToUpper(CultureInfo.InvariantCulture), StringComparison.Ordinal))
                     return
                         key;
             }
@@ -231,7 +241,10 @@ namespace Interpreter
             paramLst.AddRange(lst.Select(param => param.Trim()));
 
             // remove empty trash
-            return paramLst.Where(element => !string.IsNullOrEmpty(element)).ToList();
+            paramLst = paramLst.Where(element => !string.IsNullOrEmpty(element)).ToList();
+
+            //remove all empty Parameters
+            return (from item in paramLst let result = Regex.Replace(item, IrtConst.RegexRemoveWhiteSpace, string.Empty) where result != IrtConst.EmptyParameter select item).ToList();
         }
 
         /// <summary>
@@ -243,6 +256,7 @@ namespace Interpreter
         /// <returns>Well formed string with Parenthesis</returns>
         internal static string WellFormedParenthesis(string input)
         {
+            input = input.Trim();
             var regex = Regex.Replace(input, IrtConst.RegexParenthesisWellFormedPatternLeft, string.Empty);
             return Regex.Replace(regex, IrtConst.RegexParenthesisWellFormedPatternRight, string.Empty);
         }

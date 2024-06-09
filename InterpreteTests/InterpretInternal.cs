@@ -121,13 +121,52 @@ namespace InterpreteTests
 
             // Arrange
             input = " text {   internal(12 ,,,44   ) ,  internal4(      ,5)   }  ";
-            expected = " text{   internal(12 ,,,44   ),  internal4(      ,5)}";
+            expected = "text{   internal(12 ,,,44   ),  internal4(      ,5)}";
 
             // Act
             result = Irt.WellFormedParenthesis(input);
 
             // Assert
             Assert.AreEqual(expected, result);
+        }
+
+
+        /// <summary>
+        /// Wells the formed parenthesis removes well formed parenthesis.
+        /// </summary>
+        [TestMethod]
+        public void InternalExtensionTest()
+        {
+            // Arrange
+            var input = "   test().    Commmand() ";
+            var expected = "test().    Commmand()";
+            var ext = new IrtExtension();
+            // Act
+            var result = Irt.WellFormedParenthesis(input);
+
+            // Assert
+            Assert.AreEqual(expected, result);
+
+            // Act
+            var extensions = ext.CheckForExtension(result, IrtConst.InternalNameSpace, IrtConst.InternalExtensionCommands);
+            // Assert
+            Assert.AreEqual(-1, extensions.Status, "Not handled correctly");
+
+            // Arrange
+            input = "   test().    use() ";
+            // Act
+            result = Irt.WellFormedParenthesis(input);
+            extensions = ext.CheckForExtension(result, IrtConst.InternalNameSpace, IrtConst.InternalExtensionCommands);
+
+            Assert.AreEqual(2, extensions.Status, "Not handled correctly");
+
+            // Arrange
+            input = "   test().use(test) ";
+            // Act
+            result = Irt.WellFormedParenthesis(input);
+            extensions = ext.CheckForExtension(result, IrtConst.InternalNameSpace, IrtConst.InternalExtensionCommands);
+
+            Assert.AreEqual(3, extensions.Status, "Not handled correctly");
         }
     }
 }

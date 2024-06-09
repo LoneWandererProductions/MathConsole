@@ -32,19 +32,29 @@ namespace Interpreter
         internal const string RegexParenthesisWellFormedPatternRight = @"(?<=[)}])\s+";
 
         /// <summary>
+        ///  Regex  Pattern to remove all whitespace, (const). Value:  @"\s+".
+        /// </summary>
+        internal const string RegexRemoveWhiteSpace = @"\s+";
+
+        /// <summary>
         ///     Separator (const). Value: ", ".
         /// </summary>
         internal const string Separator = " , ";
 
         /// <summary>
+        ///     Empty Parameter (const). Value:  "()".
+        /// </summary>
+        internal const string EmptyParameter = "()";
+
+        /// <summary>
         ///     The internal command container (const). Value: "CONTAINER".
         /// </summary>
-        internal const string InternalCommandContainer = "CONTAINER";
+        private const string InternalCommandContainer = "CONTAINER";
 
         /// <summary>
         ///     The internal command batch execute (const). Value: "BATCHEXECUTE".
         /// </summary>
-        internal const string InternalCommandBatchExecute = "BATCHEXECUTE";
+        private const string InternalCommandBatchExecute = "BATCHEXECUTE";
 
         /// <summary>
         ///     The internal command help (const). Value: "HELP".
@@ -54,7 +64,7 @@ namespace Interpreter
         /// <summary>
         ///     The internal command list (const). Value: "LIST".
         /// </summary>
-        internal const string InternalCommandList = "LIST";
+        private const string InternalCommandList = "LIST";
 
         /// <summary>
         ///     The internal Namespace (const). Value: "INTERNAL".
@@ -64,7 +74,7 @@ namespace Interpreter
         /// <summary>
         ///     The internal command using (const). Value: "USING".
         /// </summary>
-        internal const string InternalUsing = "USING";
+        private const string InternalUsing = "USING";
 
         /// <summary>
         ///     The internal extension command use (const). Value: "Use".
@@ -72,24 +82,29 @@ namespace Interpreter
         private const string InternalExtensionUse = "USE";
 
         /// <summary>
+        ///     The internal extension command help (const). Value: "HELP".
+        /// </summary>
+        private const string InternalHelpExtension = "HELP";
+
+        /// <summary>
         ///     The internal command use (const). Value: "USE".
         /// </summary>
-        internal const string InternalUse = "USE";
+        private const string InternalUse = "USE";
 
         /// <summary>
         ///     The internal command Log (const). Value: "LOG".
         /// </summary>
-        internal const string InternalErrorLog = "LOG";
+        private const string InternalErrorLog = "LOG";
 
         /// <summary>
         ///     The internal command Log info (const). Value: "LOGINFO".
         /// </summary>
-        internal const string InternalLogInfo = "LOGINFO";
+        private const string InternalLogInfo = "LOGINFO";
 
         /// <summary>
         ///     The internal command Log full (const). Value: "LOGFULL".
         /// </summary>
-        internal const string InternalLogFull = "LOGFULL";
+        private const string InternalLogFull = "LOGFULL";
 
         /// <summary>
         ///     The error no commands provided (const). Value: "No Commands were provided".
@@ -236,21 +251,15 @@ namespace Interpreter
         /// </summary>
         internal const int Error = -1;
 
-
         /// <summary>
         ///     The extension has a Parameter mismatch. (const). Value: "2".
         /// </summary>
         internal const int ParameterMismatch = 2;
 
         /// <summary>
-        ///     The custom extension found. (const). Value: "3".
+        ///     The Internal extension found. (const). Value: "3.
         /// </summary>
-        internal const int CustomExtensionFound = 3;
-
-        /// <summary>
-        ///     The Internal extension found. (const). Value: "4".
-        /// </summary>
-        internal const int InternalExtensionFound = 4;
+        internal const int ExtensionFound = 3;
 
         /// <summary>
         ///     The internal check, if Parameter is empty, since the brackets are expected. (const). Value: "()".
@@ -269,6 +278,15 @@ namespace Interpreter
                     Command = InternalExtensionUse,
                     Description = "use(parameter) : use the provided parameter as Userspace, if it exists.",
                     ParameterCount = 1
+                }
+            },
+            {
+                1,
+                new InCommand
+                {
+                    Command = InternalHelpExtension,
+                    Description = "help(parameter) : displays the help for the command and asks if you want to execute it.",
+                    ParameterCount = 0
                 }
             }
         };
