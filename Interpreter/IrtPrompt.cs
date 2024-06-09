@@ -113,13 +113,7 @@ namespace Interpreter
         {
             _inputString = inputString;
 
-            inputString = CleanInputString(inputString);
-
-            var openParenthesis = new[] { IrtConst.BaseOpen, IrtConst.AdvancedOpen };
-            var closeParenthesis = new[] { IrtConst.BaseClose, IrtConst.AdvancedClose };
-
-            //check if all the Parenthesis are actual in place
-            var isValid = Irt.CheckMultiple(_inputString, openParenthesis, closeParenthesis);
+            var isValid = CleanInputString(ref inputString);
 
             if (!isValid)
             {
@@ -196,9 +190,15 @@ namespace Interpreter
         /// </summary>
         /// <param name="input">The input.</param>
         /// <returns>Mostly cleaned Input string and all Uppercase.</returns>
-        private static string CleanInputString(string input)
+        private static bool CleanInputString(ref string input)
         {
-            return Irt.WellFormedParenthesis(input).ToUpper(CultureInfo.CurrentCulture).ToUpper(CultureInfo.InvariantCulture);
+            input = Irt.WellFormedParenthesis(input).ToUpper(CultureInfo.CurrentCulture).ToUpper(CultureInfo.InvariantCulture);
+
+            var openParenthesis = new[] { IrtConst.BaseOpen, IrtConst.AdvancedOpen };
+            var closeParenthesis = new[] { IrtConst.BaseClose, IrtConst.AdvancedClose };
+
+            //check if all the Parenthesis are actual in place
+            return Irt.CheckMultiple(input, openParenthesis, closeParenthesis);
         }
 
         /// <summary>
