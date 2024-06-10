@@ -26,6 +26,8 @@ namespace Interpreter
     /// </summary>
     public sealed class Prompt : IPrompt, IDisposable
     {
+        //TODO add Callback Function, e.g.yes, no, etc
+
         /// <summary>
         ///     Used to interpret Commands
         /// </summary>
