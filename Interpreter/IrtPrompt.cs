@@ -114,24 +114,6 @@ namespace Interpreter
                 return;
             }
 
-            var extensionResult = _irtExtension.CheckForExtension(_inputString, IrtConst.InternalNameSpace,
-                IrtConst.InternalExtensionCommands);
-            if (extensionResult.Status == IrtConst.Error)
-                extensionResult = _irtExtension.CheckForExtension(_inputString, _nameSpace, _extension);
-
-            if (extensionResult.Status != IrtConst.NoSplitOccurred)
-            {
-                if (extensionResult.Status == IrtConst.Error)
-                {
-                    //TODO handle
-                }
-
-                if (extensionResult.Status == IrtConst.ParameterMismatch)
-                {
-                    //TODO handle
-                }
-            }
-
             if (IsCommentCommand(inputString))
             {
                 Trace.WriteLine(inputString);
@@ -144,7 +126,39 @@ namespace Interpreter
                 return;
             }
 
+
+            var extensionResult = _irtExtension.CheckForExtension(_inputString, IrtConst.InternalNameSpace,
+                IrtConst.InternalExtensionCommands);
+            if (extensionResult.Status == IrtConst.Error)
+                extensionResult = _irtExtension.CheckForExtension(_inputString, _nameSpace, _extension);
+
+            switch (extensionResult.Status)
+            {
+                case IrtConst.Error:
+                    //TODO handle
+                    break;
+                case IrtConst.ParameterMismatch:
+                    //TODO handle
+                    break;
+                case IrtConst.ExtensionFound:
+                    if (extensionResult.Extension.ExtensionNameSpace == IrtConst.InternalNameSpace)
+                        ProcessInputInternal(inputString, extensionResult);
+                    else ProcessInput(inputString, extensionResult);
+
+                    return;
+            }
+
             ProcessInput(inputString);
+        }
+
+        private void ProcessInputInternal(string inputString, (ExtensionCommands Extension, int Status) extensionResult)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void ProcessInput(string inputString, (ExtensionCommands Extension, int Status) extensionResult)
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -286,8 +300,8 @@ namespace Interpreter
             IReadOnlyDictionary<int, InCommand> commands)
         {
             var command = commands[key].Command.ToUpper(CultureInfo.InvariantCulture);
-
             var parameterPart = Irt.RemoveWord(command, input);
+
             return parameterPart.StartsWith(IrtConst.AdvancedOpen)
                 ? (0, parameterPart)
                 : (1, Irt.RemoveParenthesis(parameterPart, IrtConst.BaseClose, IrtConst.BaseOpen));

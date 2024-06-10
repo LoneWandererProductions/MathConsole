@@ -252,14 +252,14 @@ namespace Interpreter
         internal const int Error = -1;
 
         /// <summary>
-        ///     The extension has a Parameter mismatch. (const). Value: "2".
+        ///     The extension has a Parameter mismatch. (const). Value: "1".
         /// </summary>
-        internal const int ParameterMismatch = 2;
+        internal const int ParameterMismatch = 1;
 
         /// <summary>
-        ///     The Internal extension found. (const). Value: "3.
+        ///     The Internal extension found. (const). Value: "2.
         /// </summary>
-        internal const int ExtensionFound = 3;
+        internal const int ExtensionFound = 2;
 
         /// <summary>
         ///     The internal check, if Parameter is empty, since the brackets are expected. (const). Value: "()".
