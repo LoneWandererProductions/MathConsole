@@ -24,8 +24,8 @@ namespace InterpreteTests
         [TestMethod]
         public void SingleCheckShouldReturnTrueForBalancedParentheses()
         {
-            var input = "(a + b) * c";
-            var result = Irt.SingleCheck(input);
+            const string input = "(a + b) * c";
+            bool result = Irt.SingleCheck(input);
             Assert.IsTrue(result);
         }
 
@@ -35,8 +35,8 @@ namespace InterpreteTests
         [TestMethod]
         public void SingleCheckShouldReturnFalseForUnbalancedParentheses()
         {
-            var input = "(a + b * c";
-            var result = Irt.SingleCheck(input);
+            const string input = "(a + b * c";
+            bool result = Irt.SingleCheck(input);
             Assert.IsFalse(result);
         }
 
@@ -46,8 +46,8 @@ namespace InterpreteTests
         [TestMethod]
         public void RemoveParenthesisShouldRemoveOuterParenthesesWhenWellFormed()
         {
-            var input = "(abc)";
-            var result = Irt.RemoveParenthesis(input, ')', '(');
+            string input = "(abc)";
+            string result = Irt.RemoveParenthesis(input, ')', '(');
             Assert.AreEqual("abc", result);
         }
 
@@ -57,8 +57,8 @@ namespace InterpreteTests
         [TestMethod]
         public void RemoveParenthesisShouldReturnInput()
         {
-            var input = "abc";
-            var result = Irt.RemoveParenthesis(input, ')', '(');
+            string input = "abc";
+            string result = Irt.RemoveParenthesis(input, ')', '(');
             Assert.AreEqual("abc", result);
         }
 
@@ -68,8 +68,8 @@ namespace InterpreteTests
         [TestMethod]
         public void RemoveParenthesisShouldReturnErrorMessageWhenInputHasMismatchedParentheses()
         {
-            var input = "(abc";
-            var result = Irt.RemoveParenthesis(input, ')', '(');
+            string input = "(abc";
+            string result = Irt.RemoveParenthesis(input, ')', '(');
             Assert.AreEqual(IrtConst.ParenthesisError, result);
         }
 
@@ -79,12 +79,12 @@ namespace InterpreteTests
         [TestMethod]
         public void CheckOverloadShouldReturnCommandIdWhenOverloadMatches()
         {
-            var commands = new Dictionary<int, InCommand>
+            Dictionary<int, InCommand> commands = new Dictionary<int, InCommand>
             {
                 { 1, new InCommand { Command = "command", ParameterCount = 2 } }
             };
 
-            var result = Irt.CheckOverload("command", 2, commands);
+            int? result = Irt.CheckOverload("command", 2, commands);
             Assert.AreEqual(1, result);
         }
 
@@ -94,12 +94,12 @@ namespace InterpreteTests
         [TestMethod]
         public void CheckOverloadShouldReturnErrorWhenOverloadDoesNotMatch()
         {
-            var commands = new Dictionary<int, InCommand>
+            Dictionary<int, InCommand> commands = new Dictionary<int, InCommand>
             {
                 { 1, new InCommand { Command = "command", ParameterCount = 2 } }
             };
 
-            var result = Irt.CheckOverload("command", 3, commands);
+            int? result = Irt.CheckOverload("command", 3, commands);
             Assert.AreEqual(null, result);
         }
 
@@ -110,11 +110,11 @@ namespace InterpreteTests
         public void WellFormedParenthesisRemovesWellFormedParenthesis()
         {
             // Arrange
-            var input = "text ) ( , ) txt ) ( , ( more text";
-            var expected = "text )( , )txt )( ,( more text";
+            string input = "text ) ( , ) txt ) ( , ( more text";
+            string expected = "text )( , )txt )( ,( more text";
 
             // Act
-            var result = Irt.WellFormedParenthesis(input);
+            string result = Irt.WellFormedParenthesis(input);
 
             // Assert
             Assert.AreEqual(expected, result);
@@ -138,23 +138,23 @@ namespace InterpreteTests
         public void InternalExtensionTest()
         {
             // Arrange
-            var input = "   test().    Commmand() ";
-            var expected = "test().    Commmand()";
-            var ext = new IrtExtension();
+            string input = "   test().    Commmand() ";
+            string expected = "test().    Commmand()";
+            IrtExtension ext = new IrtExtension();
             // Act
-            var result = Irt.WellFormedParenthesis(input);
+            string result = Irt.WellFormedParenthesis(input);
 
             // Assert
             Assert.AreEqual(expected, result);
 
             // Act
-            var extensions =
+            (ExtensionCommands Extension, int Status) extensions =
                 ext.CheckForExtension(result, IrtConst.InternalNameSpace, IrtConst.InternalExtensionCommands);
             // Assert
             Assert.AreEqual(-1, extensions.Status, "Not handled correctly");
 
             // Arrange
-            input = "   test().    use() ";
+            input = "   test().    use(     ) ";
             // Act
             result = Irt.WellFormedParenthesis(input);
             extensions = ext.CheckForExtension(result, IrtConst.InternalNameSpace, IrtConst.InternalExtensionCommands);

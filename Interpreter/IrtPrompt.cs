@@ -1,9 +1,8 @@
-﻿/*
- * COPYRIGHT:   See COPYING in the top level directory
+﻿/*COPYRIGHT:   See COPYING in the top level directory
  * PROJECT:     Interpreter
- * FILE:        Interpreter/IrtPrompt.cs
+ * FILE:        Interpreter / IrtPrompt.cs
  * PURPOSE:     Handle the Input
- * PROGRAMER:   Peter Geinitz (Wayfarer)
+ * PROGRAMER:   Peter Geinitz(Wayfarer)
  */
 
 using System;
@@ -124,12 +123,12 @@ namespace Interpreter
             {
                 if (extensionResult.Status == IrtConst.Error)
                 {
-                    //handle
+                    //TODO handle
                 }
 
                 if (extensionResult.Status == IrtConst.ParameterMismatch)
                 {
-                    //handle
+                    //TODO handle
                 }
             }
 
@@ -145,19 +144,29 @@ namespace Interpreter
                 return;
             }
 
+            ProcessInput(inputString);
+        }
+
+        /// <summary>
+        ///     Processes the input string.
+        /// </summary>
+        /// <param name="inputString">Input string</param>
+        private void ProcessInput(string inputString)
+        {
             var key = Irt.CheckForKeyWord(inputString, IrtConst.InternCommands);
 
             (int Status, string Parameter) parameterPart;
+
             List<string> parameter;
 
+            //checks if it was an internal Command.
             if (key != IrtConst.ErrorParam)
             {
                 if (!ValidateParameters(inputString, key, IrtConst.InternCommands)) return;
 
                 parameterPart = ProcessParameters(inputString, key, IrtConst.InternCommands);
-                parameter = parameterPart.Status == 1
-                    ? Irt.SplitParameter(parameterPart.Parameter, IrtConst.Splitter)
-                    : new List<string> { parameterPart.Parameter };
+
+                parameter = (parameterPart.Status == 1) ? Irt.SplitParameter(parameterPart.Parameter, IrtConst.Splitter) : new List<string> { parameterPart.Parameter };
 
                 _irtInternal.HandleInternalCommands(key, parameter, _prompt);
                 return;
@@ -303,7 +312,7 @@ namespace Interpreter
         private void SetError(string error)
         {
             var com = new OutCommand
-                { Command = IrtConst.ErrorParam, Parameter = null, UsedNameSpace = _nameSpace, ErrorMessage = error };
+            { Command = IrtConst.ErrorParam, Parameter = null, UsedNameSpace = _nameSpace, ErrorMessage = error };
 
             OnCommand(com);
         }
