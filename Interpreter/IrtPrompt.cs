@@ -77,11 +77,14 @@ namespace Interpreter
         /// <param name="use">The Command Structure</param>
         internal void Initiate(UserSpace use)
         {
+            //set the basic parameter
             _com = use.Commands;
             _extension = use.ExtensionCommands;
             _nameSpace = use.UserSpaceName;
             _irtInternal = new IrtInternal(use.Commands, this, use.UserSpaceName);
+            //prepare our Extension handler
             _irtExtension = new IrtExtension();
+            //notify log about loading up
             var log = Logging.SetLastError(IrtConst.InformationStartup, 2);
             OnStatus(log);
         }
@@ -97,84 +100,98 @@ namespace Interpreter
             _nameSpace = use.UserSpaceName;
         }
 
-		/// <summary>
-		///     will do all the work
-		/// </summary>
-		/// <param name="inputString">Input string</param>
-		/// <returns>Results of our commands</returns>
-		internal void HandleInput(string inputString)
-		{
-			_inputString = inputString;
-
-			// Validate the input string
-			if (!CleanInputString(ref inputString))
-			{
-				SetError(Logging.SetLastError(IrtConst.ParenthesisError, 0));
-				return;
-			}
-
-			// Handle comment commands
-			if (IsCommentCommand(inputString))
-			{
-				Trace.WriteLine(inputString);
-				return;
-			}
-
-			// Handle help commands
-			if (IsHelpCommand(inputString))
-			{
-				OnStatus(IrtConst.HelpGeneric);
-				return;
-			}
-
-			// Check for extensions in the internal namespace first, then in the external namespace if needed
-			var extensionResult = _irtExtension.CheckForExtension(_inputString, IrtConst.InternalNameSpace, IrtConst.InternalExtensionCommands);
-
-			if (extensionResult.Status == IrtConst.Error)
-			{
-				extensionResult = _irtExtension.CheckForExtension(_inputString, _nameSpace, _extension);
-			}
-
-			// Process the extension result
-			switch (extensionResult.Status)
-			{
-				case IrtConst.Error:
-					SetError(Logging.SetLastError($"{IrtConst.ErrorExtensions}{IrtConst.Error}", 0));
-					return;
-
-				case IrtConst.ParameterMismatch:
-					SetError(Logging.SetLastError($"{IrtConst.ErrorExtensions}{IrtConst.ParameterMismatch}", 0));
-					return;
-
-				case IrtConst.ExtensionFound:
-					if (extensionResult.Extension.ExtensionNameSpace == IrtConst.InternalNameSpace)
-					{
-						ProcessInputInternal(inputString, extensionResult);
-					}
-					else
-					{
-						ProcessInput(inputString, extensionResult);
-					}
-					return;
-			}
-		}
-
-
-		private void ProcessInputInternal(string inputString, (ExtensionCommands Extension, int Status) extensionResult)
+        /// <summary>
+        ///     will do all the work
+        /// </summary>
+        /// <param name="inputString">Input string</param>
+        /// <returns>Results of our commands</returns>
+        internal void HandleInput(string inputString)
         {
-            throw new NotImplementedException();
+            _inputString = inputString;
+
+            // Validate the input string
+            if (!CleanInputString(ref inputString))
+            {
+                SetError(Logging.SetLastError(IrtConst.ParenthesisError, 0));
+                return;
+            }
+
+            // Handle comment commands
+            if (IsCommentCommand(inputString))
+            {
+                Trace.WriteLine(inputString);
+                return;
+            }
+
+            // Handle help commands
+            if (IsHelpCommand(inputString))
+            {
+                OnStatus(IrtConst.HelpGeneric);
+                return;
+            }
+
+            // Check for extensions in the internal namespace first, then in the external namespace if needed
+            var extensionResult = _irtExtension.CheckForExtension(_inputString, IrtConst.InternalNameSpace, IrtConst.InternalExtensionCommands);
+
+            if (extensionResult.Status == IrtConst.Error)
+            {
+                extensionResult = _irtExtension.CheckForExtension(_inputString, _nameSpace, _extension);
+            }
+
+            // Process the extension result
+            switch (extensionResult.Status)
+            {
+                case IrtConst.Error:
+                    SetError(Logging.SetLastError($"{IrtConst.ErrorExtensions}{IrtConst.Error}", 0));
+                    return;
+
+                case IrtConst.ParameterMismatch:
+                    SetError(Logging.SetLastError($"{IrtConst.ErrorExtensions}{IrtConst.ParameterMismatch}", 0));
+                    return;
+
+                case IrtConst.ExtensionFound:
+                    if (extensionResult.Extension.ExtensionNameSpace == IrtConst.InternalNameSpace)
+                    {
+                        ProcessExtensionInternal(extensionResult.Extension);
+                    }
+                    else
+                    {
+                        ProcessInput(inputString, extensionResult.Extension);
+                    }
+
+                    return;
+            }
+
+            ProcessInput(inputString);
         }
 
-        private void ProcessInput(string inputString, (ExtensionCommands Extension, int Status) extensionResult)
+
+        /// <summary>
+        /// Processes the internal extension.
+        /// </summary>
+        /// <param name="extension">The extension.</param>
+        private void ProcessExtensionInternal(ExtensionCommands extension)
         {
-            throw new NotImplementedException();
+            switch (extension.ExtensionCommand)
+            {
+                // switch internal Namespace
+                case 0:
+                    //first switch Namespace
+                    _prompt.SwitchNameSpaces(extension.ExtensionParameter[0]);
+                    //set input without Extension Method and execute cleaned command
+                    _prompt.StartConsole(extension.BaseCommand);
+                    break;
+                case 1:
+                    break;
+            }
         }
 
         /// <summary>
         ///     Processes the input string.
         /// </summary>
         /// <param name="inputString">Input string</param>
-        private void ProcessInput(string inputString)
+        /// <param name="extension">All Extensions</param>
+        private void ProcessInput(string inputString, ExtensionCommands extension = null)
         {
             var key = Irt.CheckForKeyWord(inputString, IrtConst.InternCommands);
 
@@ -226,7 +243,8 @@ namespace Interpreter
                 return;
             }
 
-            SetResult((int)check, parameter);
+            //add optional Extension data
+            SetResult((int)check, parameter, extension);
         }
 
         /// <summary>
@@ -236,13 +254,14 @@ namespace Interpreter
         /// <returns>Mostly cleaned Input string and all Uppercase.</returns>
         private static bool CleanInputString(ref string input)
         {
-            input = Irt.WellFormedParenthesis(input).ToUpper(CultureInfo.CurrentCulture)
-                .ToUpper(CultureInfo.InvariantCulture);
+            // Ensure the input string has well-formed parentheses and convert it to uppercase once.
+            input = Irt.WellFormedParenthesis(input).ToUpper(CultureInfo.InvariantCulture);
 
+            // Define the sets of open and close parentheses to check for.
             var openParenthesis = new[] { IrtConst.BaseOpen, IrtConst.AdvancedOpen };
             var closeParenthesis = new[] { IrtConst.BaseClose, IrtConst.AdvancedClose };
 
-            //check if all the Parenthesis are actual in place
+            // Verify that all types of parentheses are correctly paired and balanced in the input string.
             return Irt.CheckMultiple(input, openParenthesis, closeParenthesis);
         }
 
@@ -321,10 +340,11 @@ namespace Interpreter
         /// </summary>
         /// <param name="key">Id of command</param>
         /// <param name="parameter">List of Parameters</param>
+        /// <param name="extensionCommands"></param>
         /// <returns>Result of our Command</returns>
-        private void SetResult(int key, List<string> parameter)
+        private void SetResult(int key, List<string> parameter, ExtensionCommands extensionCommands)
         {
-            var com = new OutCommand { Command = key, Parameter = parameter, UsedNameSpace = _nameSpace };
+            var com = new OutCommand { Command = key, Parameter = parameter, UsedNameSpace = _nameSpace, ExtensionCommand = extensionCommands };
 
             OnCommand(com);
         }
@@ -335,7 +355,7 @@ namespace Interpreter
         private void SetError(string error)
         {
             var com = new OutCommand
-            { Command = IrtConst.ErrorParam, Parameter = null, UsedNameSpace = _nameSpace, ErrorMessage = error };
+                { Command = IrtConst.ErrorParam, Parameter = null, UsedNameSpace = _nameSpace, ErrorMessage = error };
 
             OnCommand(com);
         }

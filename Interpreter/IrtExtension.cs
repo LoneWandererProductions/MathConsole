@@ -44,13 +44,14 @@ namespace Interpreter
                 case > 2:
                     return (null, IrtConst.Error);
                 default:
-                    return ProcessExtension(result[1], nameSpace, extensionCommands, exCommand);
+                    return ProcessExtension(result[0],result[1], nameSpace, extensionCommands, exCommand);
             }
         }
 
         /// <summary>
         ///     Processes the extension.
         /// </summary>
+        /// <param name="baseCommand">The base command</param>
         /// <param name="extension">The extension.</param>
         /// <param name="nameSpace">The name space.</param>
         /// <param name="extensionCommands">The extension commands.</param>
@@ -58,7 +59,8 @@ namespace Interpreter
         /// <returns>
         ///     Status and Extension Commands
         /// </returns>
-        private static (ExtensionCommands Extension, int Status) ProcessExtension(string extension, string nameSpace,
+        private static (ExtensionCommands Extension, int Status) ProcessExtension(string baseCommand, string extension,
+            string nameSpace,
             Dictionary<int, InCommand> extensionCommands, ExtensionCommands exCommand)
         {
             var key = Irt.CheckForKeyWord(extension, extensionCommands);
@@ -78,6 +80,7 @@ namespace Interpreter
             exCommand.ExtensionNameSpace = nameSpace;
             exCommand.ExtensionCommand = key;
             exCommand.ExtensionParameter = commandParameters;
+            exCommand.BaseCommand = baseCommand;
 
             return (exCommand, IrtConst.ExtensionFound);
         }

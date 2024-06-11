@@ -3,7 +3,7 @@
  * PROJECT:     Interpreter
  * FILE:        Interpreter/IPrompt.cs
  * PURPOSE:     The Prompt Interface
- * PROGRAMER:   Peter Geinitz (Wayfarer)
+ * PROGRAMMER:  Peter Geinitz (Wayfarer)
  */
 
 // ReSharper disable UnusedMember.Global, not used yet
@@ -18,39 +18,43 @@ namespace Interpreter
     /// </summary>
     internal interface IPrompt
     {
-        /// <summary>Start the Sender and Interpreter</summary>
-        /// <param name="com">Command Register</param>
-        /// <param name="userSpace">UserSpace of the register</param>
-        /// <param name="extension">Optional Extension Methods</param>
-        void Initiate(Dictionary<int, InCommand> com, string userSpace, Dictionary<int, InCommand> extension = null);
-
-        /// <summary>Add further command Namespaces</summary>
-        /// <param name="com">Command Register</param>
-        /// <param name="userSpace">UserSpace of the register</param>
-        /// <param name="extension">Optional Extension Methods</param>
-        void AddCommands(Dictionary<int, InCommand> com, string userSpace, Dictionary<int, InCommand> extension = null);
+        /// <summary>
+        ///     Starts the Sender and Interpreter.
+        /// </summary>
+        /// <param name="commands">The command register.</param>
+        /// <param name="userSpace">The user space of the register.</param>
+        /// <param name="extension">Optional extension methods.</param>
+        void Initiate(Dictionary<int, InCommand> commands, string userSpace, Dictionary<int, InCommand> extension = null);
 
         /// <summary>
-        ///     Start the window. If we want to use the included window.
+        ///     Adds further command namespaces.
+        /// </summary>
+        /// <param name="commands">The command register.</param>
+        /// <param name="userSpace">The user space of the register.</param>
+        /// <param name="extension">Optional extension methods.</param>
+        void AddCommands(Dictionary<int, InCommand> commands, string userSpace, Dictionary<int, InCommand> extension = null);
+
+        /// <summary>
+        ///     Starts the window, if we want to use the included window.
         /// </summary>
         void StartWindow();
 
         /// <summary>
-        ///     The callbacks for Window, method messages to the window.
+        ///     Sends method messages to the window.
         /// </summary>
-        /// <param name="message">The messages.</param>
+        /// <param name="message">The message to send to the window.</param>
         void CallbacksWindow(string message);
 
         /// <summary>
-        ///     Callbacks the specified message.
+        ///     Sends a callback message.
         /// </summary>
-        /// <param name="message">The message.</param>
+        /// <param name="message">The message to send.</param>
         void Callback(string message);
 
         /// <summary>
-        ///     Start the console.
+        ///     Starts the console.
         /// </summary>
-        /// <param name="input">The input.</param>
+        /// <param name="input">The console input.</param>
         void StartConsole(string input);
     }
 }

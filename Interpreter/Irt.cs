@@ -220,9 +220,11 @@ namespace Interpreter
             foreach (var (key, inCommand) in com)
             {
                 if (string.Equals(input.ToUpper(), inCommand.Command.ToUpper(CultureInfo.InvariantCulture),
-                        StringComparison.Ordinal))
+                    StringComparison.Ordinal))
+                {
                     return
                         key;
+                }
             }
 
             return IrtConst.ErrorParam;
