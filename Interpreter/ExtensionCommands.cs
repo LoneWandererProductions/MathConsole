@@ -34,11 +34,11 @@ namespace Interpreter
         public List<string> ExtensionParameter { get; internal set; }
 
         /// <summary>
-        /// Gets or sets the base command.
-        /// Only visible within the Interpreter Namespace
+        ///     Gets or sets the base command.
+        ///     Only visible within the Interpreter Namespace
         /// </summary>
         /// <value>
-        /// The base command.
+        ///     The base command.
         /// </value>
         internal string BaseCommand { get; set; }
     }

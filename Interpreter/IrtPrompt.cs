@@ -131,12 +131,11 @@ namespace Interpreter
             }
 
             // Check for extensions in the internal namespace first, then in the external namespace if needed
-            var extensionResult = _irtExtension.CheckForExtension(_inputString, IrtConst.InternalNameSpace, IrtConst.InternalExtensionCommands);
+            var extensionResult = _irtExtension.CheckForExtension(_inputString, IrtConst.InternalNameSpace,
+                IrtConst.InternalExtensionCommands);
 
             if (extensionResult.Status == IrtConst.Error)
-            {
                 extensionResult = _irtExtension.CheckForExtension(_inputString, _nameSpace, _extension);
-            }
 
             // Process the extension result
             switch (extensionResult.Status)
@@ -151,13 +150,9 @@ namespace Interpreter
 
                 case IrtConst.ExtensionFound:
                     if (extensionResult.Extension.ExtensionNameSpace == IrtConst.InternalNameSpace)
-                    {
                         ProcessExtensionInternal(extensionResult.Extension);
-                    }
                     else
-                    {
                         ProcessInput(inputString, extensionResult.Extension);
-                    }
 
                     return;
             }
@@ -167,7 +162,7 @@ namespace Interpreter
 
 
         /// <summary>
-        /// Processes the internal extension.
+        ///     Processes the internal extension.
         /// </summary>
         /// <param name="extension">The extension.</param>
         private void ProcessExtensionInternal(ExtensionCommands extension)
@@ -206,7 +201,9 @@ namespace Interpreter
 
                 parameterPart = ProcessParameters(inputString, key, IrtConst.InternCommands);
 
-                parameter = (parameterPart.Status == 1) ? Irt.SplitParameter(parameterPart.Parameter, IrtConst.Splitter) : new List<string> { parameterPart.Parameter };
+                parameter = parameterPart.Status == 1
+                    ? Irt.SplitParameter(parameterPart.Parameter, IrtConst.Splitter)
+                    : new List<string> { parameterPart.Parameter };
 
                 _irtInternal.HandleInternalCommands(key, parameter, _prompt);
                 return;
@@ -344,7 +341,10 @@ namespace Interpreter
         /// <returns>Result of our Command</returns>
         private void SetResult(int key, List<string> parameter, ExtensionCommands extensionCommands)
         {
-            var com = new OutCommand { Command = key, Parameter = parameter, UsedNameSpace = _nameSpace, ExtensionCommand = extensionCommands };
+            var com = new OutCommand
+            {
+                Command = key, Parameter = parameter, UsedNameSpace = _nameSpace, ExtensionCommand = extensionCommands
+            };
 
             OnCommand(com);
         }

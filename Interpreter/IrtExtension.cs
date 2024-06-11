@@ -44,7 +44,7 @@ namespace Interpreter
                 case > 2:
                     return (null, IrtConst.Error);
                 default:
-                    return ProcessExtension(result[0],result[1], nameSpace, extensionCommands, exCommand);
+                    return ProcessExtension(result[0], result[1], nameSpace, extensionCommands, exCommand);
             }
         }
 

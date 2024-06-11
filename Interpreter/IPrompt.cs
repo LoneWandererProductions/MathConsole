@@ -24,7 +24,8 @@ namespace Interpreter
         /// <param name="commands">The command register.</param>
         /// <param name="userSpace">The user space of the register.</param>
         /// <param name="extension">Optional extension methods.</param>
-        void Initiate(Dictionary<int, InCommand> commands, string userSpace, Dictionary<int, InCommand> extension = null);
+        void Initiate(Dictionary<int, InCommand> commands, string userSpace,
+            Dictionary<int, InCommand> extension = null);
 
         /// <summary>
         ///     Adds further command namespaces.
@@ -32,7 +33,8 @@ namespace Interpreter
         /// <param name="commands">The command register.</param>
         /// <param name="userSpace">The user space of the register.</param>
         /// <param name="extension">Optional extension methods.</param>
-        void AddCommands(Dictionary<int, InCommand> commands, string userSpace, Dictionary<int, InCommand> extension = null);
+        void AddCommands(Dictionary<int, InCommand> commands, string userSpace,
+            Dictionary<int, InCommand> extension = null);
 
         /// <summary>
         ///     Starts the window, if we want to use the included window.
