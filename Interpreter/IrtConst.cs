@@ -126,10 +126,15 @@ namespace Interpreter
         /// </summary>
         internal const string ErrorFileNotFound = "Error please initiate the Prompt first.";
 
-        /// <summary>
-        ///     The parenthesis error (const). Value: "Wrong parenthesis".
-        /// </summary>
-        internal const string ParenthesisError = "Wrong parenthesis";
+		/// <summary>
+		///     The error for Extensions (const). Value: "Extension provided produced Errors: ".
+		/// </summary>
+		internal const string ErrorExtensions = "Extension provided produced Errors: ";
+
+		/// <summary>
+		///     The parenthesis error (const). Value: "Wrong parenthesis".
+		/// </summary>
+		internal const string ParenthesisError = "Wrong parenthesis";
 
         /// <summary>
         ///     The key word not found error (const). Value: "error KeyWord not Found: ".
