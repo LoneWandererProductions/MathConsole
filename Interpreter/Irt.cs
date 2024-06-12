@@ -135,10 +135,7 @@ namespace Interpreter
             }
 
             // Ensure the string starts with the openClause and ends with the closeClause
-            if (StartsAndEndsWith(input, openClause, closeClause))
-                return input.Substring(1, input.Length - 2).Trim();
-            else
-                return IrtConst.ParenthesisError;
+            return StartsAndEndsWith(input, openClause, closeClause) ? input.Substring(1, input.Length - 2).Trim() : IrtConst.ParenthesisError;
         }
 
         /// <summary>
@@ -180,9 +177,7 @@ namespace Interpreter
                 target = target.Remove(index, remove.Length);
             }
 
-            target = target.Trim();
-
-            return target;
+            return target.Trim();
         }
 
         /// <summary>

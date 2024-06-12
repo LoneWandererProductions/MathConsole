@@ -71,15 +71,17 @@ namespace Interpreter
             if (!ValidateParameters(extension, key, extensionCommands)) return (null, IrtConst.Error);
 
             var command = extensionCommands[key].Command;
-            var commandParameters = ExtractParameters(command, extension);
+            var (status, parameter) = ExtractParameters(command, extension);
+
+            if (status == IrtConst.Error) return (null, IrtConst.Error);
 
             //check for Parameter Overload
-            var check = Irt.CheckOverload(extensionCommands[key].Command, commandParameters.Count, extensionCommands);
+            var check = Irt.CheckOverload(extensionCommands[key].Command, parameter.Count, extensionCommands);
             if (check == null) return (null, IrtConst.ParameterMismatch);
 
             exCommand.ExtensionNameSpace = nameSpace;
             exCommand.ExtensionCommand = key;
-            exCommand.ExtensionParameter = commandParameters;
+            exCommand.ExtensionParameter = parameter;
             exCommand.BaseCommand = baseCommand;
 
             return (exCommand, IrtConst.ExtensionFound);
@@ -91,14 +93,18 @@ namespace Interpreter
         /// <param name="command">The command.</param>
         /// <param name="extension">The extension.</param>
         /// <returns>cleaned Parameter</returns>
-        private static List<string> ExtractParameters(string command, string extension)
+        private static (int Status, List<string> Parameter) ExtractParameters(string command, string extension)
         {
             //get Parameter of Extension
             var parameterPart = Irt.RemoveWord(command, extension);
             //remove Parenthesis
             parameterPart = Irt.RemoveParenthesis(parameterPart, IrtConst.BaseOpen, IrtConst.BaseClose);
+            if (parameterPart == IrtConst.ParenthesisError) return (IrtConst.Error, null);
+
             //split if multiple do exist
-            return Irt.SplitParameter(parameterPart, IrtConst.Splitter);
+            var lst = Irt.SplitParameter(parameterPart, IrtConst.Splitter);
+
+            return (IrtConst.ExtensionFound, lst);
         }
 
         /// <summary>
