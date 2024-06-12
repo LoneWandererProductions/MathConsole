@@ -93,7 +93,11 @@ namespace Interpreter
         /// <returns>cleaned Parameter</returns>
         private static List<string> ExtractParameters(string command, string extension)
         {
+            //get Parameter of Extension
             var parameterPart = Irt.RemoveWord(command, extension);
+            //remove Parenthesis
+            parameterPart = Irt.RemoveParenthesis(parameterPart, IrtConst.BaseOpen, IrtConst.BaseClose);
+            //split if multiple do exist
             return Irt.SplitParameter(parameterPart, IrtConst.Splitter);
         }
 

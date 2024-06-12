@@ -329,7 +329,7 @@ namespace Interpreter
 
             return parameterPart.StartsWith(IrtConst.AdvancedOpen)
                 ? (0, parameterPart)
-                : (1, Irt.RemoveParenthesis(parameterPart, IrtConst.BaseClose, IrtConst.BaseOpen));
+                : (1, Irt.RemoveParenthesis(parameterPart, IrtConst.BaseOpen, IrtConst.BaseClose));
         }
 
         /// <summary>

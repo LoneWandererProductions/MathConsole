@@ -13,7 +13,7 @@ using System.IO;
 using Interpreter;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace InterpreteTests
+namespace InterpretTests
 {
     /// <summary>
     ///     Interpreter unit test class.

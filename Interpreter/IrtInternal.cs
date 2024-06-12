@@ -125,7 +125,7 @@ namespace Interpreter
                 return;
             }
 
-            parameterPart = Irt.RemoveParenthesis(parameterPart, IrtConst.BaseClose, IrtConst.BaseOpen);
+            parameterPart = Irt.RemoveParenthesis(parameterPart, IrtConst.BaseOpen, IrtConst.BaseClose);
             var key = Irt.CheckForKeyWord(parameterPart, _commands);
 
             if (key == IrtConst.ErrorParam)
@@ -143,7 +143,7 @@ namespace Interpreter
         /// <param name="parameterPart">The parameter part.</param>
         private void CommandUse(string parameterPart)
         {
-            parameterPart = Irt.RemoveParenthesis(parameterPart, IrtConst.BaseClose, IrtConst.BaseOpen);
+            parameterPart = Irt.RemoveParenthesis(parameterPart, IrtConst.BaseOpen, IrtConst.BaseClose);
 
             if (!_prompt.CollectedSpaces.ContainsKey(parameterPart))
             {
@@ -219,7 +219,7 @@ namespace Interpreter
         /// <param name="parameterPart">The Parameter.</param>
         private void CommandBatchExecute(string parameterPart)
         {
-            parameterPart = Irt.RemoveParenthesis(parameterPart, IrtConst.BaseClose, IrtConst.BaseOpen);
+            parameterPart = Irt.RemoveParenthesis(parameterPart, IrtConst.BaseOpen, IrtConst.BaseClose);
             parameterPart = IrtHelper.ReadBatchFile(parameterPart);
 
             if (string.IsNullOrEmpty(parameterPart))

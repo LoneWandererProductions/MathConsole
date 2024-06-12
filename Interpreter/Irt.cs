@@ -126,7 +126,7 @@ namespace Interpreter
         /// <returns>
         ///     Cleaned String or Error Message
         /// </returns>
-        internal static string RemoveParenthesis(string input, char closeClause, char openClause)
+        internal static string RemoveParenthesis(string input, char openClause , char closeClause)
         {
             //no Parenthesis? okay we still try to handle it, might be a command with zero parameters
             if (!input.Contains(IrtConst.BaseOpen) && !input.Contains(closeClause))
@@ -136,12 +136,9 @@ namespace Interpreter
 
             // Ensure the string starts with the openClause and ends with the closeClause
             if (StartsAndEndsWith(input, openClause, closeClause))
-            {
-                // Remove the first and last characters
                 return input.Substring(1, input.Length - 2).Trim();
-            }
-
-            return IrtConst.ParenthesisError;
+            else
+                return IrtConst.ParenthesisError;
         }
 
         /// <summary>

@@ -1,6 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace InterpreteTests
+namespace InterpretTests
 {
     [TestClass]
     public class InterpretExtension

@@ -6,7 +6,9 @@
  * PROGRAMER:   Peter Geinitz (Wayfarer)
  */
 
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Interpreter;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -18,6 +20,16 @@ namespace InterpreteTests
     [TestClass]
     public sealed class InterpretInternal
     {
+        /// <summary>
+        /// The log
+        /// </summary>
+        private static string _log;
+
+        /// <summary>
+        /// The out command
+        /// </summary>
+        private static OutCommand _outCommand;
+
         /// <summary>
         ///     Singles the check should return true for balanced parentheses.
         /// </summary>
@@ -47,7 +59,7 @@ namespace InterpreteTests
         public void RemoveParenthesisShouldRemoveOuterParenthesesWhenWellFormed()
         {
             var input = "(abc)";
-            var result = Irt.RemoveParenthesis(input, ')', '(');
+            var result = Irt.RemoveParenthesis(input, '(', ')');
             Assert.AreEqual("abc", result);
         }
 
@@ -190,6 +202,72 @@ namespace InterpreteTests
             Assert.AreEqual(IrtConst.ExtensionFound, extensions.Status, "Not handled correctly");
 
             Assert.AreEqual("test( /...)", extensions.Extension.BaseCommand, "Not handled correctly");
+        }
+
+        /// <summary>
+        ///     Check our Interpreter
+        /// </summary>
+        [TestMethod]
+        public void ConsoleNameSpaceSwitch()
+        {
+            var dctCommandOne = new Dictionary<int, InCommand> ()
+            {
+                { 0, new InCommand { Command = "First", ParameterCount = 2, Description = "Help First" } },
+                { 1, new InCommand { Command = "Second", ParameterCount = 0, Description = "Second Command Namespace 1"  } },
+                {
+                    2,
+                    new InCommand { Command = "Third", ParameterCount = 0, Description = "Special case no Parameter" }
+                }
+            };
+
+            var  dctCommandTwo = new Dictionary<int, InCommand>()
+            {
+                { 1, new InCommand { Command = "Second", ParameterCount = 0, Description = "Second Command Namespace 2" } },
+                { 4, new InCommand { Command = "Test", ParameterCount = 0, Description = "Here we go" } }
+            };
+
+            var prompt = new Prompt();
+            prompt.SendLogs += SendLogs;
+            prompt.SendCommands += SendCommands;
+            prompt.Initiate(dctCommandOne, "UserSpace 1");
+            prompt.StartConsole("FirSt(1,2)");
+
+            Assert.AreEqual(0, _outCommand.Command, "Wrong Id: " + _outCommand.Command);
+
+            prompt.AddCommands(dctCommandTwo, "UserSpace 2");
+
+            Assert.AreEqual(2, prompt.CollectedSpaces.Count, "Wrong Number of Namespaces");
+
+            prompt.StartConsole("use (UserSpace 2)");
+            prompt.StartConsole("test");
+
+            Assert.AreEqual(4, _outCommand.Command, "Wrong Id: " + _outCommand.Command);
+
+            prompt.StartConsole("Second().use(UserSpace 1)");
+            Assert.AreEqual(1, _outCommand.Command, "Wrong Id: " + _outCommand.Command);
+            Assert.AreEqual("UserSpace 1", _outCommand.UsedNameSpace, "Wrong Userspace");
+        }
+
+        /// <summary>
+        ///     Listen to Messages
+        /// </summary>
+        /// <param name="sender">Object</param>
+        /// <param name="e">Type</param>
+        private static void SendLogs(object sender, string e)
+        {
+            Trace.WriteLine(e);
+            _log = e;
+        }
+
+        /// <summary>
+        ///     Listen to Commands
+        /// </summary>
+        /// <param name="sender">Object</param>
+        /// <param name="e">Type</param>
+        private static void SendCommands(object sender, OutCommand e)
+        {
+            if (e.Command == -1) _log = e.ErrorMessage;
+            _outCommand = e;
         }
     }
 }

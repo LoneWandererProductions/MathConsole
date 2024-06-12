@@ -12,6 +12,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using ExtendedSystemObjects;
 
@@ -177,6 +178,7 @@ namespace Interpreter
         /// <param name="space">The Namespace we would like to use.</param>
         internal void SwitchNameSpaces(string space)
         {
+            space = space.ToUpper(CultureInfo.InvariantCulture);
             var use = CollectedSpaces[space];
             IrtPrompt.SwitchUserSpace(use);
         }
