@@ -17,7 +17,7 @@ namespace Interpreter
     internal sealed class IrtExtension
     {
         /// <summary>
-        /// The regex, Find periods that are not inside {} or ()
+        ///     The regex, Find periods that are not inside {} or ()
         /// </summary>
         private static readonly Regex Regex = new(IrtConst.RegexParenthesisOutsidePattern);
 
@@ -80,10 +80,11 @@ namespace Interpreter
             if (!ValidateParameters(commandKey, parameters.Count, extensionCommands))
             {
                 // Check for parameter overload
-                var overloadCheck = Irt.CheckOverload(extensionCommands[commandKey].Command, parameters.Count, extensionCommands);
+                var overloadCheck = Irt.CheckOverload(extensionCommands[commandKey].Command, parameters.Count,
+                    extensionCommands);
                 if (overloadCheck == null) return (null, IrtConst.ParameterMismatch);
 
-                commandKey = (int) overloadCheck;
+                commandKey = (int)overloadCheck;
             }
 
             // Set the extension command details
@@ -125,7 +126,8 @@ namespace Interpreter
         /// <param name="parametersCount">Count of parameter</param>
         /// <param name="commands">The commands.</param>
         /// <returns>If Parameters are correct</returns>
-        private static bool ValidateParameters(int key, int parametersCount, IReadOnlyDictionary<int, InCommand> commands)
+        private static bool ValidateParameters(int key, int parametersCount,
+            IReadOnlyDictionary<int, InCommand> commands)
         {
             // Check if the command requires parameters or if the input has correctly formatted single parameter
             return commands[key].ParameterCount == parametersCount;

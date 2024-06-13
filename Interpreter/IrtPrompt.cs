@@ -23,11 +23,6 @@ namespace Interpreter
         private static Dictionary<int, InCommand> _com;
 
         /// <summary>
-        ///     Extension Command Register
-        /// </summary>
-        private static Dictionary<int, InCommand> _extension { get; set; }
-
-        /// <summary>
         ///     Namespace of Commands
         /// </summary>
         private static string _nameSpace;
@@ -60,6 +55,11 @@ namespace Interpreter
         {
             _prompt = prompt;
         }
+
+        /// <summary>
+        ///     Extension Command Register
+        /// </summary>
+        private static Dictionary<int, InCommand> _extension { get; set; }
 
         /// <summary>
         ///     Send selected Command to the Subscriber

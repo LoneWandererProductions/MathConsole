@@ -20,7 +20,7 @@ namespace InterpreteTests
     public sealed class InterpretInternal
     {
         /// <summary>
-        /// The out command object for capturing command outputs.
+        ///     The out command object for capturing command outputs.
         /// </summary>
         private static OutCommand _outCommand;
 
@@ -154,7 +154,8 @@ namespace InterpreteTests
             Assert.AreEqual(expected, result);
 
             // Act
-            var extensions = ext.CheckForExtension(result, IrtConst.InternalNameSpace, IrtConst.InternalExtensionCommands);
+            var extensions =
+                ext.CheckForExtension(result, IrtConst.InternalNameSpace, IrtConst.InternalExtensionCommands);
 
             // Assert
             Assert.AreEqual(IrtConst.Error, extensions.Status, "Not handled correctly");
@@ -210,16 +211,25 @@ namespace InterpreteTests
         [TestMethod]
         public void ConsoleNameSpaceSwitch()
         {
-            var dctCommandOne = new Dictionary<int, InCommand>()
+            var dctCommandOne = new Dictionary<int, InCommand>
             {
                 { 0, new InCommand { Command = "First", ParameterCount = 2, Description = "Help First" } },
-                { 1, new InCommand { Command = "Second", ParameterCount = 0, Description = "Second Command Namespace 1"  } },
-                { 2, new InCommand { Command = "Third", ParameterCount = 0, Description = "Special case no Parameter" } }
+                {
+                    1,
+                    new InCommand { Command = "Second", ParameterCount = 0, Description = "Second Command Namespace 1" }
+                },
+                {
+                    2,
+                    new InCommand { Command = "Third", ParameterCount = 0, Description = "Special case no Parameter" }
+                }
             };
 
-            var dctCommandTwo = new Dictionary<int, InCommand>()
+            var dctCommandTwo = new Dictionary<int, InCommand>
             {
-                { 1, new InCommand { Command = "Second", ParameterCount = 0, Description = "Second Command Namespace 2" } },
+                {
+                    1,
+                    new InCommand { Command = "Second", ParameterCount = 0, Description = "Second Command Namespace 2" }
+                },
                 { 4, new InCommand { Command = "Test", ParameterCount = 0, Description = "Here we go" } }
             };
 
@@ -244,7 +254,7 @@ namespace InterpreteTests
             Assert.AreEqual(1, _outCommand.Command, "Wrong Id: " + _outCommand.Command);
             Assert.AreEqual("UserSpace 1", _outCommand.UsedNameSpace, "Wrong Userspace");
 
-            var extension = new Dictionary<int, InCommand>()
+            var extension = new Dictionary<int, InCommand>
             {
                 { 1, new InCommand { Command = "Ext", ParameterCount = 0, Description = "Null" } },
                 { 4, new InCommand { Command = "Ext", ParameterCount = 1, Description = "Overload" } }

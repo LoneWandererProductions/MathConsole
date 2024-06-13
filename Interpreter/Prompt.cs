@@ -104,7 +104,7 @@ namespace Interpreter
         {
             ResetState();
 
-            var use = new UserSpace { UserSpaceName = userSpace, Commands = com, ExtensionCommands = extension};
+            var use = new UserSpace { UserSpaceName = userSpace, Commands = com, ExtensionCommands = extension };
 
             //Upper is needed because of the way we compare commands in the Interpreter
             CollectedSpaces.AddDistinct(userSpace.ToUpper(), use);
