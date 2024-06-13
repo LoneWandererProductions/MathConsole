@@ -246,6 +246,19 @@ namespace InterpreteTests
             prompt.StartConsole("Second().use(UserSpace 1)");
             Assert.AreEqual(1, _outCommand.Command, "Wrong Id: " + _outCommand.Command);
             Assert.AreEqual("UserSpace 1", _outCommand.UsedNameSpace, "Wrong Userspace");
+
+            var extension = new Dictionary<int, InCommand>()
+            {
+                { 1, new InCommand { Command = "Ext", ParameterCount = 0, Description = "Null" } },
+                { 4, new InCommand { Command = "Ext", ParameterCount = 1, Description = "Overload" } }
+            };
+
+            //reboot this time with user extension, check if we support overloads
+            prompt.Initiate(dctCommandOne, "UserSpace 1", extension);
+            prompt.StartConsole("First(1,2).ext()");
+            Assert.AreEqual(1, _outCommand.ExtensionCommand.ExtensionCommand, "Wrong Id: ");
+            prompt.StartConsole("First(1,2).ext(3)");
+            Assert.AreEqual(4, _outCommand.ExtensionCommand.ExtensionCommand, "Wrong Id: ");
         }
 
         /// <summary>

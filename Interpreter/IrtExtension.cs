@@ -17,6 +17,11 @@ namespace Interpreter
     internal sealed class IrtExtension
     {
         /// <summary>
+        /// The regex, Find periods that are not inside {} or ()
+        /// </summary>
+        private static readonly Regex Regex = new(IrtConst.RegexParenthesisOutsidePattern);
+
+        /// <summary>
         ///     Checks for extension.
         /// </summary>
         /// <param name="input">The input.</param>
@@ -30,11 +35,8 @@ namespace Interpreter
         {
             var exCommand = new ExtensionCommands();
 
-            // Find periods that are not inside {} or ()
-            var regex = new Regex(IrtConst.RegexParenthesisOutsidePattern);
-
             // Split the input based on the regex pattern
-            var result = regex.Split(input);
+            var result = Regex.Split(input);
 
             // Determine the split result and handle accordingly
             switch (result.Length)
@@ -60,32 +62,39 @@ namespace Interpreter
         ///     Status and Extension Commands
         /// </returns>
         private static (ExtensionCommands Extension, int Status) ProcessExtension(string baseCommand, string extension,
-            string nameSpace,
-            Dictionary<int, InCommand> extensionCommands, ExtensionCommands exCommand)
+            string nameSpace, Dictionary<int, InCommand> extensionCommands, ExtensionCommands exCommand)
         {
-            var key = Irt.CheckForKeyWord(extension, extensionCommands);
+            // Check if the extension command exists in the provided extensionCommands
+            var commandKey = Irt.CheckForKeyWord(extension, extensionCommands);
+            if (commandKey == IrtConst.ErrorParam) return (null, IrtConst.Error);
 
-            if (key == IrtConst.ErrorParam) return (null, IrtConst.Error);
-
-            // Validate parameter count and parentheses
-            if (!ValidateParameters(extension, key, extensionCommands)) return (null, IrtConst.Error);
-
-            var command = extensionCommands[key].Command;
-            var (status, parameter) = ExtractParameters(command, extension);
-
+            // Extract the command string and parameters
+            var command = extensionCommands[commandKey].Command;
+            var (status, parameters) = ExtractParameters(command, extension);
             if (status == IrtConst.Error) return (null, IrtConst.Error);
 
-            //check for Parameter Overload
-            var check = Irt.CheckOverload(extensionCommands[key].Command, parameter.Count, extensionCommands);
-            if (check == null) return (null, IrtConst.ParameterMismatch);
+            // Validate the Parenthesis logic
+            if (!ValidateParameters(extension)) return (null, IrtConst.ParenthesisMismatch);
 
+            // Validate the parameter count of the extension command
+            if (!ValidateParameters(commandKey, parameters.Count, extensionCommands))
+            {
+                // Check for parameter overload
+                var overloadCheck = Irt.CheckOverload(extensionCommands[commandKey].Command, parameters.Count, extensionCommands);
+                if (overloadCheck == null) return (null, IrtConst.ParameterMismatch);
+
+                commandKey = (int) overloadCheck;
+            }
+
+            // Set the extension command details
             exCommand.ExtensionNameSpace = nameSpace;
-            exCommand.ExtensionCommand = key;
-            exCommand.ExtensionParameter = parameter;
+            exCommand.ExtensionCommand = commandKey;
+            exCommand.ExtensionParameter = parameters;
             exCommand.BaseCommand = baseCommand;
 
             return (exCommand, IrtConst.ExtensionFound);
         }
+
 
         /// <summary>
         ///     Extracts the parameters.
@@ -95,28 +104,37 @@ namespace Interpreter
         /// <returns>cleaned Parameter</returns>
         private static (int Status, List<string> Parameter) ExtractParameters(string command, string extension)
         {
-            //get Parameter of Extension
+            // Remove the command part from the extension to get the parameter part
             var parameterPart = Irt.RemoveWord(command, extension);
-            //remove Parenthesis
+
+            // Remove parentheses from the parameter part
             parameterPart = Irt.RemoveParenthesis(parameterPart, IrtConst.BaseOpen, IrtConst.BaseClose);
             if (parameterPart == IrtConst.ParenthesisError) return (IrtConst.Error, null);
 
-            //split if multiple do exist
-            var lst = Irt.SplitParameter(parameterPart, IrtConst.Splitter);
+            // Split the parameter part into individual parameters if multiple exist
+            var parameterList = Irt.SplitParameter(parameterPart, IrtConst.Splitter);
 
-            return (IrtConst.ExtensionFound, lst);
+            return (IrtConst.ExtensionFound, parameterList);
         }
+
 
         /// <summary>
         ///     Validates the parameters.
         /// </summary>
-        /// <param name="input">The input.</param>
         /// <param name="key">The key.</param>
-        /// <param name="com">The COM.</param>
+        /// <param name="parametersCount">Count of parameter</param>
+        /// <param name="commands">The commands.</param>
         /// <returns>If Parameters are correct</returns>
-        private static bool ValidateParameters(string input, int key, IReadOnlyDictionary<int, InCommand> com)
+        private static bool ValidateParameters(int key, int parametersCount, IReadOnlyDictionary<int, InCommand> commands)
         {
-            return com[key].ParameterCount == 0 || Irt.SingleCheck(input);
+            // Check if the command requires parameters or if the input has correctly formatted single parameter
+            return commands[key].ParameterCount == parametersCount;
+        }
+
+        private static bool ValidateParameters(string input)
+        {
+            // Check if the command requires parameters or if the input has correctly formatted single parameter
+            return Irt.SingleCheck(input);
         }
     }
 }

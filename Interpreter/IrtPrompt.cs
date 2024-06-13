@@ -25,7 +25,7 @@ namespace Interpreter
         /// <summary>
         ///     Extension Command Register
         /// </summary>
-        private static Dictionary<int, InCommand> _extension;
+        private static Dictionary<int, InCommand> _extension { get; set; }
 
         /// <summary>
         ///     Namespace of Commands
