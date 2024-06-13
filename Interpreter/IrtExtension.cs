@@ -44,7 +44,7 @@ namespace Interpreter
                 case 1:
                     return (null, IrtConst.NoSplitOccurred);
                 case > 2:
-                    return (null, IrtConst.Error);
+                    return (null, IrtConst.Error); // Too many periods outside of parentheses
                 default:
                     return ProcessExtension(result[0], result[1], nameSpace, extensionCommands, exCommand);
             }

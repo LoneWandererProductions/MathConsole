@@ -2,11 +2,10 @@
  * COPYRIGHT:   See COPYING in the top level directory
  * PROJECT:     CommonLibraryTests
  * FILE:        CommonLibraryTests/InterpretInternal.cs
- * PURPOSE:     Tests for the internals of theInterpreter
- * PROGRAMER:   Peter Geinitz (Wayfarer)
+ * PURPOSE:     Tests for the internals of the Interpreter
+ * PROGRAMMER:  Peter Geinitz (Wayfarer)
  */
 
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Interpreter;
@@ -21,17 +20,12 @@ namespace InterpreteTests
     public sealed class InterpretInternal
     {
         /// <summary>
-        /// The log
-        /// </summary>
-        private static string _log;
-
-        /// <summary>
-        /// The out command
+        /// The out command object for capturing command outputs.
         /// </summary>
         private static OutCommand _outCommand;
 
         /// <summary>
-        ///     Singles the check should return true for balanced parentheses.
+        ///     Tests if SingleCheck correctly identifies balanced parentheses.
         /// </summary>
         [TestMethod]
         public void SingleCheckShouldReturnTrueForBalancedParentheses()
@@ -42,7 +36,7 @@ namespace InterpreteTests
         }
 
         /// <summary>
-        ///     Singles the check should return false for unbalanced parentheses.
+        ///     Tests if SingleCheck correctly identifies unbalanced parentheses.
         /// </summary>
         [TestMethod]
         public void SingleCheckShouldReturnFalseForUnbalancedParentheses()
@@ -53,7 +47,7 @@ namespace InterpreteTests
         }
 
         /// <summary>
-        ///     Removes the parenthesis should remove outer parentheses when well formed.
+        ///     Tests if RemoveParenthesis correctly removes outer parentheses when well-formed.
         /// </summary>
         [TestMethod]
         public void RemoveParenthesisShouldRemoveOuterParenthesesWhenWellFormed()
@@ -64,29 +58,29 @@ namespace InterpreteTests
         }
 
         /// <summary>
-        ///     Removes the parenthesis should return the input string, this is just an edge Case
+        ///     Tests if RemoveParenthesis returns the input string when no outer parentheses are present.
         /// </summary>
         [TestMethod]
         public void RemoveParenthesisShouldReturnInput()
         {
             var input = "abc";
-            var result = Irt.RemoveParenthesis(input, ')', '(');
+            var result = Irt.RemoveParenthesis(input, '(', ')');
             Assert.AreEqual("abc", result);
         }
 
         /// <summary>
-        ///     Removes the parenthesis should return error message when input has mismatched parentheses.
+        ///     Tests if RemoveParenthesis returns an error message when input has mismatched parentheses.
         /// </summary>
         [TestMethod]
         public void RemoveParenthesisShouldReturnErrorMessageWhenInputHasMismatchedParentheses()
         {
             var input = "(abc";
-            var result = Irt.RemoveParenthesis(input, ')', '(');
+            var result = Irt.RemoveParenthesis(input, '(', ')');
             Assert.AreEqual(IrtConst.ParenthesisError, result);
         }
 
         /// <summary>
-        ///     Checks the overload should return command identifier when overload matches.
+        ///     Tests if CheckOverload returns the correct command identifier when overload matches.
         /// </summary>
         [TestMethod]
         public void CheckOverloadShouldReturnCommandIdWhenOverloadMatches()
@@ -101,7 +95,7 @@ namespace InterpreteTests
         }
 
         /// <summary>
-        ///     Checks the overload should return error when overload does not match.
+        ///     Tests if CheckOverload returns null when overload does not match.
         /// </summary>
         [TestMethod]
         public void CheckOverloadShouldReturnErrorWhenOverloadDoesNotMatch()
@@ -112,11 +106,11 @@ namespace InterpreteTests
             };
 
             var result = Irt.CheckOverload("command", 3, commands);
-            Assert.AreEqual(null, result);
+            Assert.IsNull(result);
         }
 
         /// <summary>
-        ///     Wells the formed parenthesis removes well formed parenthesis.
+        ///     Tests if WellFormedParenthesis correctly removes well-formed parentheses.
         /// </summary>
         [TestMethod]
         public void WellFormedParenthesisRemovesWellFormedParenthesis()
@@ -142,9 +136,8 @@ namespace InterpreteTests
             Assert.AreEqual(expected, result);
         }
 
-
         /// <summary>
-        ///     Wells the formed parenthesis removes well formed parenthesis.
+        ///     Tests internal extension functionality.
         /// </summary>
         [TestMethod]
         public void InternalExtensionTest()
@@ -153,6 +146,7 @@ namespace InterpreteTests
             var input = "   test().    Commmand() ";
             var expected = "test().    Commmand()";
             var ext = new IrtExtension();
+
             // Act
             var result = Irt.WellFormedParenthesis(input);
 
@@ -160,67 +154,70 @@ namespace InterpreteTests
             Assert.AreEqual(expected, result);
 
             // Act
-            var extensions =
-                ext.CheckForExtension(result, IrtConst.InternalNameSpace, IrtConst.InternalExtensionCommands);
+            var extensions = ext.CheckForExtension(result, IrtConst.InternalNameSpace, IrtConst.InternalExtensionCommands);
+
             // Assert
             Assert.AreEqual(IrtConst.Error, extensions.Status, "Not handled correctly");
 
             // Arrange
             input = "   test().    use(     ) ";
+
             // Act
             result = Irt.WellFormedParenthesis(input);
             extensions = ext.CheckForExtension(result, IrtConst.InternalNameSpace, IrtConst.InternalExtensionCommands);
 
+            // Assert
             Assert.AreEqual(IrtConst.ParameterMismatch, extensions.Status, "Not handled correctly");
 
             // Arrange
             input = "   test().use(test) ";
+
             // Act
             result = Irt.WellFormedParenthesis(input);
             extensions = ext.CheckForExtension(result, IrtConst.InternalNameSpace, IrtConst.InternalExtensionCommands);
 
+            // Assert
             Assert.AreEqual(IrtConst.ExtensionFound, extensions.Status, "Not handled correctly");
 
-            //test more exotic displays of extension
+            // Test more exotic displays of extension
 
             // Arrange
             input = "   test(.).use(test) ";
+
             // Act
             result = Irt.WellFormedParenthesis(input);
             extensions = ext.CheckForExtension(result, IrtConst.InternalNameSpace, IrtConst.InternalExtensionCommands);
 
+            // Assert
             Assert.AreEqual(IrtConst.ExtensionFound, extensions.Status, "Not handled correctly");
-
             Assert.AreEqual("test(.)", extensions.Extension.BaseCommand, "Not handled correctly");
 
             // Arrange
             input = "   test( /...) . use(test)  ";
+
             // Act
             result = Irt.WellFormedParenthesis(input);
             extensions = ext.CheckForExtension(result, IrtConst.InternalNameSpace, IrtConst.InternalExtensionCommands);
 
+            // Assert
             Assert.AreEqual(IrtConst.ExtensionFound, extensions.Status, "Not handled correctly");
-
             Assert.AreEqual("test( /...)", extensions.Extension.BaseCommand, "Not handled correctly");
         }
 
         /// <summary>
-        ///     Check our Interpreter
+        ///     Tests the namespace switching functionality of the interpreter.
         /// </summary>
         [TestMethod]
         public void ConsoleNameSpaceSwitch()
         {
-            var dctCommandOne = new Dictionary<int, InCommand> ()
+            var dctCommandOne = new Dictionary<int, InCommand>()
             {
                 { 0, new InCommand { Command = "First", ParameterCount = 2, Description = "Help First" } },
                 { 1, new InCommand { Command = "Second", ParameterCount = 0, Description = "Second Command Namespace 1"  } },
-                {
-                    2,
-                    new InCommand { Command = "Third", ParameterCount = 0, Description = "Special case no Parameter" }
-                }
+                { 2, new InCommand { Command = "Third", ParameterCount = 0, Description = "Special case no Parameter" } }
             };
 
-            var  dctCommandTwo = new Dictionary<int, InCommand>()
+            var dctCommandTwo = new Dictionary<int, InCommand>()
             {
                 { 1, new InCommand { Command = "Second", ParameterCount = 0, Description = "Second Command Namespace 2" } },
                 { 4, new InCommand { Command = "Test", ParameterCount = 0, Description = "Here we go" } }
@@ -253,7 +250,7 @@ namespace InterpreteTests
                 { 4, new InCommand { Command = "Ext", ParameterCount = 1, Description = "Overload" } }
             };
 
-            //reboot this time with user extension, check if we support overloads
+            // Reboot this time with user extension, check if we support overloads
             prompt.Initiate(dctCommandOne, "UserSpace 1", extension);
             prompt.StartConsole("First(1,2).ext()");
             Assert.AreEqual(1, _outCommand.ExtensionCommand.ExtensionCommand, "Wrong Id: ");
@@ -262,24 +259,26 @@ namespace InterpreteTests
         }
 
         /// <summary>
-        ///     Listen to Messages
+        ///     Logs the messages.
         /// </summary>
-        /// <param name="sender">Object</param>
-        /// <param name="e">Type</param>
+        /// <param name="sender">Sender object</param>
+        /// <param name="e">Message string</param>
         private static void SendLogs(object sender, string e)
         {
             Trace.WriteLine(e);
-            _log = e;
         }
 
         /// <summary>
-        ///     Listen to Commands
+        ///     Captures the commands.
         /// </summary>
-        /// <param name="sender">Object</param>
-        /// <param name="e">Type</param>
+        /// <param name="sender">Sender object</param>
+        /// <param name="e">OutCommand object</param>
         private static void SendCommands(object sender, OutCommand e)
         {
-            if (e.Command == -1) _log = e.ErrorMessage;
+            if (e.Command == -1)
+            {
+            }
+
             _outCommand = e;
         }
     }
