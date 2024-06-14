@@ -246,7 +246,7 @@ namespace Interpreter
                 }
             }
 
-            return IrtConst.ErrorParam;
+            return IrtConst.Error;
         }
 
         /// <summary>

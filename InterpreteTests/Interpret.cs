@@ -167,7 +167,7 @@ namespace InterpretTests
 
             _prompt.StartConsole(string.Empty);
 
-            Assert.IsTrue(_log.Contains("error KeyWord not Found: "), "Syntax Error: " + _log);
+            Assert.IsTrue(_log.Contains("Input was null or empty"), "Syntax Error: " + _log);
             Assert.AreEqual(-1, _outCommand.Command, "Wrong Id: " + _outCommand.Command);
 
             _prompt.StartConsole("FirSt(1,2");

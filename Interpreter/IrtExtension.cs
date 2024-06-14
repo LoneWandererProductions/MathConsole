@@ -66,7 +66,7 @@ namespace Interpreter
         {
             // Check if the extension command exists in the provided extensionCommands
             var commandKey = Irt.CheckForKeyWord(extension, extensionCommands);
-            if (commandKey == IrtConst.ErrorParam) return (null, IrtConst.Error);
+            if (commandKey == IrtConst.Error) return (null, IrtConst.Error);
 
             // Extract the command string and parameters
             var command = extensionCommands[commandKey].Command;

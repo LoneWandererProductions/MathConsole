@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 
 namespace Interpreter
 {
@@ -129,7 +128,7 @@ namespace Interpreter
             parameterPart = Irt.RemoveParenthesis(parameterPart, IrtConst.BaseOpen, IrtConst.BaseClose);
             var key = Irt.CheckForKeyWord(parameterPart, _commands);
 
-            if (key == IrtConst.ErrorParam)
+            if (key == IrtConst.Error)
             {
                 SetError(Logging.SetLastError($"{IrtConst.KeyWordNotFoundError}{parameterPart}", 0));
                 return;
@@ -253,7 +252,7 @@ namespace Interpreter
         private void SetError(string error)
         {
             var com = new OutCommand
-                { Command = IrtConst.ErrorParam, Parameter = null, UsedNameSpace = _nameSpace, ErrorMessage = error };
+                { Command = IrtConst.Error, Parameter = null, UsedNameSpace = _nameSpace, ErrorMessage = error };
 
             OnCommand(com);
         }

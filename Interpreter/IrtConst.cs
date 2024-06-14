@@ -131,10 +131,15 @@ namespace Interpreter
         /// </summary>
         internal const string ErrorExtensions = "Extension provided produced Errors: ";
 
-        /// <summary>
-        ///     The parenthesis error (const). Value: "Wrong parenthesis".
-        /// </summary>
-        internal const string ParenthesisError = "Wrong parenthesis";
+		/// <summary>
+		///     The error for Invalid Input (const). Value: "Input was null or empty.".
+		/// </summary>
+		internal const string ErrorInvalidInput = "Input was null or empty.";
+
+		/// <summary>
+		///     The parenthesis error (const). Value: "Wrong parenthesis".
+		/// </summary>
+		internal const string ParenthesisError = "Wrong parenthesis";
 
         /// <summary>
         ///     The key word not found error (const). Value: "error KeyWord not Found: ".
@@ -207,11 +212,6 @@ namespace Interpreter
         internal const string FormatCount = " Parameter Count: ";
 
         /// <summary>
-        ///     The error Parameter (const). Value: -1.
-        /// </summary>
-        internal const int ErrorParam = -1;
-
-        /// <summary>
         ///     The open Clause, Standard is'('
         /// </summary>
         internal const char BaseOpen = '(';
@@ -246,15 +246,15 @@ namespace Interpreter
         /// </summary>
         internal const string CommentCommand = "--";
 
-        /// <summary>
-        ///     The no split occurred. (const). Value: "2".
-        /// </summary>
-        internal const int NoSplitOccurred = 0;
+		/// <summary>
+		///     The error. (const). Value: "-1".
+		/// </summary>
+		internal const int Error = -1;
 
-        /// <summary>
-        ///     The error. (const). Value: "-1".
-        /// </summary>
-        internal const int Error = -1;
+		/// <summary>
+		///     The no split occurred. (const). Value: "2".
+		/// </summary>
+		internal const int NoSplitOccurred = 0;
 
         /// <summary>
         ///     The extension has a Parameter mismatch. (const). Value: "1".
@@ -267,17 +267,17 @@ namespace Interpreter
         internal const int ParenthesisMismatch = 2;
 
         /// <summary>
-        ///     The Internal extension found. (const). Value: "3.
+        ///     The Internal extension found. (const). Value: "3".
         /// </summary>
         internal const int ExtensionFound = 3;
 
 		/// <summary>
-		///     If Command  is Batch expression. (const). Value: "0.
+		///     If Command  is Batch expression. (const). Value: "0".
 		/// </summary>
 		internal const int BatchCommand = 0;
 
 		/// <summary>
-		///     If Cmmand has Parameter. (const). Value: "1.
+		///     If Command has Parameter. (const). Value: "1".
 		/// </summary>
 		internal const int ParameterCommand = 1;
 

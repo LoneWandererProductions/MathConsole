@@ -190,7 +190,7 @@ namespace Interpreter
         /// <param name="e">Type</param>
         private void SendCommand(object sender, OutCommand e)
         {
-            AddToLog(e.Command == IrtConst.ErrorParam ? e.ErrorMessage : e.Command.ToString());
+            AddToLog(e.Command == IrtConst.Error ? e.ErrorMessage : e.Command.ToString());
 
             SendCommands?.Invoke(nameof(Prompt), e);
         }
