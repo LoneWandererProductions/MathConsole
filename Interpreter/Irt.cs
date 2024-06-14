@@ -36,7 +36,7 @@ namespace Interpreter
         }
 
         /// <summary>
-        /// Validates the parameters. Parenthesis.
+        ///     Validates the parameters. Parenthesis.
         /// </summary>
         /// <param name="input">The input.</param>
         /// <returns>if the input has correctly formatted parenthesis</returns>

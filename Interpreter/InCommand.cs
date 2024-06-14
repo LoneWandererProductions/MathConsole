@@ -18,10 +18,10 @@ namespace Interpreter
     public sealed class InCommand
     {
         /// <summary>
-        /// Sets the optional feedback identifier to User Feedback.
+        ///     Sets the optional feedback identifier to User Feedback.
         /// </summary>
         /// <value>
-        /// The feedback identifier.
+        ///     The feedback identifier.
         /// </value>
         public int FeedbackId { internal get; init; }
 

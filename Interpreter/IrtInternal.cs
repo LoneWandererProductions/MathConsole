@@ -49,13 +49,13 @@ namespace Interpreter
             _nameSpace = nameSpace;
         }
 
-		/// <summary>
-		///     Handles the internal commands.
-		/// </summary>
-		/// <param name="command">The command.</param>
-		/// <param name="parameter">The parameter.</param>
-		/// <param name="prompt">The prompt.</param>
-		internal void HandleInternalCommands(int command, List<string> parameter, Prompt prompt)
+        /// <summary>
+        ///     Handles the internal commands.
+        /// </summary>
+        /// <param name="command">The command.</param>
+        /// <param name="parameter">The parameter.</param>
+        /// <param name="prompt">The prompt.</param>
+        internal void HandleInternalCommands(int command, List<string> parameter, Prompt prompt)
         {
             _prompt = prompt;
 

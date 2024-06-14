@@ -324,7 +324,10 @@ namespace Interpreter
             var command = commands[key].Command.ToUpper(CultureInfo.InvariantCulture);
             var parameterPart = Irt.RemoveWord(command, input);
 
-            return parameterPart.StartsWith(IrtConst.AdvancedOpen) ? (IrtConst.BatchCommand, parameterPart) : (IrtConst.ParameterCommand, Irt.RemoveParenthesis(parameterPart, IrtConst.BaseOpen, IrtConst.BaseClose));
+            return parameterPart.StartsWith(IrtConst.AdvancedOpen)
+                ? (IrtConst.BatchCommand, parameterPart)
+                : (IrtConst.ParameterCommand,
+                    Irt.RemoveParenthesis(parameterPart, IrtConst.BaseOpen, IrtConst.BaseClose));
         }
 
         /// <summary>

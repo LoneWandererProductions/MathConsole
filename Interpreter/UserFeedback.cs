@@ -5,10 +5,10 @@ namespace Interpreter
     public class UserFeedback
     {
         /// <summary>
-        /// Gets or sets the identifier. -1 if it is unused.
+        ///     Gets or sets the identifier. -1 if it is unused.
         /// </summary>
         /// <value>
-        /// The identifier.
+        ///     The identifier.
         /// </value>
         public int Id { get; set; }
 
