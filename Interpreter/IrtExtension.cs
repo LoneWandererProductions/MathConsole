@@ -96,7 +96,6 @@ namespace Interpreter
             return (exCommand, IrtConst.ExtensionFound);
         }
 
-
         /// <summary>
         ///     Extracts the parameters.
         /// </summary>

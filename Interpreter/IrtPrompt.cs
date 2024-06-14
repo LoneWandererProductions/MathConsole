@@ -109,14 +109,14 @@ namespace Interpreter
         {
             _inputString = inputString;
 
-			if (string.IsNullOrWhiteSpace(inputString))
-			{
-				SetError(IrtConst.ErrorInvalidInput);
-				return;
-			}
+            if (string.IsNullOrWhiteSpace(inputString))
+            {
+                SetError(IrtConst.ErrorInvalidInput);
+                return;
+            }
 
-			// Validate the input string
-			if (!CleanInputString(ref inputString))
+            // Validate the input string
+            if (!CleanInputString(ref inputString))
             {
                 SetError(Logging.SetLastError(IrtConst.ParenthesisError, 0));
                 return;
@@ -136,15 +136,15 @@ namespace Interpreter
                 return;
             }
 
-			//first Check if the Parenthesis are right?
-			if (!Irt.ValidateParameters(inputString))
-			{
-				SetErrorWithLog(IrtConst.ParenthesisError);
-				return;
-			}
+            //first Check if the Parenthesis are right?
+            if (!Irt.ValidateParameters(inputString))
+            {
+                SetErrorWithLog(IrtConst.ParenthesisError);
+                return;
+            }
 
-			// Check for extensions in the internal namespace first, then in the external namespace if needed
-			var extensionResult = _irtExtension.CheckForExtension(_inputString, IrtConst.InternalNameSpace,
+            // Check for extensions in the internal namespace first, then in the external namespace if needed
+            var extensionResult = _irtExtension.CheckForExtension(_inputString, IrtConst.InternalNameSpace,
                 IrtConst.InternalExtensionCommands);
 
             if (extensionResult.Status == IrtConst.Error)
@@ -194,73 +194,74 @@ namespace Interpreter
             }
         }
 
-		/// <summary>
-		///     Processes the input string.
-		/// </summary>
-		/// <param name="inputString">Input string</param>
-		/// <param name="extension">All Extensions</param>
-		private void ProcessInput(string inputString, ExtensionCommands extension = null)
-		{
-			var key = Irt.CheckForKeyWord(inputString, IrtConst.InternCommands);
+        /// <summary>
+        ///     Processes the input string.
+        /// </summary>
+        /// <param name="inputString">Input string</param>
+        /// <param name="extension">All Extensions</param>
+        private void ProcessInput(string inputString, ExtensionCommands extension = null)
+        {
+            var key = Irt.CheckForKeyWord(inputString, IrtConst.InternCommands);
 
-			//Todo bring closer to IrtExtension
+            (int Status, string Parameter) parameterPart;
 
-			(int Status, string Parameter) parameterPart;
+            List<string> parameter;
 
-			List<string> parameter;
+            //checks if it was an internal Command.
+            if (key != IrtConst.Error)
+            {
+                parameterPart = ProcessParameters(inputString, key, IrtConst.InternCommands);
 
-			//checks if it was an internal Command.
-			if (key != IrtConst.Error)
-			{
-				parameterPart = ProcessParameters(inputString, key, IrtConst.InternCommands);
+                //handle normal command and batch/containers
+                parameter = parameterPart.Status == IrtConst.ParameterCommand
+                    ? Irt.SplitParameter(parameterPart.Parameter, IrtConst.Splitter)
+                    : new List<string> { parameterPart.Parameter };
 
-				parameter = parameterPart.Status == IrtConst.ParameterCommand
-					? Irt.SplitParameter(parameterPart.Parameter, IrtConst.Splitter)
-					: new List<string> { parameterPart.Parameter };
+                _irtInternal.HandleInternalCommands(key, parameter, _prompt);
+                return;
+            }
 
-				_irtInternal.HandleInternalCommands(key, parameter, _prompt);
-				return;
-			}
+            if (_com == null)
+            {
+                SetError(IrtConst.ErrorNoCommandsProvided);
+                return;
+            }
 
-			if (_com == null)
-			{
-				SetError(IrtConst.ErrorNoCommandsProvided);
-				return;
-			}
+            key = Irt.CheckForKeyWord(inputString, _com);
 
-			key = Irt.CheckForKeyWord(inputString, _com);
+            if (key == IrtConst.Error)
+            {
+                SetErrorWithLog(IrtConst.KeyWordNotFoundError, _inputString);
+                return;
+            }
 
-			if (key == IrtConst.Error)
-			{
-				SetErrorWithLog(IrtConst.KeyWordNotFoundError, _inputString);
-				return;
-			}
+            //do our normal Checks for User Commands
+            parameterPart = ProcessParameters(inputString, key, _com);
 
-			parameterPart = ProcessParameters(inputString, key, _com);
+            //actual not possible yet, this must be implemented from user side and I have not build support for it yet
+            parameter = parameterPart.Status == IrtConst.ParameterCommand
+                ? Irt.SplitParameter(parameterPart.Parameter, IrtConst.Splitter)
+                : new List<string> { parameterPart.Parameter };
 
-			parameter = parameterPart.Status == 1
-				? Irt.SplitParameter(parameterPart.Parameter, IrtConst.Splitter)
-				: new List<string> { parameterPart.Parameter };
+            //check for Parameter Overload
+            var check = Irt.CheckOverload(_com[key].Command, parameter.Count, _com);
 
-			//check for Parameter Overload
-			var check = Irt.CheckOverload(_com[key].Command, parameter.Count, _com);
+            if (check == null)
+            {
+                SetErrorWithLog(IrtConst.SyntaxError);
+                return;
+            }
 
-			if (check == null)
-			{
-				SetErrorWithLog(IrtConst.SyntaxError);
-				return;
-			}
+            //add optional Extension data
+            SetResult((int)check, parameter, extension);
+        }
 
-			//add optional Extension data
-			SetResult((int)check, parameter, extension);
-		}
-
-		/// <summary>
-		///     Cleans the input string.
-		/// </summary>
-		/// <param name="input">The input.</param>
-		/// <returns>Mostly cleaned Input string and all Uppercase.</returns>
-		private static bool CleanInputString(ref string input)
+        /// <summary>
+        ///     Cleans the input string.
+        /// </summary>
+        /// <param name="input">The input.</param>
+        /// <returns>Mostly cleaned Input string and all Uppercase.</returns>
+        private static bool CleanInputString(ref string input)
         {
             // Ensure the input string has well-formed parentheses and convert it to uppercase once.
             input = Irt.WellFormedParenthesis(input).ToUpper(CultureInfo.InvariantCulture);
@@ -323,15 +324,8 @@ namespace Interpreter
             var command = commands[key].Command.ToUpper(CultureInfo.InvariantCulture);
             var parameterPart = Irt.RemoveWord(command, input);
 
-			if (parameterPart.StartsWith(IrtConst.AdvancedOpen))
-			{
-				return (IrtConst.BatchCommand, parameterPart);
-			}
-			else
-			{
-				return (IrtConst.ParameterCommand, Irt.RemoveParenthesis(parameterPart, IrtConst.BaseOpen, IrtConst.BaseClose));
-			}
-		}
+            return parameterPart.StartsWith(IrtConst.AdvancedOpen) ? (IrtConst.BatchCommand, parameterPart) : (IrtConst.ParameterCommand, Irt.RemoveParenthesis(parameterPart, IrtConst.BaseOpen, IrtConst.BaseClose));
+        }
 
         /// <summary>
         ///     Decide the appropriate Action by command
