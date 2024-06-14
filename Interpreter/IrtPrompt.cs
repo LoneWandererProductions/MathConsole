@@ -130,8 +130,15 @@ namespace Interpreter
                 return;
             }
 
-            // Check for extensions in the internal namespace first, then in the external namespace if needed
-            var extensionResult = _irtExtension.CheckForExtension(_inputString, IrtConst.InternalNameSpace,
+			//first Check if the Parenthesis are right?
+			if (!Irt.ValidateParameters(inputString))
+			{
+				SetErrorWithLog(IrtConst.ParenthesisError);
+				return;
+			}
+
+			// Check for extensions in the internal namespace first, then in the external namespace if needed
+			var extensionResult = _irtExtension.CheckForExtension(_inputString, IrtConst.InternalNameSpace,
                 IrtConst.InternalExtensionCommands);
 
             if (extensionResult.Status == IrtConst.Error)
@@ -190,18 +197,18 @@ namespace Interpreter
         {
             var key = Irt.CheckForKeyWord(inputString, IrtConst.InternCommands);
 
+            //Todo bring closer to IrtExtension
+
             (int Status, string Parameter) parameterPart;
 
             List<string> parameter;
 
             //checks if it was an internal Command.
             if (key != IrtConst.ErrorParam)
-            {
-                if (!ValidateParameters(inputString, key, IrtConst.InternCommands)) return;
-
+			{
                 parameterPart = ProcessParameters(inputString, key, IrtConst.InternCommands);
 
-                parameter = parameterPart.Status == 1
+                parameter = parameterPart.Status == IrtConst.ParameterCommand
                     ? Irt.SplitParameter(parameterPart.Parameter, IrtConst.Splitter)
                     : new List<string> { parameterPart.Parameter };
 
@@ -222,8 +229,6 @@ namespace Interpreter
                 SetErrorWithLog(IrtConst.KeyWordNotFoundError, _inputString);
                 return;
             }
-
-            if (!ValidateParameters(inputString, key, _com)) return;
 
             parameterPart = ProcessParameters(inputString, key, _com);
 
@@ -300,21 +305,6 @@ namespace Interpreter
         }
 
         /// <summary>
-        ///     Validates the parameters.
-        /// </summary>
-        /// <param name="input">The input.</param>
-        /// <param name="key">The key.</param>
-        /// <param name="commands">The current Commands</param>
-        /// <returns>Check if Parameter is valid</returns>
-        private bool ValidateParameters(string input, int key, IReadOnlyDictionary<int, InCommand> commands)
-        {
-            if (commands[key].ParameterCount == 0 || Irt.SingleCheck(input)) return true;
-
-            SetErrorWithLog(IrtConst.ParenthesisError);
-            return false;
-        }
-
-        /// <summary>
         ///     Processes the parameters.
         /// </summary>
         /// <param name="input">The input.</param>
@@ -327,10 +317,15 @@ namespace Interpreter
             var command = commands[key].Command.ToUpper(CultureInfo.InvariantCulture);
             var parameterPart = Irt.RemoveWord(command, input);
 
-            return parameterPart.StartsWith(IrtConst.AdvancedOpen)
-                ? (0, parameterPart)
-                : (1, Irt.RemoveParenthesis(parameterPart, IrtConst.BaseOpen, IrtConst.BaseClose));
-        }
+			if (parameterPart.StartsWith(IrtConst.AdvancedOpen))
+			{
+				return (IrtConst.BatchCommand, parameterPart);
+			}
+			else
+			{
+				return (IrtConst.ParameterCommand, Irt.RemoveParenthesis(parameterPart, IrtConst.BaseOpen, IrtConst.BaseClose));
+			}
+		}
 
         /// <summary>
         ///     Decide the appropriate Action by command

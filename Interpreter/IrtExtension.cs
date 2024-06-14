@@ -74,10 +74,10 @@ namespace Interpreter
             if (status == IrtConst.Error) return (null, IrtConst.Error);
 
             // Validate the Parenthesis logic
-            if (!ValidateParameters(extension)) return (null, IrtConst.ParenthesisMismatch);
+            if (!Irt.ValidateParameters(extension)) return (null, IrtConst.ParenthesisMismatch);
 
             // Validate the parameter count of the extension command
-            if (!ValidateParameters(commandKey, parameters.Count, extensionCommands))
+            if (!Irt.ValidateParameters(commandKey, parameters.Count, extensionCommands))
             {
                 // Check for parameter overload
                 var overloadCheck = Irt.CheckOverload(extensionCommands[commandKey].Command, parameters.Count,
@@ -116,27 +116,6 @@ namespace Interpreter
             var parameterList = Irt.SplitParameter(parameterPart, IrtConst.Splitter);
 
             return (IrtConst.ExtensionFound, parameterList);
-        }
-
-
-        /// <summary>
-        ///     Validates the parameters.
-        /// </summary>
-        /// <param name="key">The key.</param>
-        /// <param name="parametersCount">Count of parameter</param>
-        /// <param name="commands">The commands.</param>
-        /// <returns>If Parameters are correct</returns>
-        private static bool ValidateParameters(int key, int parametersCount,
-            IReadOnlyDictionary<int, InCommand> commands)
-        {
-            // Check if the command requires parameters or if the input has correctly formatted single parameter
-            return commands[key].ParameterCount == parametersCount;
-        }
-
-        private static bool ValidateParameters(string input)
-        {
-            // Check if the command requires parameters or if the input has correctly formatted single parameter
-            return Irt.SingleCheck(input);
         }
     }
 }

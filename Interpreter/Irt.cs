@@ -21,18 +21,43 @@ namespace Interpreter
     /// </summary>
     internal static class Irt
     {
-        /// <summary>
-        ///     Checks if the input string has balanced parentheses of a single type.
-        /// </summary>
-        /// <param name="input">Input string to check.</param>
-        /// <returns>True if parentheses are balanced, false otherwise.</returns>
-        /// <example>
-        ///     <code>
-        /// bool result = Irt.SingleCheck("(a + b) * c");
-        /// // result is true
-        /// </code>
-        /// </example>
-        internal static bool SingleCheck(string input)
+		/// <summary>
+		///     Validates the parameters. Parameter Count
+		/// </summary>
+		/// <param name="key">The key.</param>
+		/// <param name="parametersCount">Count of parameter</param>
+		/// <param name="commands">The commands.</param>
+		/// <returns>If Parameters are correct</returns>
+		internal static bool ValidateParameters(int key, int parametersCount,
+			IReadOnlyDictionary<int, InCommand> commands)
+		{
+			// Check if the command requires parameters or if the input has correctly formatted single parameter
+			return commands[key].ParameterCount == parametersCount;
+		}
+
+		/// <summary>
+		/// Validates the parameters. Parenthesis.
+		/// </summary>
+		/// <param name="input">The input.</param>
+		/// <returns>if the input has correctly formatted parenthesis</returns>
+		internal static bool ValidateParameters(string input)
+		{
+			// if the input has correctly formatted parenthesis
+			return SingleCheck(input);
+		}
+
+		/// <summary>
+		///     Checks if the input string has balanced parentheses of a single type.
+		/// </summary>
+		/// <param name="input">Input string to check.</param>
+		/// <returns>True if parentheses are balanced, false otherwise.</returns>
+		/// <example>
+		///     <code>
+		/// bool result = Irt.SingleCheck("(a + b) * c");
+		/// // result is true
+		/// </code>
+		/// </example>
+		internal static bool SingleCheck(string input)
         {
             // Index of the currently open parentheses:
             var parentheses = new Stack<int>();

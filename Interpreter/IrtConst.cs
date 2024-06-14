@@ -262,19 +262,29 @@ namespace Interpreter
         internal const int ParameterMismatch = 1;
 
         /// <summary>
-        ///     The extension has a Parameter mismatch. (const). Value: "1".
+        ///     The extension has a Parameter mismatch. (const). Value: "2".
         /// </summary>
         internal const int ParenthesisMismatch = 2;
 
         /// <summary>
-        ///     The Internal extension found. (const). Value: "2.
+        ///     The Internal extension found. (const). Value: "3.
         /// </summary>
         internal const int ExtensionFound = 3;
 
-        /// <summary>
-        ///     The internal check, if Parameter is empty, since the brackets are expected. (const). Value: "()".
-        /// </summary>
-        internal static readonly string InternalEmptyParameter = string.Concat(BaseOpen, BaseClose);
+		/// <summary>
+		///     If Command  is Batch expression. (const). Value: "0.
+		/// </summary>
+		internal const int BatchCommand = 0;
+
+		/// <summary>
+		///     If Cmmand has Parameter. (const). Value: "1.
+		/// </summary>
+		internal const int ParameterCommand = 1;
+
+		/// <summary>
+		///     The internal check, if Parameter is empty, since the brackets are expected. (const). Value: "()".
+		/// </summary>
+		internal static readonly string InternalEmptyParameter = string.Concat(BaseOpen, BaseClose);
 
         /// <summary>
         ///     The internal Extension commands
