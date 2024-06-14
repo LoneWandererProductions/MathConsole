@@ -131,15 +131,15 @@ namespace Interpreter
         /// </summary>
         internal const string ErrorExtensions = "Extension provided produced Errors: ";
 
-		/// <summary>
-		///     The error for Invalid Input (const). Value: "Input was null or empty.".
-		/// </summary>
-		internal const string ErrorInvalidInput = "Input was null or empty.";
+        /// <summary>
+        ///     The error for Invalid Input (const). Value: "Input was null or empty.".
+        /// </summary>
+        internal const string ErrorInvalidInput = "Input was null or empty.";
 
-		/// <summary>
-		///     The parenthesis error (const). Value: "Wrong parenthesis".
-		/// </summary>
-		internal const string ParenthesisError = "Wrong parenthesis";
+        /// <summary>
+        ///     The parenthesis error (const). Value: "Wrong parenthesis".
+        /// </summary>
+        internal const string ParenthesisError = "Wrong parenthesis";
 
         /// <summary>
         ///     The key word not found error (const). Value: "error KeyWord not Found: ".
@@ -246,15 +246,15 @@ namespace Interpreter
         /// </summary>
         internal const string CommentCommand = "--";
 
-		/// <summary>
-		///     The error. (const). Value: "-1".
-		/// </summary>
-		internal const int Error = -1;
+        /// <summary>
+        ///     The error. (const). Value: "-1".
+        /// </summary>
+        internal const int Error = -1;
 
-		/// <summary>
-		///     The no split occurred. (const). Value: "2".
-		/// </summary>
-		internal const int NoSplitOccurred = 0;
+        /// <summary>
+        ///     The no split occurred. (const). Value: "2".
+        /// </summary>
+        internal const int NoSplitOccurred = 0;
 
         /// <summary>
         ///     The extension has a Parameter mismatch. (const). Value: "1".
@@ -271,20 +271,20 @@ namespace Interpreter
         /// </summary>
         internal const int ExtensionFound = 3;
 
-		/// <summary>
-		///     If Command  is Batch expression. (const). Value: "0".
-		/// </summary>
-		internal const int BatchCommand = 0;
+        /// <summary>
+        ///     If Command  is Batch expression. (const). Value: "0".
+        /// </summary>
+        internal const int BatchCommand = 0;
 
-		/// <summary>
-		///     If Command has Parameter. (const). Value: "1".
-		/// </summary>
-		internal const int ParameterCommand = 1;
+        /// <summary>
+        ///     If Command has Parameter. (const). Value: "1".
+        /// </summary>
+        internal const int ParameterCommand = 1;
 
-		/// <summary>
-		///     The internal check, if Parameter is empty, since the brackets are expected. (const). Value: "()".
-		/// </summary>
-		internal static readonly string InternalEmptyParameter = string.Concat(BaseOpen, BaseClose);
+        /// <summary>
+        ///     The internal check, if Parameter is empty, since the brackets are expected. (const). Value: "()".
+        /// </summary>
+        internal static readonly string InternalEmptyParameter = string.Concat(BaseOpen, BaseClose);
 
         /// <summary>
         ///     The internal Extension commands
@@ -295,9 +295,10 @@ namespace Interpreter
                 0,
                 new InCommand
                 {
-                    Command = InternalExtensionUse,
-                    Description = "use(parameter) : use the provided parameter as Userspace, if it exists.",
-                    ParameterCount = 1
+                    Command = InternalHelpExtension,
+                    Description =
+                        "help(parameter) : displays the help for the command and asks if you want to execute it.",
+                    ParameterCount = 0
                 }
             },
             {
