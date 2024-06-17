@@ -316,6 +316,25 @@ namespace Interpreter
         }
 
         /// <summary>
+        ///     Processes the parameters.
+        /// </summary>
+        /// <param name="input">The input.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="commands">The commands in use.</param>
+        /// <returns>return Parameter</returns>
+        internal static (int Status, string Parameter) ProcessParameters(string input, int key,
+            IReadOnlyDictionary<int, InCommand> commands)
+        {
+            var command = commands[key].Command.ToUpper(CultureInfo.InvariantCulture);
+            var parameterPart = Irt.RemoveWord(command, input);
+
+            return parameterPart.StartsWith(IrtConst.AdvancedOpen)
+                ? (IrtConst.BatchCommand, parameterPart)
+                : (IrtConst.ParameterCommand,
+                    Irt.RemoveParenthesis(parameterPart, IrtConst.BaseOpen, IrtConst.BaseClose));
+        }
+
+        /// <summary>
         ///     Checks if the string starts and ends with the specified characters.
         /// </summary>
         /// <param name="input">Input string to check.</param>

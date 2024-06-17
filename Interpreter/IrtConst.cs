@@ -295,10 +295,9 @@ namespace Interpreter
                 0,
                 new InCommand
                 {
-                    Command = InternalHelpExtension,
-                    Description =
-                        "help(parameter) : displays the help for the command and asks if you want to execute it.",
-                    ParameterCount = 0
+                    Command = InternalExtensionUse,
+                    Description = "use(parameter) : use the provided parameter as Userspace, if it exists.",
+                    ParameterCount = 1
                 }
             },
             {

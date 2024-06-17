@@ -24,7 +24,7 @@ namespace Interpreter
         /// <summary>
         ///     The prompt
         /// </summary>
-        private static Prompt _prompt;
+        private Prompt _prompt;
 
         /// <summary>
         ///     The commands
@@ -42,11 +42,31 @@ namespace Interpreter
         /// <param name="commands">The commands.</param>
         /// <param name="irtPrompt">The irt prompt.</param>
         /// <param name="nameSpace">The name space.</param>
-        public IrtInternal(Dictionary<int, InCommand> commands, IrtPrompt irtPrompt, string nameSpace)
+        /// <param name="prompt">The prompt</param>
+        internal IrtInternal(Dictionary<int, InCommand> commands, IrtPrompt irtPrompt, string nameSpace, Prompt prompt)
         {
             _commands = commands;
             _irtPrompt = irtPrompt;
             _nameSpace = nameSpace;
+            _prompt = prompt;
+        }
+
+        /// <summary>
+        /// Processes the input.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="inputString">The input string.</param>
+        internal void ProcessInput(int key, string inputString)
+        {
+            var parameterPart = Irt.ProcessParameters(inputString, key, IrtConst.InternCommands);
+
+            //handle normal command and batch/containers
+            var parameter = parameterPart.Status == IrtConst.ParameterCommand
+                ? Irt.SplitParameter(parameterPart.Parameter, IrtConst.Splitter)
+                : new List<string> { parameterPart.Parameter };
+
+            HandleInternalCommands(key, parameter, _prompt);
+            return;
         }
 
         /// <summary>

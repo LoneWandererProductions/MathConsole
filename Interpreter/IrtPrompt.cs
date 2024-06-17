@@ -59,7 +59,7 @@ namespace Interpreter
         /// <summary>
         ///     Extension Command Register
         /// </summary>
-        private static Dictionary<int, InCommand> _extension { get; set; }
+        private static Dictionary<int, InCommand> _extension;
 
         /// <summary>
         ///     Send selected Command to the Subscriber
@@ -81,7 +81,7 @@ namespace Interpreter
             _com = use.Commands;
             _extension = use.ExtensionCommands;
             _nameSpace = use.UserSpaceName;
-            _irtInternal = new IrtInternal(use.Commands, this, use.UserSpaceName);
+            _irtInternal = new IrtInternal(use.Commands, this, use.UserSpaceName, _prompt);
             //prepare our Extension handler
             _irtExtension = new IrtExtension();
             //notify log about loading up
@@ -202,22 +202,9 @@ namespace Interpreter
         private void ProcessInput(string inputString, ExtensionCommands extension = null)
         {
             var key = Irt.CheckForKeyWord(inputString, IrtConst.InternCommands);
-
-            (int Status, string Parameter) parameterPart;
-
-            List<string> parameter;
-
-            //checks if it was an internal Command.
             if (key != IrtConst.Error)
             {
-                parameterPart = ProcessParameters(inputString, key, IrtConst.InternCommands);
-
-                //handle normal command and batch/containers
-                parameter = parameterPart.Status == IrtConst.ParameterCommand
-                    ? Irt.SplitParameter(parameterPart.Parameter, IrtConst.Splitter)
-                    : new List<string> { parameterPart.Parameter };
-
-                _irtInternal.HandleInternalCommands(key, parameter, _prompt);
+                _irtInternal.ProcessInput(key, inputString);
                 return;
             }
 
@@ -236,10 +223,10 @@ namespace Interpreter
             }
 
             //do our normal Checks for User Commands
-            parameterPart = ProcessParameters(inputString, key, _com);
+            var parameterPart = Irt.ProcessParameters(inputString, key, _com);
 
             //actual not possible yet, this must be implemented from user side and I have not build support for it yet
-            parameter = parameterPart.Status == IrtConst.ParameterCommand
+            var parameter = parameterPart.Status == IrtConst.ParameterCommand
                 ? Irt.SplitParameter(parameterPart.Parameter, IrtConst.Splitter)
                 : new List<string> { parameterPart.Parameter };
 
@@ -309,25 +296,6 @@ namespace Interpreter
         {
             var log = Logging.SetLastError(errorMessage, 0);
             SetError(string.Concat(log, additionalInfo));
-        }
-
-        /// <summary>
-        ///     Processes the parameters.
-        /// </summary>
-        /// <param name="input">The input.</param>
-        /// <param name="key">The key.</param>
-        /// <param name="commands">The commands in use.</param>
-        /// <returns>return Parameter</returns>
-        private static (int Status, string Parameter) ProcessParameters(string input, int key,
-            IReadOnlyDictionary<int, InCommand> commands)
-        {
-            var command = commands[key].Command.ToUpper(CultureInfo.InvariantCulture);
-            var parameterPart = Irt.RemoveWord(command, input);
-
-            return parameterPart.StartsWith(IrtConst.AdvancedOpen)
-                ? (IrtConst.BatchCommand, parameterPart)
-                : (IrtConst.ParameterCommand,
-                    Irt.RemoveParenthesis(parameterPart, IrtConst.BaseOpen, IrtConst.BaseClose));
         }
 
         /// <summary>
