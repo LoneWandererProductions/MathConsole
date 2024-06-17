@@ -30,6 +30,28 @@ namespace Interpreter
         //TODO add Callback Function, e.g.yes, no, etc
 
         /// <summary>
+        /// The await input check, if true await correct answer
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [await input]; otherwise, <c>false</c>.
+        /// </value>
+        internal bool AwaitInput { get; set; }
+
+        /// <summary>
+        /// Gets or sets the awaited input Id
+        /// </summary>
+        /// <value>
+        /// The awaited input Id.
+        /// </value>
+        internal int AwaitedInput { get; set; }
+
+        /// <summary>
+        /// The feedback
+        /// </summary>
+        private Dictionary<int, UserFeedback> _feedback;
+
+
+        /// <summary>
         ///     Used to interpret Commands
         /// </summary>
         private static IrtPrompt _interpret;
@@ -99,11 +121,13 @@ namespace Interpreter
         /// <param name="com">Command Register</param>
         /// <param name="userSpace">UserSpace of the register</param>
         /// <param name="extension">Optional Extension Methods</param>
+        /// <param name="userFeedback">Optional user Feedback Methods</param>
         public void Initiate(Dictionary<int, InCommand> com, string userSpace,
-            Dictionary<int, InCommand> extension = null)
+            Dictionary<int, InCommand> extension = null, Dictionary<int, UserFeedback> userFeedback = null)
         {
             ResetState();
 
+            _feedback = userFeedback;
             var use = new UserSpace { UserSpaceName = userSpace, Commands = com, ExtensionCommands = extension };
 
             //Upper is needed because of the way we compare commands in the Interpreter
@@ -151,7 +175,8 @@ namespace Interpreter
         /// <param name="input">Input string</param>
         public void StartConsole(string input)
         {
-            _interpret?.HandleInput(input);
+            if (AwaitInput) _interpret?.HandleInput(input);
+            else HandleUserInput();
         }
 
         /// <inheritdoc />
@@ -181,6 +206,23 @@ namespace Interpreter
             space = space.ToUpper(CultureInfo.InvariantCulture);
             var use = CollectedSpaces[space];
             IrtPrompt.SwitchUserSpace(use);
+        }
+
+        private void HandleUserInput()
+        {
+            if (_feedback == null)
+            {
+                AwaitInput = false;
+                return;
+            }
+            if (!_feedback.ContainsKey(AwaitedInput))
+            {
+                AwaitInput = false;
+                return;
+            }
+
+
+            AwaitInput = false;
         }
 
         /// <summary>

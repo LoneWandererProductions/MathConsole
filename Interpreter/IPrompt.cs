@@ -19,13 +19,14 @@ namespace Interpreter
     internal interface IPrompt
     {
         /// <summary>
-        ///     Starts the Sender and Interpreter.
+        /// Starts the Sender and Interpreter.
         /// </summary>
         /// <param name="commands">The command register.</param>
         /// <param name="userSpace">The user space of the register.</param>
         /// <param name="extension">Optional extension methods.</param>
+        /// <param name="userFeedback">Optional user feedback.</param>
         void Initiate(Dictionary<int, InCommand> commands, string userSpace,
-            Dictionary<int, InCommand> extension = null);
+            Dictionary<int, InCommand> extension = null, Dictionary<int, UserFeedback> userFeedback = null);
 
         /// <summary>
         ///     Adds further command namespaces.
