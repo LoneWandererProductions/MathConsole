@@ -24,7 +24,7 @@ namespace Interpreter
         /// <summary>
         ///     The prompt
         /// </summary>
-        private Prompt _prompt;
+        private readonly Prompt _prompt;
 
         /// <summary>
         ///     The commands
@@ -58,28 +58,14 @@ namespace Interpreter
         /// <param name="inputString">The input string.</param>
         internal void ProcessInput(int key, string inputString)
         {
-            var parameterPart = Irt.ProcessParameters(inputString, key, IrtConst.InternCommands);
+            var (status, parts) = Irt.ProcessParameters(inputString, key, IrtConst.InternCommands);
 
             //handle normal command and batch/containers
-            var parameter = parameterPart.Status == IrtConst.ParameterCommand
-                ? Irt.SplitParameter(parameterPart.Parameter, IrtConst.Splitter)
-                : new List<string> { parameterPart.Parameter };
+            var parameter = status == IrtConst.ParameterCommand
+                ? Irt.SplitParameter(parts, IrtConst.Splitter)
+                : new List<string> {parts};
 
-            HandleInternalCommands(key, parameter, _prompt);
-            return;
-        }
-
-        /// <summary>
-        ///     Handles the internal commands.
-        /// </summary>
-        /// <param name="command">The command.</param>
-        /// <param name="parameter">The parameter.</param>
-        /// <param name="prompt">The prompt.</param>
-        internal void HandleInternalCommands(int command, List<string> parameter, Prompt prompt)
-        {
-            _prompt = prompt;
-
-            HandleInternalCommands(command, parameter);
+            HandleInternalCommands(key, parameter);
         }
 
         /// <summary>
