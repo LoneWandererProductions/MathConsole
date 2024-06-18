@@ -27,29 +27,18 @@ namespace Interpreter
     /// </summary>
     public sealed class Prompt : IPrompt, IDisposable
     {
-        //TODO add Callback Function, e.g.yes, no, etc
-
-        /// <summary>
-        /// The await input check, if true await correct answer
-        /// </summary>
-        /// <value>
-        ///   <c>true</c> if [await input]; otherwise, <c>false</c>.
-        /// </value>
-        internal bool AwaitInput { get; set; }
-
-        /// <summary>
-        /// Gets or sets the awaited input Id
-        /// </summary>
-        /// <value>
-        /// The awaited input Id.
-        /// </value>
-        internal int AwaitedInput { get; set; }
-
         /// <summary>
         /// The feedback
         /// </summary>
         private Dictionary<int, UserFeedback> _feedback;
 
+        /// <summary>
+        /// Gets or sets the command register.
+        /// </summary>
+        /// <value>
+        /// The command register.
+        /// </value>
+        internal IrtRegister CommandRegister { get; set; }
 
         /// <summary>
         ///     Used to interpret Commands
@@ -175,7 +164,7 @@ namespace Interpreter
         /// <param name="input">Input string</param>
         public void StartConsole(string input)
         {
-            if (AwaitInput) _interpret?.HandleInput(input);
+            if (CommandRegister.AwaitInput) _interpret?.HandleInput(input);
             else HandleUserInput();
         }
 
@@ -212,17 +201,19 @@ namespace Interpreter
         {
             if (_feedback == null)
             {
-                AwaitInput = false;
+                CommandRegister.AwaitInput = false;
                 return;
             }
-            if (!_feedback.ContainsKey(AwaitedInput))
+
+            if (!_feedback.ContainsKey(CommandRegister.AwaitedInput))
             {
-                AwaitInput = false;
+                CommandRegister.AwaitInput = false;
                 return;
             }
 
+            if(CommandRegister.AwaitedOutput != null) SendCommand(this, CommandRegister.AwaitedOutput);
 
-            AwaitInput = false;
+            CommandRegister.AwaitInput = false;
         }
 
         /// <summary>
