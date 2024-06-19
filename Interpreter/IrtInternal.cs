@@ -22,11 +22,6 @@ namespace Interpreter
         private static string _nameSpace;
 
         /// <summary>
-        ///     The prompt
-        /// </summary>
-        private readonly Prompt _prompt;
-
-        /// <summary>
         ///     The commands
         /// </summary>
         private readonly Dictionary<int, InCommand> _commands;
@@ -35,6 +30,11 @@ namespace Interpreter
         ///     The irt prompt
         /// </summary>
         private readonly IrtPrompt _irtPrompt;
+
+        /// <summary>
+        ///     The prompt
+        /// </summary>
+        private readonly Prompt _prompt;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="IrtInternal" /> class.
@@ -52,7 +52,7 @@ namespace Interpreter
         }
 
         /// <summary>
-        /// Processes the input.
+        ///     Processes the input.
         /// </summary>
         /// <param name="key">The key.</param>
         /// <param name="inputString">The input string.</param>
@@ -63,7 +63,7 @@ namespace Interpreter
             //handle normal command and batch/containers
             var parameter = status == IrtConst.ParameterCommand
                 ? Irt.SplitParameter(parts, IrtConst.Splitter)
-                : new List<string> {parts};
+                : new List<string> { parts };
 
             HandleInternalCommands(key, parameter);
         }

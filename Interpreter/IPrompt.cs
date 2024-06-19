@@ -19,7 +19,7 @@ namespace Interpreter
     internal interface IPrompt
     {
         /// <summary>
-        /// Starts the Sender and Interpreter.
+        ///     Starts the Sender and Interpreter.
         /// </summary>
         /// <param name="commands">The command register.</param>
         /// <param name="userSpace">The user space of the register.</param>

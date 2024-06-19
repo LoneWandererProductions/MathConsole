@@ -28,19 +28,6 @@ namespace Interpreter
     public sealed class Prompt : IPrompt, IDisposable
     {
         /// <summary>
-        /// The feedback
-        /// </summary>
-        private Dictionary<int, UserFeedback> _feedback;
-
-        /// <summary>
-        /// Gets or sets the command register.
-        /// </summary>
-        /// <value>
-        /// The command register.
-        /// </value>
-        internal IrtFeedback CommandRegister { get; set; }
-
-        /// <summary>
         ///     Used to interpret Commands
         /// </summary>
         private static IrtPrompt _interpret;
@@ -51,9 +38,22 @@ namespace Interpreter
         private static int _count = -1;
 
         /// <summary>
+        ///     The feedback
+        /// </summary>
+        private Dictionary<int, UserFeedback> _feedback;
+
+        /// <summary>
         ///     User Input Windows
         /// </summary>
         private WindowPrompt _prompt;
+
+        /// <summary>
+        ///     Gets or sets the command register.
+        /// </summary>
+        /// <value>
+        ///     The command register.
+        /// </value>
+        internal IrtFeedback CommandRegister { get; set; }
 
         /// <summary>
         ///     The collected Namespaces
@@ -210,7 +210,7 @@ namespace Interpreter
                 return;
             }
 
-            if(CommandRegister.AwaitedOutput != null) SendCommand(this, CommandRegister.AwaitedOutput);
+            if (CommandRegister.AwaitedOutput != null) SendCommand(this, CommandRegister.AwaitedOutput);
 
             CommandRegister.AwaitInput = false;
         }

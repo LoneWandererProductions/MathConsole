@@ -9,31 +9,31 @@
 namespace Interpreter
 {
     /// <summary>
-    /// Control Object that checks if User Feedback is needed
+    ///     Control Object that checks if User Feedback is needed
     /// </summary>
     internal sealed class IrtFeedback
     {
         /// <summary>
-        /// The await input check, if true await correct answer
+        ///     The await input check, if true await correct answer
         /// </summary>
         /// <value>
-        ///   <c>true</c> if [await input]; otherwise, <c>false</c>.
+        ///     <c>true</c> if [await input]; otherwise, <c>false</c>.
         /// </value>
         internal bool AwaitInput { get; set; }
 
         /// <summary>
-        /// Gets or sets the awaited input Id
+        ///     Gets or sets the awaited input Id
         /// </summary>
         /// <value>
-        /// The awaited input Id.
+        ///     The awaited input Id.
         /// </value>
         internal int AwaitedInput { get; init; }
 
         /// <summary>
-        /// Gets or sets the awaited output.
+        ///     Gets or sets the awaited output.
         /// </summary>
         /// <value>
-        /// The awaited output.
+        ///     The awaited output.
         /// </value>
         internal OutCommand AwaitedOutput { get; init; }
     }

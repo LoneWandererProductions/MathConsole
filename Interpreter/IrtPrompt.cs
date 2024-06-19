@@ -28,6 +28,11 @@ namespace Interpreter
         private static string _nameSpace;
 
         /// <summary>
+        ///     Extension Command Register
+        /// </summary>
+        private static Dictionary<int, InCommand> _extension;
+
+        /// <summary>
         ///     The prompt
         /// </summary>
         private readonly Prompt _prompt;
@@ -55,11 +60,6 @@ namespace Interpreter
         {
             _prompt = prompt;
         }
-
-        /// <summary>
-        ///     Extension Command Register
-        /// </summary>
-        private static Dictionary<int, InCommand> _extension;
 
         /// <summary>
         ///     Send selected Command to the Subscriber
@@ -223,7 +223,7 @@ namespace Interpreter
             //actual not possible yet, this must be implemented from user side and I have not build support for it yet
             var parameter = status == IrtConst.ParameterCommand
                 ? Irt.SplitParameter(splitParameter, IrtConst.Splitter)
-                : new List<string> {splitParameter};
+                : new List<string> { splitParameter };
 
             //check for Parameter Overload
             var check = Irt.CheckOverload(_com[key].Command, parameter.Count, _com);
@@ -309,18 +309,14 @@ namespace Interpreter
             };
 
             //does the Command come with needed User Feedback?
-            if(_com[key].FeedbackId == 0)
-            {
+            if (_com[key].FeedbackId == 0)
                 _prompt.SendCommand(this, com);
-            }
             //if yes inform the prompt to handle it correctly
             else
-            {
                 _prompt.CommandRegister = new IrtFeedback
                 {
                     AwaitedOutput = com, AwaitInput = true, AwaitedInput = _com[key].FeedbackId
                 };
-            }
         }
 
         /// <summary>

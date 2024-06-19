@@ -137,7 +137,7 @@ namespace InterpreteTests
         }
 
         /// <summary>
-        /// Removes the parenthesis with malformed parentheses returns error.
+        ///     Removes the parenthesis with malformed parentheses returns error.
         /// </summary>
         [TestMethod]
         public void RemoveParenthesisWithMalformedParenthesesReturnsError()
@@ -149,7 +149,7 @@ namespace InterpreteTests
 
 
         /// <summary>
-        /// Checks for key word with non existing command returns error.
+        ///     Checks for key word with non existing command returns error.
         /// </summary>
         [TestMethod]
         public void CheckForKeyWordWithNonExistingCommand_ReturnsError()
@@ -165,7 +165,7 @@ namespace InterpreteTests
         }
 
         /// <summary>
-        /// Singles the check should return true for nested balanced parentheses.
+        ///     Singles the check should return true for nested balanced parentheses.
         /// </summary>
         [TestMethod]
         public void SingleCheckShouldReturnTrueForNestedBalancedParentheses()
@@ -176,7 +176,7 @@ namespace InterpreteTests
         }
 
         /// <summary>
-        /// Singles the check should return false for different count unbalanced parentheses.
+        ///     Singles the check should return false for different count unbalanced parentheses.
         /// </summary>
         [TestMethod]
         public void SingleCheckShouldReturnFalseForDifferentCountUnbalancedParentheses()
@@ -187,7 +187,7 @@ namespace InterpreteTests
         }
 
         /// <summary>
-        /// Checks the multiple should return true for balanced multiple parentheses.
+        ///     Checks the multiple should return true for balanced multiple parentheses.
         /// </summary>
         [TestMethod]
         public void CheckMultipleShouldReturnTrueForBalancedMultipleParentheses()
@@ -200,7 +200,7 @@ namespace InterpreteTests
         }
 
         /// <summary>
-        /// Checks the multiple should return false for unbalanced multiple parentheses.
+        ///     Checks the multiple should return false for unbalanced multiple parentheses.
         /// </summary>
         [TestMethod]
         public void CheckMultipleShouldReturnFalseForUnbalancedMultipleParentheses()
@@ -213,7 +213,7 @@ namespace InterpreteTests
         }
 
         /// <summary>
-        /// Removes the parenthesis should remove outer curly braces when well formed.
+        ///     Removes the parenthesis should remove outer curly braces when well formed.
         /// </summary>
         [TestMethod]
         public void RemoveParenthesisShouldRemoveOuterCurlyBracesWhenWellFormed()
@@ -224,7 +224,7 @@ namespace InterpreteTests
         }
 
         /// <summary>
-        /// Checks for key word with existing command returns correct key.
+        ///     Checks for key word with existing command returns correct key.
         /// </summary>
         [TestMethod]
         public void CheckForKeyWordWithExistingCommand_ReturnsCorrectKey()
