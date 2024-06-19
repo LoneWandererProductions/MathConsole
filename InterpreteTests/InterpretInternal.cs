@@ -137,6 +137,109 @@ namespace InterpreteTests
         }
 
         /// <summary>
+        /// Removes the parenthesis with malformed parentheses returns error.
+        /// </summary>
+        [TestMethod]
+        public void RemoveParenthesisWithMalformedParenthesesReturnsError()
+        {
+            var result = Irt.RemoveParenthesis("(a + b", '(', ')');
+
+            Assert.AreEqual(IrtConst.ParenthesisError, result);
+        }
+
+
+        /// <summary>
+        /// Checks for key word with non existing command returns error.
+        /// </summary>
+        [TestMethod]
+        public void CheckForKeyWordWithNonExistingCommand_ReturnsError()
+        {
+            var commands = new Dictionary<int, InCommand>
+            {
+                { 1, new InCommand { Command = "TEST" } }
+            };
+
+            var result = Irt.CheckForKeyWord("INVALID", commands);
+
+            Assert.AreEqual(IrtConst.Error, result);
+        }
+
+        /// <summary>
+        /// Singles the check should return true for nested balanced parentheses.
+        /// </summary>
+        [TestMethod]
+        public void SingleCheckShouldReturnTrueForNestedBalancedParentheses()
+        {
+            const string input = "((a + b) * (c - d))";
+            var result = Irt.SingleCheck(input);
+            Assert.IsTrue(result);
+        }
+
+        /// <summary>
+        /// Singles the check should return false for different count unbalanced parentheses.
+        /// </summary>
+        [TestMethod]
+        public void SingleCheckShouldReturnFalseForDifferentCountUnbalancedParentheses()
+        {
+            const string input = "(a + b) * (c - d";
+            var result = Irt.SingleCheck(input);
+            Assert.IsFalse(result);
+        }
+
+        /// <summary>
+        /// Checks the multiple should return true for balanced multiple parentheses.
+        /// </summary>
+        [TestMethod]
+        public void CheckMultipleShouldReturnTrueForBalancedMultipleParentheses()
+        {
+            const string input = "{(a + b) * [c - d]}";
+            var openParenthesis = new[] { '(', '{', '[' };
+            var closeParenthesis = new[] { ')', '}', ']' };
+            var result = Irt.CheckMultiple(input, openParenthesis, closeParenthesis);
+            Assert.IsTrue(result);
+        }
+
+        /// <summary>
+        /// Checks the multiple should return false for unbalanced multiple parentheses.
+        /// </summary>
+        [TestMethod]
+        public void CheckMultipleShouldReturnFalseForUnbalancedMultipleParentheses()
+        {
+            const string input = "{(a + b) * [c - d}";
+            var openParenthesis = new[] { '(', '{', '[' };
+            var closeParenthesis = new[] { ')', '}', ']' };
+            var result = Irt.CheckMultiple(input, openParenthesis, closeParenthesis);
+            Assert.IsFalse(result);
+        }
+
+        /// <summary>
+        /// Removes the parenthesis should remove outer curly braces when well formed.
+        /// </summary>
+        [TestMethod]
+        public void RemoveParenthesisShouldRemoveOuterCurlyBracesWhenWellFormed()
+        {
+            var input = "{abc}";
+            var result = Irt.RemoveParenthesis(input, '{', '}');
+            Assert.AreEqual("abc", result);
+        }
+
+        /// <summary>
+        /// Checks for key word with existing command returns correct key.
+        /// </summary>
+        [TestMethod]
+        public void CheckForKeyWordWithExistingCommand_ReturnsCorrectKey()
+        {
+            var commands = new Dictionary<int, InCommand>
+            {
+                { 1, new InCommand { Command = "TEST" } },
+                { 2, new InCommand { Command = "VALID" } }
+            };
+
+            var result = Irt.CheckForKeyWord("VALID", commands);
+            Assert.AreEqual(2, result);
+        }
+
+        /// <summary>
         ///     Tests internal extension functionality.
         /// </summary>
         [TestMethod]

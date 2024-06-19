@@ -309,7 +309,7 @@ namespace Interpreter
             };
 
             //does the Command come with needed User Feedback?
-            if(_com[key].FeedbackId == IrtConst.Error)
+            if(_com[key].FeedbackId == 0)
             {
                 _prompt.SendCommand(this, com);
             }
