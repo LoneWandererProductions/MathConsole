@@ -64,11 +64,6 @@ namespace Interpreter
         /// <summary>
         ///     Send selected Command to the Subscriber
         /// </summary>
-        internal event EventHandler<OutCommand> SendCommand;
-
-        /// <summary>
-        ///     Send selected Command to the Subscriber
-        /// </summary>
         internal event EventHandler<string> SendInternalLog;
 
         /// <summary>
@@ -187,7 +182,7 @@ namespace Interpreter
                     //first switch Namespace
                     _prompt.SwitchNameSpaces(extension.ExtensionParameter[0]);
                     //set input without Extension Method and execute cleaned command
-                    _prompt.StartConsole(extension.BaseCommand);
+                    _prompt.ConsoleInput(extension.BaseCommand);
                     break;
                 case 1:
                     break;
@@ -223,12 +218,12 @@ namespace Interpreter
             }
 
             //do our normal Checks for User Commands
-            var parameterPart = Irt.ProcessParameters(inputString, key, _com);
+            var (status, splitParameter) = Irt.ProcessParameters(inputString, key, _com);
 
             //actual not possible yet, this must be implemented from user side and I have not build support for it yet
-            var parameter = parameterPart.Status == IrtConst.ParameterCommand
-                ? Irt.SplitParameter(parameterPart.Parameter, IrtConst.Splitter)
-                : new List<string> { parameterPart.Parameter };
+            var parameter = status == IrtConst.ParameterCommand
+                ? Irt.SplitParameter(splitParameter, IrtConst.Splitter)
+                : new List<string> {splitParameter};
 
             //check for Parameter Overload
             var check = Irt.CheckOverload(_com[key].Command, parameter.Count, _com);
@@ -300,6 +295,7 @@ namespace Interpreter
 
         /// <summary>
         ///     Decide the appropriate Action by command
+        ///     Optional set the User Input
         /// </summary>
         /// <param name="key">Id of command</param>
         /// <param name="parameter">List of Parameters</param>
@@ -312,7 +308,19 @@ namespace Interpreter
                 Command = key, Parameter = parameter, UsedNameSpace = _nameSpace, ExtensionCommand = extensionCommands
             };
 
-            OnCommand(com);
+            //does the Command come with needed User Feedback?
+            if(_com[key].FeedbackId == IrtConst.Error)
+            {
+                _prompt.SendCommand(this, com);
+            }
+            //if yes inform the prompt to handle it correctly
+            else
+            {
+                _prompt.CommandRegister = new IrtFeedback
+                {
+                    AwaitedOutput = com, AwaitInput = true, AwaitedInput = _com[key].FeedbackId
+                };
+            }
         }
 
         /// <summary>
@@ -323,7 +331,8 @@ namespace Interpreter
             var com = new OutCommand
                 { Command = IrtConst.Error, Parameter = null, UsedNameSpace = _nameSpace, ErrorMessage = error };
 
-            OnCommand(com);
+
+            _prompt.SendCommand(this, com);
         }
 
         /// <summary>
@@ -333,15 +342,6 @@ namespace Interpreter
         private void OnStatus(string sendLog)
         {
             SendInternalLog?.Invoke(this, sendLog);
-        }
-
-        /// <summary>
-        ///     Only sends Commands
-        /// </summary>
-        /// <param name="outCommand">Selected User Command</param>
-        private void OnCommand(OutCommand outCommand)
-        {
-            SendCommand?.Invoke(this, outCommand);
         }
     }
 }

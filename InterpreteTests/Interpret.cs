@@ -114,29 +114,29 @@ namespace InterpretTests
             _prompt.SendLogs += SendLogs;
             _prompt.SendCommands += SendCommands;
             _prompt.Initiate(DctCommandOne, UserSpaceOne);
-            _prompt.StartConsole("FirSt(1,2)");
+            _prompt.ConsoleInput("FirSt(1,2)");
 
             Assert.AreEqual(0, _outCommand.Command, "Wrong Id: " + _outCommand.Command);
 
-            _prompt.StartConsole("Third()");
+            _prompt.ConsoleInput("Third()");
 
             Assert.AreEqual(2, _outCommand.Command, "Wrong Id: " + _outCommand.Command);
 
-            _prompt.StartConsole("third");
+            _prompt.ConsoleInput("third");
 
             Assert.AreEqual(2, _outCommand.Command, "Wrong Id: " + _outCommand.Command);
 
-            _prompt.StartConsole("helP");
+            _prompt.ConsoleInput("helP");
 
             Assert.IsTrue(_log.Contains("Basic Syntax"), "Wrong Basic Help: " + _log);
 
-            _prompt.StartConsole("helP()");
+            _prompt.ConsoleInput("helP()");
 
             Assert.AreEqual(true,
                 _log.Contains("Basic prompt, Version : 0.3. Author: Peter Geinitz (Wayfarer), not context sensitive"),
                 "Help not displayed" + _log);
 
-            _prompt.StartConsole("helP(fIrst)");
+            _prompt.ConsoleInput("helP(fIrst)");
 
             Assert.AreEqual(true, _log.Contains("First Description"), "Wrong Help: " + _log);
 
@@ -153,41 +153,41 @@ namespace InterpretTests
             _prompt.SendLogs += SendLogs;
             _prompt.SendCommands += SendCommands;
             _prompt.Initiate(DctCommandOne, UserSpaceOne);
-            _prompt.StartConsole("FirSt(1)");
+            _prompt.ConsoleInput("FirSt(1)");
 
             Assert.IsTrue(_log.Contains("Error in the Syntax"), "Syntax Error: " + _log);
             Assert.AreEqual(-1, _outCommand.Command, "Wrong Id: " + _outCommand.Command);
 
-            _prompt.StartConsole("First(1,2)");
+            _prompt.ConsoleInput("First(1,2)");
 
             //Overload
 
             Assert.AreEqual(0, _outCommand.Command, "Wrong Id: " + _outCommand.Command);
             Assert.AreEqual(2, _outCommand.Parameter.Count, "Wrong Number: " + _outCommand.Parameter.Count);
 
-            _prompt.StartConsole(string.Empty);
+            _prompt.ConsoleInput(string.Empty);
 
             Assert.IsTrue(_log.Contains("Input was null or empty"), "Syntax Error: " + _log);
             Assert.AreEqual(-1, _outCommand.Command, "Wrong Id: " + _outCommand.Command);
 
-            _prompt.StartConsole("FirSt(1,2");
+            _prompt.ConsoleInput("FirSt(1,2");
 
             Assert.IsTrue(_log.Contains("Wrong parenthesis"), "Parenthesis Error: " + _log);
             Assert.AreEqual(-1, _outCommand.Command, "Wrong Id: " + _outCommand.Command);
 
             //possible Break
 
-            _prompt.StartConsole("Third");
+            _prompt.ConsoleInput("Third");
 
             Assert.IsTrue(_log.Contains("Wrong parenthesis"), "Parenthesis Error: " + _log);
 
             //Internal Test
 
-            _prompt.StartConsole("help");
+            _prompt.ConsoleInput("help");
 
             Assert.AreNotEqual("Error in the Syntax", _log, "Parenthesis Error: " + _log);
 
-            _prompt.StartConsole("help()");
+            _prompt.ConsoleInput("help()");
 
             Assert.AreEqual(true,
                 _log.Contains("Basic prompt, Version : 0.3. Author: Peter Geinitz (Wayfarer), not context sensitive"),
@@ -222,14 +222,14 @@ namespace InterpretTests
             prompt.Initiate(commands, "NameSpaceOne");
 
             // Act
-            prompt.StartConsole("First(1,2)");
+            prompt.ConsoleInput("First(1,2)");
 
             // Assert
             Assert.AreEqual(0, _outCommand.Command, "Wrong Id: " + _outCommand.Command);
             Assert.AreEqual(2, _outCommand.Parameter.Count, "Wrong Number: " + _outCommand.Parameter.Count);
 
             // Act
-            prompt.StartConsole("Third(1,2)");
+            prompt.ConsoleInput("Third(1,2)");
 
             // Assert
             Assert.AreEqual(-1, _outCommand.Command, "Wrong Id: " + _outCommand.Command);
@@ -238,28 +238,28 @@ namespace InterpretTests
                 "Wrong or no error set: " + _outCommand.ErrorMessage);
 
             // Act
-            prompt.StartConsole("Third");
+            prompt.ConsoleInput("Third");
 
             // Assert
             Assert.AreEqual(2, _outCommand.Command, "Wrong Id: " + _outCommand.Command);
             Assert.AreEqual(0, _outCommand.Parameter.Count, "Wrong Number: " + _outCommand.Parameter.Count);
 
             // Act
-            prompt.StartConsole("Fourth(2,2)");
+            prompt.ConsoleInput("Fourth(2,2)");
 
             // Assert
             Assert.AreEqual(3, _outCommand.Command, "Wrong Id: " + _outCommand.Command);
             Assert.AreEqual(2, _outCommand.Parameter.Count, "Wrong Number: " + _outCommand.Parameter.Count);
 
             // Act
-            prompt.StartConsole("Fourth(2,2,3)");
+            prompt.ConsoleInput("Fourth(2,2,3)");
 
             // Assert
             Assert.AreEqual(3, _outCommand.Command, "Wrong Id: " + _outCommand.Command);
             Assert.AreEqual(3, _outCommand.Parameter.Count, "Wrong Number: " + _outCommand.Parameter.Count);
 
             // Act
-            prompt.StartConsole("Fourth(2)");
+            prompt.ConsoleInput("Fourth(2)");
 
             // Assert
             Assert.AreEqual(-1, _outCommand.Command, "Wrong Id: " + _outCommand.Command);
@@ -286,18 +286,18 @@ namespace InterpretTests
             _prompt.SendLogs += SendLogs;
             _prompt.SendCommands += SendCommands;
             _prompt.Initiate(dct, UserSpaceOne);
-            _prompt.StartConsole("FirSt()");
+            _prompt.ConsoleInput("FirSt()");
 
             Assert.AreEqual(0, _outCommand.Command, "Wrong Id: " + _outCommand.Command);
 
             //overload
-            _prompt.StartConsole("FirSt(1)");
+            _prompt.ConsoleInput("FirSt(1)");
 
             Assert.AreEqual(1, _outCommand.Command, "Wrong Id: " + _outCommand.Command);
             Assert.AreEqual(1, _outCommand.Parameter.Count, "Wrong Number: " + _outCommand.Parameter.Count);
 
             //break
-            _prompt.StartConsole("FirSt(1,3)");
+            _prompt.ConsoleInput("FirSt(1,3)");
 
             Assert.AreEqual(-1, _outCommand.Command, "Wrong Id: " + _outCommand.Command);
             Assert.IsTrue(_log.Contains("Error in the Syntax"), "Syntax Error: " + _log);
@@ -315,7 +315,7 @@ namespace InterpretTests
             _prompt.SendLogs += SendLogs;
             _prompt.SendCommands += SendCommands;
             _prompt.Initiate(DctCommandOne, UserSpaceOne);
-            _prompt.StartConsole("FirSt(1,2)");
+            _prompt.ConsoleInput("FirSt(1,2)");
 
             Assert.AreEqual(0, _outCommand.Command, "Wrong Id: " + _outCommand.Command);
 
@@ -323,12 +323,12 @@ namespace InterpretTests
 
             Assert.AreEqual(2, _prompt.CollectedSpaces.Count, "Wrong Number of Namespaces");
 
-            _prompt.StartConsole("use (" + UserSpaceTwo + ")");
-            _prompt.StartConsole("test");
+            _prompt.ConsoleInput("use (" + UserSpaceTwo + ")");
+            _prompt.ConsoleInput("test");
 
             Assert.AreEqual(4, _outCommand.Command, "Wrong Id: " + _outCommand.Command);
 
-            _prompt.StartConsole("using");
+            _prompt.ConsoleInput("using");
 
             Assert.IsTrue(_log.StartsWith(UserSpaceTwo.ToUpper(), StringComparison.Ordinal), "Namespace not switched");
             _prompt.Dispose();
@@ -344,7 +344,7 @@ namespace InterpretTests
             _prompt.SendLogs += SendLogs;
             _prompt.SendCommands += SendCommands;
             _prompt.Initiate(DctCommandOne, UserSpaceOne);
-            _prompt.StartConsole("Container{FirSt(1,2); Third() ; ; --test comment;Help()};;;;");
+            _prompt.ConsoleInput("Container{FirSt(1,2); Third() ; ; --test comment;Help()};;;;");
 
             Assert.AreEqual(true,
                 _log.Contains("Basic prompt, Version : 0.3. Author: Peter Geinitz (Wayfarer), not context sensitive"),
@@ -368,7 +368,7 @@ namespace InterpretTests
 
             CreateFile();
 
-            _prompt.StartConsole("BATCHEXECUTE(" + Batch + ")");
+            _prompt.ConsoleInput("BATCHEXECUTE(" + Batch + ")");
 
             Assert.AreEqual(true,
                 _log.Contains("Basic prompt, Version : 0.3. Author: Peter Geinitz (Wayfarer), not context sensitive"),
@@ -420,24 +420,6 @@ namespace InterpretTests
         }
 
         /// <summary>
-        ///     Handles the input valid command no parameters success.
-        /// </summary>
-        [TestMethod]
-        public void HandleInputValidCommandNoParameters_Success()
-        {
-            var commandHandled = false;
-            _irtPrompt.SendCommand += (sender, e) =>
-            {
-                Assert.AreEqual(1, e.Command);
-                commandHandled = true;
-            };
-
-            _irtPrompt.HandleInput("COMMAND1");
-
-            Assert.IsTrue(commandHandled);
-        }
-
-        /// <summary>
         ///     Handles the input help command logs help.
         /// </summary>
         [TestMethod]
@@ -453,26 +435,6 @@ namespace InterpretTests
             _irtPrompt.HandleInput(IrtConst.InternalCommandHelp);
 
             Assert.IsTrue(logHandled);
-        }
-
-        /// <summary>
-        ///     Handles the input command with parameters success.
-        /// </summary>
-        [TestMethod]
-        public void HandleInputCommandWithParametersSuccess()
-        {
-            var commandHandled = false;
-            _irtPrompt.SendCommand += (sender, e) =>
-            {
-                Assert.AreEqual(2, e.Command);
-                Assert.AreEqual(1, e.Parameter.Count);
-                Assert.AreEqual("PARAM1", e.Parameter[0]);
-                commandHandled = true;
-            };
-
-            _irtPrompt.HandleInput("COMMAND2(PARAM1)");
-
-            Assert.IsTrue(commandHandled);
         }
     }
 }

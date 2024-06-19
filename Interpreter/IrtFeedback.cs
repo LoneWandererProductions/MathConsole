@@ -1,6 +1,17 @@
-﻿namespace Interpreter
+﻿/*
+ * COPYRIGHT:   See COPYING in the top level directory
+ * PROJECT:     Interpreter
+ * FILE:        Interpreter/IrtFeedback.cs
+ * PURPOSE:     Handle some stuff from the User Feedback
+ * PROGRAMER:   Peter Geinitz (Wayfarer)
+ */
+
+namespace Interpreter
 {
-    internal class IrtRegister
+    /// <summary>
+    /// Control Object that checks if User Feedback is needed
+    /// </summary>
+    internal sealed class IrtFeedback
     {
         /// <summary>
         /// The await input check, if true await correct answer
@@ -16,7 +27,7 @@
         /// <value>
         /// The awaited input Id.
         /// </value>
-        internal int AwaitedInput { get; set; }
+        internal int AwaitedInput { get; init; }
 
         /// <summary>
         /// Gets or sets the awaited output.
@@ -24,6 +35,6 @@
         /// <value>
         /// The awaited output.
         /// </value>
-        internal OutCommand AwaitedOutput { get; set; }
+        internal OutCommand AwaitedOutput { get; init; }
     }
 }

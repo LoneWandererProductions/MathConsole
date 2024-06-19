@@ -38,7 +38,7 @@ namespace Interpreter
         /// <value>
         /// The command register.
         /// </value>
-        internal IrtRegister CommandRegister { get; set; }
+        internal IrtFeedback CommandRegister { get; set; }
 
         /// <summary>
         ///     Used to interpret Commands
@@ -115,7 +115,7 @@ namespace Interpreter
             Dictionary<int, InCommand> extension = null, Dictionary<int, UserFeedback> userFeedback = null)
         {
             ResetState();
-
+            CommandRegister = new IrtFeedback();
             _feedback = userFeedback;
             var use = new UserSpace { UserSpaceName = userSpace, Commands = com, ExtensionCommands = extension };
 
@@ -125,7 +125,6 @@ namespace Interpreter
             _interpret = new IrtPrompt(this);
             _interpret.Initiate(use);
             _interpret.SendInternalLog += SendLog;
-            _interpret.SendCommand += SendCommand;
         }
 
         /// <inheritdoc />
@@ -162,9 +161,9 @@ namespace Interpreter
         ///     Handle it within the code, no User Input
         /// </summary>
         /// <param name="input">Input string</param>
-        public void StartConsole(string input)
+        public void ConsoleInput(string input)
         {
-            if (CommandRegister.AwaitInput) _interpret?.HandleInput(input);
+            if (!CommandRegister.AwaitInput) _interpret?.HandleInput(input);
             else HandleUserInput();
         }
 
@@ -221,7 +220,7 @@ namespace Interpreter
         /// </summary>
         /// <param name="sender">Object</param>
         /// <param name="e">Type</param>
-        private void SendCommand(object sender, OutCommand e)
+        internal void SendCommand(object sender, OutCommand e)
         {
             AddToLog(e.Command == IrtConst.Error ? e.ErrorMessage : e.Command.ToString());
 
@@ -233,7 +232,7 @@ namespace Interpreter
         /// </summary>
         /// <param name="sender">Object</param>
         /// <param name="e">Type</param>
-        private void SendLog(object sender, string e)
+        internal void SendLog(object sender, string e)
         {
             AddToLog(e);
             SendLogs?.Invoke(nameof(Prompt), e);

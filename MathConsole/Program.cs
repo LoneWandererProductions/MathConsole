@@ -34,7 +34,7 @@ namespace MathConsole
                         _prompt.Callback("Enter something: ");
                         var input = Console.ReadLine();
 
-                        _prompt.StartConsole(input);
+                        _prompt.ConsoleInput(input);
                     }
                     else
                     {

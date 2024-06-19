@@ -55,9 +55,9 @@ namespace Interpreter
         void Callback(string message);
 
         /// <summary>
-        ///     Starts the console.
+        ///     Use this to handle commands.
         /// </summary>
         /// <param name="input">The console input.</param>
-        void StartConsole(string input);
+        void ConsoleInput(string input);
     }
 }
