@@ -38,8 +38,8 @@ namespace Interpreter
             // Split the input based on the regex pattern
             var result = Regex.Split(input);
 
-            // Determine the split result and handle accordingly
-            switch (result.Length)
+			// Determine the split result and handle accordingly
+			switch (result.Length)
             {
                 case 1:
                     return (null, IrtConst.NoSplitOccurred);
