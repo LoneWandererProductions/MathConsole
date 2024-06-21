@@ -3,7 +3,6 @@
  * PROJECT:     Interpreter
  * FILE:        Interpreter/Prompt.cs
  * PURPOSE:     Handle the Input, Entry point for all Commands
- *              Don't use in a multi thread Environment, not tested.
  * PROGRAMER:   Peter Geinitz (Wayfarer)
  */
 
