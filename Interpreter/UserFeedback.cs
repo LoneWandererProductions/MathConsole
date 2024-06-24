@@ -34,7 +34,7 @@ namespace Interpreter
 
         /// <summary>
         ///     Gets or sets the options. The Hardcoded options like yes, no, cancel, only one is allowed
-        ///     Vaule is the Message fitting to the Key.
+        ///     Value is the Message fitting to the Key.
         /// </summary>
         /// <value>
         ///     The options.
