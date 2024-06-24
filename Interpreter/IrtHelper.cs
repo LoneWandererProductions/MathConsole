@@ -14,36 +14,36 @@ using System.Linq;
 
 namespace Interpreter
 {
-    /// <summary>
-    ///     Mostly handles Batch Files for now in the future it will do more stuff
-    /// </summary>
-    internal static class IrtHelper
-    {
-        /// <summary>
-        ///     Reads a .batch file
-        /// </summary>
-        /// <param name="filepath">path of the .txt file</param>
-        /// <returns>the values as String[]. Can return null.</returns>
-        public static string ReadBatchFile(string filepath)
-        {
-            var parts = new List<string>();
-            try
-            {
-                using var reader = new StreamReader(filepath);
-                while (reader.ReadLine() is { } line) parts.Add(line);
-            }
-            catch (IOException ex)
-            {
-                Trace.WriteLine(ex);
-                return string.Empty;
-            }
-            catch (ArgumentException ex)
-            {
-                Trace.WriteLine(ex);
-                return string.Empty;
-            }
+	/// <summary>
+	///     Mostly handles Batch Files for now in the future it will do more stuff
+	/// </summary>
+	internal static class IrtHelper
+	{
+		/// <summary>
+		///     Reads a .batch file
+		/// </summary>
+		/// <param name="filepath">path of the .txt file</param>
+		/// <returns>the values as String[]. Can return null.</returns>
+		public static string ReadBatchFile(string filepath)
+		{
+			var parts = new List<string>();
+			try
+			{
+				using var reader = new StreamReader(filepath);
+				while (reader.ReadLine() is { } line) parts.Add(line);
+			}
+			catch (IOException ex)
+			{
+				Trace.WriteLine(ex);
+				return string.Empty;
+			}
+			catch (ArgumentException ex)
+			{
+				Trace.WriteLine(ex);
+				return string.Empty;
+			}
 
-            return parts.Aggregate(string.Empty, string.Concat);
-        }
-    }
+			return parts.Aggregate(string.Empty, string.Concat);
+		}
+	}
 }

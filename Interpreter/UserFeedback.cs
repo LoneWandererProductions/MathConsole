@@ -15,7 +15,7 @@ namespace Interpreter
 	/// Object that will hold the Information for the user about user confirmations
 	/// </summary>
 	public class UserFeedback
-    {
+	{
 		/// <summary>
 		/// Gets or sets a value indicating whether this <see cref="UserFeedback"/> is before.
 		/// </summary>

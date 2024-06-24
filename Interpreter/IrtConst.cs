@@ -49,12 +49,12 @@ namespace Interpreter
             /// <summary>
             ///     The internal command container (const). Value: "CONTAINER".
             /// </summary>
-            private const string InternalCommandContainer = "CONTAINER";
+            private const string InternalContainer = "CONTAINER";
 
             /// <summary>
             ///     The internal command batch execute (const). Value: "BATCHEXECUTE".
             /// </summary>
-            private const string InternalCommandBatchExecute = "BATCHEXECUTE";
+            private const string InternalBatchExecute = "BATCHEXECUTE";
 
             /// <summary>
             ///     The internal command help (const). Value: "HELP".
@@ -106,10 +106,30 @@ namespace Interpreter
             /// </summary>
             private const string InternalLogFull = "LOGFULL";
 
-            /// <summary>
-            ///     The error no commands provided (const). Value: "No Commands were provided".
-            /// </summary>
-            internal const string ErrorNoCommandsProvided = "No Commands were provided";
+		    /// <summary>
+		    ///     The internal command if statement (const). Value: "IF".
+		    /// </summary>
+		    private const string InternalIf = "IF";
+
+		    /// <summary>
+		    ///     The internal command else, followed after if (const). Value: "ELSE".
+		    /// </summary>
+		    private const string InternalElse = "ELSE";
+
+		    /// <summary>
+		    ///     The internal command Goto (const). Value: "GOTO".
+		    /// </summary>
+		    private const string InternalGoto= "GOTO";
+
+		    /// <summary>
+		    ///     The internal command label, used by goto (const). Value: "LABEL".
+		    /// </summary>
+		    private const string InternalLabel = "LABEL";
+
+		    /// <summary>
+		    ///     The error no commands provided (const). Value: "No Commands were provided".
+		    /// </summary>
+		    internal const string ErrorNoCommandsProvided = "No Commands were provided";
 
             /// <summary>
             ///     The error UserSpace not Found (const). Value: "Error UserSpace not found".
@@ -286,25 +306,34 @@ namespace Interpreter
             /// </summary>
             internal static readonly string InternalEmptyParameter = string.Concat(BaseOpen, BaseClose);
 
-            /// <summary>
-            ///     Basic internal Help
-            /// </summary>
-            internal static readonly string HelpGeneric = string.Join(
-            Environment.NewLine,
-            "Basic prompt, Version : 0.3. Author: Peter Geinitz (Wayfarer), not context sensitive",
-            "Type Help or Help(Keyword) for a specific help",
-            "Basic Syntax: Verb (Parameter, ...)",
-            "Basic Syntax: Verb (Parameter, ...)",
-            "System Commands:",
-                   $"{InternalCommandHelp} : Basic help and specific help for provided Commands",
-                   $"{InternalCommandList} : List all external Commands",
-                   $"{InternalUsing} : Current Commands available and the one currently in use",
-                   $"{InternalUse} : Type use(namespace) to switch to command namespace",
-                   $"{InternalLogInfo} : Statistics about the current log",
-                   $"{InternalErrorLog} : Enumerate all Error Log entries",
-                   $"{InternalLogFull} : Enumerate full Log",
-                   $"{InternalCommandContainer} : Holds a set of commands and executes them sequentially, use Container{{Command1; Command2; .... }}; ';' is the separator that indicates a new command follows."
-                                                                     );
+		/// <summary>
+		///     Basic internal Help
+		/// </summary>
+		internal static readonly string HelpGeneric = string.Join(
+			Environment.NewLine,
+			"Basic prompt, Version : 0.3. Author: Peter Geinitz (Wayfarer), not context sensitive",
+			"Type Help or Help(Keyword) for specific help",
+			"Basic Syntax: Verb(Parameter, ...)",
+			"System Commands:",
+			$"{InternCommands[0].Command} : {InternCommands[0].Description}",
+			$"{InternCommands[1].Command} : {InternCommands[1].Description}",
+			$"{InternCommands[2].Command} : {InternCommands[2].Description}",
+			$"{InternCommands[3].Command} : {InternCommands[3].Description}",
+			$"{InternCommands[4].Command} : {InternCommands[4].Description}",
+			$"{InternCommands[5].Command} : {InternCommands[5].Description}",
+			$"{InternCommands[6].Command} : {InternCommands[6].Description}",
+			$"{InternCommands[7].Command} : {InternCommands[7].Description}",
+			$"{InternCommands[8].Command} : {InternCommands[8].Description}",
+			$"{InternCommands[9].Command} : {InternCommands[9].Description}",
+			$"{InternCommands[10].Command} : {InternCommands[10].Description}",
+			$"{InternCommands[11].Command} : {InternCommands[11].Description}",
+			$"{InternCommands[12].Command} : {InternCommands[12].Description}",
+            "Furthermore there are Extension Commands, that alter the behaviour of all Commands, they are added with an '.' to an existing command.",
+            "The Internal Extension are:",
+			$"{InternalExtensionCommands[0].Command} : {InternCommands[0].Description}",
+			$"{InternalExtensionCommands[1].Command} : {InternCommands[1].Description}"
+		);
+
 
 		/// <summary>
 		/// The Help feedback Object, only used for the Internal Help Extension
@@ -362,7 +391,7 @@ namespace Interpreter
                new InCommand
            {
                Command = InternalCommandHelp,
-               Description = "Help : List all external Commands",
+               Description = "Help : List all external Commands.",
                ParameterCount = 0
            }
            },
@@ -371,7 +400,7 @@ namespace Interpreter
                new InCommand
            {
                Command = InternalCommandList,
-               Description = "List: Calculate the statistic data for the loaded file.",
+               Description = "List: List all external Commands.",
                ParameterCount = 0
            }
            },
@@ -380,7 +409,7 @@ namespace Interpreter
                new InCommand
            {
                Command = InternalUsing,
-               Description = "Using : Current Commands available and the one currently in use.",
+               Description = "Using : Displays current Commands available and the one currently in use.",
                ParameterCount = 0
            }
            },
@@ -424,7 +453,7 @@ namespace Interpreter
                7,
                new InCommand
            {
-               Command = InternalCommandContainer,
+               Command = InternalContainer,
                Description =
                    "Container : Holds a set of commands and executes them sequential, use Container{Command1; Command2; .... } and ; is the Separator that states that a new command follows.",
                ParameterCount = 0
@@ -432,13 +461,50 @@ namespace Interpreter
            },
            {
                8,
-               new InCommand
-       {
-           Command = InternalCommandBatchExecute,
-           Description = "Batchexecute : Loads a file and executes the commands in it, similar to Container.",
-           ParameterCount = 1
-       }
-           }
-       };
+                   new InCommand
+                   {
+                       Command = InternalBatchExecute,
+                       Description = "Batchexecute : Loads a file and executes the commands in it, similar to Container.",
+                       ParameterCount = 1
+                   }
+               },
+		   {
+			   9,
+				   new InCommand
+				   {
+					   Command = InternalIf,
+					   Description = "If : intended for batch commands and Container, aks for condition and executes everything after the following {}. The Parameter is the ",
+					   ParameterCount = 1
+				   }
+			   },
+		   {
+			   10,
+				   new InCommand
+				   {
+					   Command = InternalElse,
+					   Description = "Else :must be followed after an If and the {} if not we will throw an error, if the If clause was wrong everything after else {} will be excuted.",
+					   ParameterCount = 0
+				   }
+			   },
+		   {
+			   11,
+				   new InCommand
+				   {
+					   Command = InternalGoto,
+					   Description = "Goto : intended for batch commands and Container, if reached, code will jump to Label with Parameter equal to Goto Parameter, else we will get an error.",
+					   ParameterCount = 1
+				   }
+			   },
+		   {
+			   12,
+				   new InCommand
+				   {
+					   Command = InternalLabel,
+					   Description = "label : intended for batch commands and Container, Entry point for Goto Command.",
+					   ParameterCount = 1
+				   }
+			   },
+
+		   };
         }
 }
