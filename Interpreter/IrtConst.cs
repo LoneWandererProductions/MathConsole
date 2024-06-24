@@ -306,238 +306,238 @@ namespace Interpreter
             /// </summary>
             internal static readonly string InternalEmptyParameter = string.Concat(BaseOpen, BaseClose);
 
-		/// <summary>
-		///     Important Command Id for Container. (const). Value: "8".
-		/// </summary>
-		internal const int InternalContainerId = 8;
+		    /// <summary>
+		    ///     Important Command Id for Container. (const). Value: "8".
+		    /// </summary>
+		    internal const int InternalContainerId = 8;
 
 
-		/// <summary>
-		///     Important Command Id for batch files. (const). Value: "9".
-		/// </summary>
-		internal const int InternalBatchId = 9;
+		    /// <summary>
+		    ///     Important Command Id for batch files. (const). Value: "9".
+		    /// </summary>
+		    internal const int InternalBatchId = 9;
 
-		/// <summary>
-		///     Basic internal Help
-		/// </summary>
+		    /// <summary>
+		    ///     Basic internal Help
+		    /// </summary>
 
-		/// <summary>
-		///     Basic internal Help
-		/// </summary>
-		internal static string HelpGeneric => HelpInfo();
+		    /// <summary>
+		    ///     Basic internal Help
+		    /// </summary>
+		    internal static string HelpGeneric => HelpInfo();
 
-		/// <summary>
-		/// Helps the information.
-		/// </summary>
-		/// <returns>Collected Infos about the commands.</returns>
-		private static string HelpInfo()
-		{
-			return string.Join(
-				Environment.NewLine,
-				"Basic prompt, Version : 0.3. Author: Peter Geinitz (Wayfarer), not context sensitive",
-				"Type Help or Help(Keyword) for specific help",
-				"Basic Syntax: Verb(Parameter, ...)",
-				"System Commands:",
-				$"{InternCommands[0].Command} : {InternCommands[0].Description}",
-				$"{InternCommands[1].Command} : {InternCommands[1].Description}",
-				$"{InternCommands[2].Command} : {InternCommands[2].Description}",
-				$"{InternCommands[3].Command} : {InternCommands[3].Description}",
-				$"{InternCommands[4].Command} : {InternCommands[4].Description}",
-				$"{InternCommands[5].Command} : {InternCommands[5].Description}",
-				$"{InternCommands[6].Command} : {InternCommands[6].Description}",
-				$"{InternCommands[7].Command} : {InternCommands[7].Description}",
-				$"{InternCommands[InternalContainerId].Command} : {InternCommands[InternalContainerId].Description}",
-				$"{InternCommands[InternalBatchId].Command} : {InternCommands[InternalBatchId].Description}",
-				$"{InternCommands[10].Command} : {InternCommands[10].Description}",
-				$"{InternCommands[11].Command} : {InternCommands[11].Description}",
-				$"{InternCommands[12].Command} : {InternCommands[12].Description}",
-				$"{InternCommands[13].Command} : {InternCommands[13].Description}",
-				"Furthermore, there are Extension Commands that alter the behaviour of all Commands. They are added with a '.' to an existing command.",
-				"The Internal Extensions are:",
-				$"{InternalExtensionCommands[0].Command} : {InternalExtensionCommands[0].Description}",
-				$"{InternalExtensionCommands[1].Command} : {InternalExtensionCommands[1].Description}"
-		    );
-		}
+		    /// <summary>
+		    /// Helps the information.
+		    /// </summary>
+		    /// <returns>Collected Infos about the commands.</returns>
+		    private static string HelpInfo()
+		    {
+			    return string.Join(
+				    Environment.NewLine,
+				    "Basic prompt, Version : 0.3. Author: Peter Geinitz (Wayfarer), not context sensitive",
+				    "Type Help or Help(Keyword) for specific help",
+				    "Basic Syntax: Verb(Parameter, ...)",
+				    "System Commands:",
+				    $"{InternCommands[0].Command} : {InternCommands[0].Description}",
+				    $"{InternCommands[1].Command} : {InternCommands[1].Description}",
+				    $"{InternCommands[2].Command} : {InternCommands[2].Description}",
+				    $"{InternCommands[3].Command} : {InternCommands[3].Description}",
+				    $"{InternCommands[4].Command} : {InternCommands[4].Description}",
+				    $"{InternCommands[5].Command} : {InternCommands[5].Description}",
+				    $"{InternCommands[6].Command} : {InternCommands[6].Description}",
+				    $"{InternCommands[7].Command} : {InternCommands[7].Description}",
+				    $"{InternCommands[InternalContainerId].Command} : {InternCommands[InternalContainerId].Description}",
+				    $"{InternCommands[InternalBatchId].Command} : {InternCommands[InternalBatchId].Description}",
+				    $"{InternCommands[10].Command} : {InternCommands[10].Description}",
+				    $"{InternCommands[11].Command} : {InternCommands[11].Description}",
+				    $"{InternCommands[12].Command} : {InternCommands[12].Description}",
+				    $"{InternCommands[13].Command} : {InternCommands[13].Description}",
+				    "Furthermore, there are Extension Commands that alter the behaviour of all Commands. They are added with a '.' to an existing command.",
+				    "The Internal Extensions are:",
+				    $"{InternalExtensionCommands[0].Command} : {InternalExtensionCommands[0].Description}",
+				    $"{InternalExtensionCommands[1].Command} : {InternalExtensionCommands[1].Description}"
+		        );
+		    }
 
-		/// <summary>
-		/// The Help feedback Object, only used for the Internal Help Extension
-		/// </summary>
-		internal static UserFeedback HelpFeedback = new()
-            {
-                Before = true,
-                Message = "You now have the following Options:",
-                Options = new Dictionary<AvailableFeedback, string>()
-            {
-                    {
-                         AvailableFeedback.Yes,
-                         "If you want to execute the Command type yes."
-                     },
-                     {
-                         AvailableFeedback.No,
-						 "If you want to stop executing the Command type no."
-					 }
-                }
-            };
+		    /// <summary>
+		    /// The Help feedback Object, only used for the Internal Help Extension
+		    /// </summary>
+		    internal static UserFeedback HelpFeedback = new()
+                {
+                    Before = true,
+                    Message = "You now have the following Options:",
+                    Options = new Dictionary<AvailableFeedback, string>()
+                {
+                        {
+                             AvailableFeedback.Yes,
+                             "If you want to execute the Command type yes."
+                         },
+                         {
+                             AvailableFeedback.No,
+						     "If you want to stop executing the Command type no."
+					     }
+                    }
+                };
 
-            /// <summary>
-            ///     The internal Extension commands, will be used for all external Userspaces.
-            /// </summary>
-            internal static readonly Dictionary<int, InCommand> InternalExtensionCommands = new()
-         {
+                /// <summary>
+                ///     The internal Extension commands, will be used for all external Userspaces.
+                /// </summary>
+                internal static readonly Dictionary<int, InCommand> InternalExtensionCommands = new()
              {
-                 0,
-                 new InCommand
                  {
-                     Command = InternalExtensionUse,
-                     Description = "use(parameter) : use the provided parameter as Userspace, if it exists.",
-                     ParameterCount = 1
+                     0,
+                     new InCommand
+                     {
+                         Command = InternalExtensionUse,
+                         Description = "use(parameter) : use the provided parameter as Userspace, if it exists.",
+                         ParameterCount = 1
+                     }
+                 },
+                 {
+                     1,
+                     new InCommand
+                 {
+                     Command = InternalHelpExtension,
+                     Description =
+                         "help(parameter) : displays the help for the command and asks if you want to execute it.",
+                     ParameterCount = 0
                  }
-             },
-             {
-                 1,
-                 new InCommand
-             {
-                 Command = InternalHelpExtension,
-                 Description =
-                     "help(parameter) : displays the help for the command and asks if you want to execute it.",
-                 ParameterCount = 0
-             }
-             }
-         };
+                 }
+             };
 
-            /// <summary>
-            ///     The Dictionary for internal commands, all implemented and tested
-            /// </summary>
-            internal static readonly Dictionary<int, InCommand> InternCommands = new()
-       {
+                /// <summary>
+                ///     The Dictionary for internal commands, all implemented and tested
+                /// </summary>
+                internal static readonly Dictionary<int, InCommand> InternCommands = new()
            {
-               0,
-               new InCommand
-           {
-               Command = InternalCommandHelp,
-               Description = "Help : List all external Commands.",
-               ParameterCount = 0
-           }
-           },
-		   {
-			   1,
-			   new InCommand
-		   {
-			   Command = InternalCommandHelp,
-			   Description = "Help : Help with Parameter is an overload of help, provides Information about specified command.",
-			   ParameterCount = 1
-		   }
-		   },
-		   {
-               2,
-               new InCommand
-           {
-               Command = InternalCommandList,
-               Description = "List: List all external Commands.",
-               ParameterCount = 0
-           }
-           },
-           {
-               3,
-               new InCommand
-           {
-               Command = InternalUsing,
-               Description = "Using : Displays current Commands available and the one currently in use.",
-               ParameterCount = 0
-           }
-           },
-           {
-               4,
-               new InCommand
-           {
-               Command = InternalUse,
-               Description = "Use : Type use(namespace) to switch to command namespace",
-               ParameterCount = 1
-           }
-           },
-           {
-               5,
-               new InCommand
-           {
-               Command = InternalLogInfo,
-               Description = "Loginfo : statistics about the current log",
-               ParameterCount = 0
-           }
-           },
-           {
-               6,
-               new InCommand
-           {
-               Command = InternalErrorLog,
-               Description = "Log : Enumerate all Error Log entries.",
-               ParameterCount = 0
-           }
-           },
-           {
-               7,
-               new InCommand
-           {
-               Command = InternalLogFull,
-               Description = "Logfull : Enumerate full Log",
-               ParameterCount = 0
-           }
-           },
-           {
-			   InternalContainerId,
-               new InCommand
-           {
-               Command = InternalContainer,
-               Description =
-                   "Container : Holds a set of commands and executes them sequential, use Container{Command1; Command2; .... } and ; is the Separator that states that a new command follows.",
-               ParameterCount = 0
-           }
-           },
-           {
-			   InternalBatchId,
+               {
+                   0,
                    new InCommand
-                   {
-                       Command = InternalBatchExecute,
-                       Description = "Batchexecute : Loads a file and executes the commands in it, similar to Container.",
-                       ParameterCount = 1
-                   }
+               {
+                   Command = InternalCommandHelp,
+                   Description = "Help : List all external Commands.",
+                   ParameterCount = 0
+               }
                },
-		   {
-			   10,
-				   new InCommand
-				   {
-					   Command = InternalIf,
-					   Description = "If : intended for batch commands and Container, aks for condition and executes everything after the following {}. The Parameter is the ",
-					   ParameterCount = 1
-				   }
-			   },
-		   {
-			   11,
-				   new InCommand
-				   {
-					   Command = InternalElse,
-					   Description = "Else :must be followed after an If and the {} if not we will throw an error, if the If clause was wrong everything after else {} will be excuted.",
-					   ParameterCount = 0
-				   }
-			   },
-		   {
-			   12,
-				   new InCommand
-				   {
-					   Command = InternalGoto,
-					   Description = "Goto : intended for batch commands and Container, if reached, code will jump to Label with Parameter equal to Goto Parameter, else we will get an error.",
-					   ParameterCount = 1
-				   }
-			   },
-		   {
-			   13,
-				   new InCommand
-				   {
-					   Command = InternalLabel,
-					   Description = "label : intended for batch commands and Container, Entry point for Goto Command.",
-					   ParameterCount = 1
-				   }
-			   },
+		       {
+			       1,
+			       new InCommand
+		       {
+			       Command = InternalCommandHelp,
+			       Description = "Help : Help with Parameter is an overload of help, provides Information about specified command.",
+			       ParameterCount = 1
+		       }
+		       },
+		       {
+                   2,
+                   new InCommand
+               {
+                   Command = InternalCommandList,
+                   Description = "List: List all external Commands.",
+                   ParameterCount = 0
+               }
+               },
+               {
+                   3,
+                   new InCommand
+               {
+                   Command = InternalUsing,
+                   Description = "Using : Displays current Commands available and the one currently in use.",
+                   ParameterCount = 0
+               }
+               },
+               {
+                   4,
+                   new InCommand
+               {
+                   Command = InternalUse,
+                   Description = "Use : Type use(namespace) to switch to command namespace",
+                   ParameterCount = 1
+               }
+               },
+               {
+                   5,
+                   new InCommand
+               {
+                   Command = InternalLogInfo,
+                   Description = "Loginfo : statistics about the current log",
+                   ParameterCount = 0
+               }
+               },
+               {
+                   6,
+                   new InCommand
+               {
+                   Command = InternalErrorLog,
+                   Description = "Log : Enumerate all Error Log entries.",
+                   ParameterCount = 0
+               }
+               },
+               {
+                   7,
+                   new InCommand
+               {
+                   Command = InternalLogFull,
+                   Description = "Logfull : Enumerate full Log",
+                   ParameterCount = 0
+               }
+               },
+               {
+			       InternalContainerId,
+                   new InCommand
+               {
+                   Command = InternalContainer,
+                   Description =
+                       "Container : Holds a set of commands and executes them sequential, use Container{Command1; Command2; .... } and ; is the Separator that states that a new command follows.",
+                   ParameterCount = 0
+               }
+               },
+               {
+			       InternalBatchId,
+                       new InCommand
+                       {
+                           Command = InternalBatchExecute,
+                           Description = "Batchexecute : Loads a file and executes the commands in it, similar to Container.",
+                           ParameterCount = 1
+                       }
+                   },
+		       {
+			       10,
+				       new InCommand
+				       {
+					       Command = InternalIf,
+					       Description = "If : intended for batch commands and Container, aks for condition and executes everything after the following {}. The Parameter is the ",
+					       ParameterCount = 1
+				       }
+			       },
+		       {
+			       11,
+				       new InCommand
+				       {
+					       Command = InternalElse,
+					       Description = "Else :must be followed after an If and the {} if not we will throw an error, if the If clause was wrong everything after else {} will be excuted.",
+					       ParameterCount = 0
+				       }
+			       },
+		       {
+			       12,
+				       new InCommand
+				       {
+					       Command = InternalGoto,
+					       Description = "Goto : intended for batch commands and Container, if reached, code will jump to Label with Parameter equal to Goto Parameter, else we will get an error.",
+					       ParameterCount = 1
+				       }
+			       },
+		       {
+			       13,
+				       new InCommand
+				       {
+					       Command = InternalLabel,
+					       Description = "label : intended for batch commands and Container, Entry point for Goto Command.",
+					       ParameterCount = 1
+				       }
+			       },
 
-		   };
+		       };
         }
 }
