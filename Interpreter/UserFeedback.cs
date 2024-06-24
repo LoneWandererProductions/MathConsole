@@ -11,60 +11,57 @@ using System.Text;
 
 namespace Interpreter
 {
-	/// <summary>
-	/// Object that will hold the Information for the user about user confirmations
-	/// </summary>
-	public class UserFeedback
-	{
-		/// <summary>
-		/// Gets or sets a value indicating whether this <see cref="UserFeedback"/> is before.
-		/// </summary>
-		/// <value>
-		///   <c>true</c> if before; otherwise, <c>false</c>.
-		/// </value>
-		public bool Before { get; set; }
+    /// <summary>
+    ///     Object that will hold the Information for the user about user confirmations
+    /// </summary>
+    public class UserFeedback
+    {
+        /// <summary>
+        ///     Gets or sets a value indicating whether this <see cref="UserFeedback" /> is before.
+        /// </summary>
+        /// <value>
+        ///     <c>true</c> if before; otherwise, <c>false</c>.
+        /// </value>
+        public bool Before { get; set; }
 
-		/// <summary>
-		/// Gets or sets the message.
-		/// </summary>
-		/// <value>
-		/// The message.
-		/// </value>
-		public string Message { get; set; }
+        /// <summary>
+        ///     Gets or sets the message.
+        /// </summary>
+        /// <value>
+        ///     The message.
+        /// </value>
+        public string Message { get; set; }
 
-		/// <summary>
-		/// Gets or sets the options. The Hardcoded options like yes, no, cancel, only one is allowed
-		/// Vaule is the Message fitting to the Key.
-		/// </summary>
-		/// <value>
-		/// The options.
-		/// </value>
-		public Dictionary<AvailableFeedback, string> Options { get; set; }
+        /// <summary>
+        ///     Gets or sets the options. The Hardcoded options like yes, no, cancel, only one is allowed
+        ///     Vaule is the Message fitting to the Key.
+        /// </summary>
+        /// <value>
+        ///     The options.
+        /// </value>
+        public Dictionary<AvailableFeedback, string> Options { get; set; }
 
-		/// <summary>
-		/// Converts to string.
-		/// Builds the output Message
-		/// </summary>
-		/// <returns>
-		/// A <see cref="string" /> that represents this instance, creates the User message.
-		/// </returns>
-		public override string ToString()
-		{
-			var message = new StringBuilder();
-			message.Append(Message); // Start with the main message
+        /// <summary>
+        ///     Converts to string.
+        ///     Builds the output Message
+        /// </summary>
+        /// <returns>
+        ///     A <see cref="string" /> that represents this instance, creates the User message.
+        /// </returns>
+        public override string ToString()
+        {
+            var message = new StringBuilder();
+            message.Append(Message); // Start with the main message
 
-			if (Options?.Count > 0)
-			{
-				// Iterate through each key-value pair in Options
-				foreach (var kvp in Options)
-				{
-					message.Append($"{kvp.Key} {kvp.Value}, "); // Format key-value pairs
-				}
+            if (Options?.Count > 0)
+            {
+                // Iterate through each key-value pair in Options
+                foreach (var kvp in Options) message.Append($"{kvp.Key} {kvp.Value}, "); // Format key-value pairs
 
-				message.Length -= 2; // Remove the last ", " to avoid extra trailing comma
-			}
+                message.Length -= 2; // Remove the last ", " to avoid extra trailing comma
+            }
 
-			return message.ToString();
-		}
-	}
+            return message.ToString();
+        }
+    }
 }

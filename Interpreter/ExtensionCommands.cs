@@ -10,36 +10,36 @@ using System.Collections.Generic;
 
 namespace Interpreter
 {
-	/// <summary>
-	///     Extensions for the existing commands
-	/// </summary>
-	public sealed class ExtensionCommands
-	{
-		/// <summary>
-		///     Gets the used name space.
-		/// </summary>
-		/// <value>
-		///     The used name space.
-		/// </value>
-		public string ExtensionNameSpace { get; internal set; }
+    /// <summary>
+    ///     Extensions for the existing commands
+    /// </summary>
+    public sealed class ExtensionCommands
+    {
+        /// <summary>
+        ///     Gets the used name space.
+        /// </summary>
+        /// <value>
+        ///     The used name space.
+        /// </value>
+        public string ExtensionNameSpace { get; internal set; }
 
-		/// <summary>
-		///     Gets or sets the command.
-		/// </summary>
-		public int ExtensionCommand { get; internal set; }
+        /// <summary>
+        ///     Gets or sets the command.
+        /// </summary>
+        public int ExtensionCommand { get; internal set; }
 
-		/// <summary>
-		///     Gets or sets the parameter.
-		/// </summary>
-		public List<string> ExtensionParameter { get; internal set; }
+        /// <summary>
+        ///     Gets or sets the parameter.
+        /// </summary>
+        public List<string> ExtensionParameter { get; internal set; }
 
-		/// <summary>
-		///     Gets or sets the base command.
-		///     Only visible within the Interpreter Namespace
-		/// </summary>
-		/// <value>
-		///     The base command.
-		/// </value>
-		internal string BaseCommand { get; set; }
-	}
+        /// <summary>
+        ///     Gets or sets the base command.
+        ///     Only visible within the Interpreter Namespace
+        /// </summary>
+        /// <value>
+        ///     The base command.
+        /// </value>
+        internal string BaseCommand { get; set; }
+    }
 }

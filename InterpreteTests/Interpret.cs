@@ -237,12 +237,12 @@ namespace InterpretTests
             Assert.IsTrue(_outCommand.ErrorMessage.Contains("Error in the Syntax: "),
                 "Wrong or no error set: " + _outCommand.ErrorMessage);
 
-			// Act
-			prompt.ConsoleInput("help (third )");
-			Assert.IsTrue(_log.Contains("Special case no Parameter"), "Help not correctly displayed.");
+            // Act
+            prompt.ConsoleInput("help (third )");
+            Assert.IsTrue(_log.Contains("Special case no Parameter"), "Help not correctly displayed.");
 
-			// Act
-			prompt.ConsoleInput("Third");
+            // Act
+            prompt.ConsoleInput("Third");
 
             // Assert
             Assert.AreEqual(2, _outCommand.Command, "Wrong Id: " + _outCommand.Command);
@@ -349,15 +349,15 @@ namespace InterpretTests
             _prompt.SendCommands += SendCommands;
             _prompt.Initiate(DctCommandOne, UserSpaceOne);
 
-			_prompt.ConsoleInput("Container{ Help()};");
+            _prompt.ConsoleInput("Container{ Help()};");
 
-			Assert.AreEqual(true,
-				_log.Contains("Basic prompt, Version : 0.3. Author: Peter Geinitz (Wayfarer)"),
-				"Help not displayed" + _log);
+            Assert.AreEqual(true,
+                _log.Contains("Basic prompt, Version : 0.3. Author: Peter Geinitz (Wayfarer)"),
+                "Help not displayed" + _log);
 
             //advanced tests
 
-			_prompt.ConsoleInput("Container{FirSt(1,2); Third() ; ; --test comment;Help()};;;;");
+            _prompt.ConsoleInput("Container{FirSt(1,2); Third() ; ; --test comment;Help()};;;;");
 
             Assert.AreEqual(true,
                 _log.Contains("Basic prompt, Version : 0.3. Author: Peter Geinitz (Wayfarer), not context sensitive"),

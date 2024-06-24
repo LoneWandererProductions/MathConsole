@@ -239,81 +239,81 @@ namespace InterpreteTests
             Assert.AreEqual(2, result);
         }
 
-		/// <summary>
-		/// Splits the parameter single parameter should return single parameter.
-		/// </summary>
-		[TestMethod]
-		public void SplitParameterSingleParameterShouldReturnSingleParameter()
-		{
-			var result = Irt.SplitParameter("parameter1", ',');
-			CollectionAssert.AreEqual(new List<string> { "parameter1" }, result);
-		}
+        /// <summary>
+        ///     Splits the parameter single parameter should return single parameter.
+        /// </summary>
+        [TestMethod]
+        public void SplitParameterSingleParameterShouldReturnSingleParameter()
+        {
+            var result = Irt.SplitParameter("parameter1", ',');
+            CollectionAssert.AreEqual(new List<string> { "parameter1" }, result);
+        }
 
-		/// <summary>
-		/// Splits the parameter multiple parameters should return all parameters.
-		/// </summary>
-		[TestMethod]
-		public void SplitParameterMultipleParametersShouldReturnAllParameters()
-		{
-			var result = Irt.SplitParameter("parameter1,parameter2,parameter3", ',');
-			CollectionAssert.AreEqual(new List<string> { "parameter1", "parameter2", "parameter3" }, result);
-		}
+        /// <summary>
+        ///     Splits the parameter multiple parameters should return all parameters.
+        /// </summary>
+        [TestMethod]
+        public void SplitParameterMultipleParametersShouldReturnAllParameters()
+        {
+            var result = Irt.SplitParameter("parameter1,parameter2,parameter3", ',');
+            CollectionAssert.AreEqual(new List<string> { "parameter1", "parameter2", "parameter3" }, result);
+        }
 
-		/// <summary>
-		/// Splits the parameter with spaces should trim spaces.
-		/// </summary>
-		[TestMethod]
-		public void SplitParameterWithSpacesShouldTrimSpaces()
-		{
-			var result = Irt.SplitParameter(" parameter1 , parameter2 , parameter3 ", ',');
-			CollectionAssert.AreEqual(new List<string> { "parameter1", "parameter2", "parameter3" }, result);
-		}
+        /// <summary>
+        ///     Splits the parameter with spaces should trim spaces.
+        /// </summary>
+        [TestMethod]
+        public void SplitParameterWithSpacesShouldTrimSpaces()
+        {
+            var result = Irt.SplitParameter(" parameter1 , parameter2 , parameter3 ", ',');
+            CollectionAssert.AreEqual(new List<string> { "parameter1", "parameter2", "parameter3" }, result);
+        }
 
-		/// <summary>
-		/// Splits the parameter empty parameters should remove empty parameters.
-		/// </summary>
-		[TestMethod]
-		public void SplitParameterEmptyParameters_ShouldRemoveEmptyParameters()
-		{
-			var result = Irt.SplitParameter("parameter1,,parameter3", ',');
-			CollectionAssert.AreEqual(new List<string> { "parameter1", "parameter3" }, result);
-		}
+        /// <summary>
+        ///     Splits the parameter empty parameters should remove empty parameters.
+        /// </summary>
+        [TestMethod]
+        public void SplitParameterEmptyParameters_ShouldRemoveEmptyParameters()
+        {
+            var result = Irt.SplitParameter("parameter1,,parameter3", ',');
+            CollectionAssert.AreEqual(new List<string> { "parameter1", "parameter3" }, result);
+        }
 
-		/// <summary>
-		/// Splits the parameter empty and whitespace parameters should remove empty and whitespace parameters.
-		/// </summary>
-		[TestMethod]
-		public void SplitParameterEmptyAndWhitespaceParametersShouldRemoveEmptyAndWhitespaceParameters()
-		{
-			var result = Irt.SplitParameter("parameter1, ,parameter3", ',');
-			CollectionAssert.AreEqual(new List<string> { "parameter1", "parameter3" }, result);
-		}
+        /// <summary>
+        ///     Splits the parameter empty and whitespace parameters should remove empty and whitespace parameters.
+        /// </summary>
+        [TestMethod]
+        public void SplitParameterEmptyAndWhitespaceParametersShouldRemoveEmptyAndWhitespaceParameters()
+        {
+            var result = Irt.SplitParameter("parameter1, ,parameter3", ',');
+            CollectionAssert.AreEqual(new List<string> { "parameter1", "parameter3" }, result);
+        }
 
-		/// <summary>
-		/// Splits the parameter custom splitter should split by custom splitter.
-		/// </summary>
-		[TestMethod]
-		public void SplitParameterCustomSplitterShouldSplitByCustomSplitter()
-		{
-			var result = Irt.SplitParameter("parameter1|parameter2|parameter3", '|');
-			CollectionAssert.AreEqual(new List<string> { "parameter1", "parameter2", "parameter3" }, result);
-		}
+        /// <summary>
+        ///     Splits the parameter custom splitter should split by custom splitter.
+        /// </summary>
+        [TestMethod]
+        public void SplitParameterCustomSplitterShouldSplitByCustomSplitter()
+        {
+            var result = Irt.SplitParameter("parameter1|parameter2|parameter3", '|');
+            CollectionAssert.AreEqual(new List<string> { "parameter1", "parameter2", "parameter3" }, result);
+        }
 
-		/// <summary>
-		/// Samples the splitter.
-		/// </summary>
-		[TestMethod]
-		public void SampleSplitter()
-		{
-			var result = Irt.SplitParameter("help;;;", ';');
-			CollectionAssert.AreEqual(new List<string> { "help" }, result);
-		}
+        /// <summary>
+        ///     Samples the splitter.
+        /// </summary>
+        [TestMethod]
+        public void SampleSplitter()
+        {
+            var result = Irt.SplitParameter("help;;;", ';');
+            CollectionAssert.AreEqual(new List<string> { "help" }, result);
+        }
 
 
-		/// <summary>
-		///     Tests internal extension functionality.
-		/// </summary>
-		[TestMethod]
+        /// <summary>
+        ///     Tests internal extension functionality.
+        /// </summary>
+        [TestMethod]
         public void InternalExtensionTest()
         {
             // Arrange
