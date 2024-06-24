@@ -307,33 +307,57 @@ namespace Interpreter
             internal static readonly string InternalEmptyParameter = string.Concat(BaseOpen, BaseClose);
 
 		/// <summary>
+		///     Important Command Id for Container. (const). Value: "8".
+		/// </summary>
+		internal const int InternalContainerId = 8;
+
+
+		/// <summary>
+		///     Important Command Id for batch files. (const). Value: "9".
+		/// </summary>
+		internal const int InternalBatchId = 9;
+
+		/// <summary>
 		///     Basic internal Help
 		/// </summary>
-		internal static readonly string HelpGeneric = string.Join(
-			Environment.NewLine,
-			"Basic prompt, Version : 0.3. Author: Peter Geinitz (Wayfarer), not context sensitive",
-			"Type Help or Help(Keyword) for specific help",
-			"Basic Syntax: Verb(Parameter, ...)",
-			"System Commands:",
-			$"{InternCommands[0].Command} : {InternCommands[0].Description}",
-			$"{InternCommands[1].Command} : {InternCommands[1].Description}",
-			$"{InternCommands[2].Command} : {InternCommands[2].Description}",
-			$"{InternCommands[3].Command} : {InternCommands[3].Description}",
-			$"{InternCommands[4].Command} : {InternCommands[4].Description}",
-			$"{InternCommands[5].Command} : {InternCommands[5].Description}",
-			$"{InternCommands[6].Command} : {InternCommands[6].Description}",
-			$"{InternCommands[7].Command} : {InternCommands[7].Description}",
-			$"{InternCommands[8].Command} : {InternCommands[8].Description}",
-			$"{InternCommands[9].Command} : {InternCommands[9].Description}",
-			$"{InternCommands[10].Command} : {InternCommands[10].Description}",
-			$"{InternCommands[11].Command} : {InternCommands[11].Description}",
-			$"{InternCommands[12].Command} : {InternCommands[12].Description}",
-            "Furthermore there are Extension Commands, that alter the behaviour of all Commands, they are added with an '.' to an existing command.",
-            "The Internal Extension are:",
-			$"{InternalExtensionCommands[0].Command} : {InternCommands[0].Description}",
-			$"{InternalExtensionCommands[1].Command} : {InternCommands[1].Description}"
-		);
 
+		/// <summary>
+		///     Basic internal Help
+		/// </summary>
+		internal static string HelpGeneric => HelpInfo();
+
+		/// <summary>
+		/// Helps the information.
+		/// </summary>
+		/// <returns>Collected Infos about the commands.</returns>
+		private static string HelpInfo()
+		{
+			return string.Join(
+				Environment.NewLine,
+				"Basic prompt, Version : 0.3. Author: Peter Geinitz (Wayfarer), not context sensitive",
+				"Type Help or Help(Keyword) for specific help",
+				"Basic Syntax: Verb(Parameter, ...)",
+				"System Commands:",
+				$"{InternCommands[0].Command} : {InternCommands[0].Description}",
+				$"{InternCommands[1].Command} : {InternCommands[1].Description}",
+				$"{InternCommands[2].Command} : {InternCommands[2].Description}",
+				$"{InternCommands[3].Command} : {InternCommands[3].Description}",
+				$"{InternCommands[4].Command} : {InternCommands[4].Description}",
+				$"{InternCommands[5].Command} : {InternCommands[5].Description}",
+				$"{InternCommands[6].Command} : {InternCommands[6].Description}",
+				$"{InternCommands[7].Command} : {InternCommands[7].Description}",
+				$"{InternCommands[InternalContainerId].Command} : {InternCommands[InternalContainerId].Description}",
+				$"{InternCommands[InternalBatchId].Command} : {InternCommands[InternalBatchId].Description}",
+				$"{InternCommands[10].Command} : {InternCommands[10].Description}",
+				$"{InternCommands[11].Command} : {InternCommands[11].Description}",
+				$"{InternCommands[12].Command} : {InternCommands[12].Description}",
+				$"{InternCommands[13].Command} : {InternCommands[13].Description}",
+				"Furthermore, there are Extension Commands that alter the behaviour of all Commands. They are added with a '.' to an existing command.",
+				"The Internal Extensions are:",
+				$"{InternalExtensionCommands[0].Command} : {InternalExtensionCommands[0].Description}",
+				$"{InternalExtensionCommands[1].Command} : {InternalExtensionCommands[1].Description}"
+		    );
+		}
 
 		/// <summary>
 		/// The Help feedback Object, only used for the Internal Help Extension
@@ -395,8 +419,17 @@ namespace Interpreter
                ParameterCount = 0
            }
            },
-           {
-               1,
+		   {
+			   1,
+			   new InCommand
+		   {
+			   Command = InternalCommandHelp,
+			   Description = "Help : Help with Parameter is an overload of help, provides Information about specified command.",
+			   ParameterCount = 1
+		   }
+		   },
+		   {
+               2,
                new InCommand
            {
                Command = InternalCommandList,
@@ -405,7 +438,7 @@ namespace Interpreter
            }
            },
            {
-               2,
+               3,
                new InCommand
            {
                Command = InternalUsing,
@@ -414,7 +447,7 @@ namespace Interpreter
            }
            },
            {
-               3,
+               4,
                new InCommand
            {
                Command = InternalUse,
@@ -423,7 +456,7 @@ namespace Interpreter
            }
            },
            {
-               4,
+               5,
                new InCommand
            {
                Command = InternalLogInfo,
@@ -432,7 +465,7 @@ namespace Interpreter
            }
            },
            {
-               5,
+               6,
                new InCommand
            {
                Command = InternalErrorLog,
@@ -441,7 +474,7 @@ namespace Interpreter
            }
            },
            {
-               6,
+               7,
                new InCommand
            {
                Command = InternalLogFull,
@@ -450,7 +483,7 @@ namespace Interpreter
            }
            },
            {
-               7,
+			   InternalContainerId,
                new InCommand
            {
                Command = InternalContainer,
@@ -460,7 +493,7 @@ namespace Interpreter
            }
            },
            {
-               8,
+			   InternalBatchId,
                    new InCommand
                    {
                        Command = InternalBatchExecute,
@@ -469,7 +502,7 @@ namespace Interpreter
                    }
                },
 		   {
-			   9,
+			   10,
 				   new InCommand
 				   {
 					   Command = InternalIf,
@@ -478,7 +511,7 @@ namespace Interpreter
 				   }
 			   },
 		   {
-			   10,
+			   11,
 				   new InCommand
 				   {
 					   Command = InternalElse,
@@ -487,7 +520,7 @@ namespace Interpreter
 				   }
 			   },
 		   {
-			   11,
+			   12,
 				   new InCommand
 				   {
 					   Command = InternalGoto,
@@ -496,7 +529,7 @@ namespace Interpreter
 				   }
 			   },
 		   {
-			   12,
+			   13,
 				   new InCommand
 				   {
 					   Command = InternalLabel,

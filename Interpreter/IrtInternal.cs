@@ -65,7 +65,24 @@ namespace Interpreter
 				? Irt.SplitParameter(parts, IrtConst.Splitter)
 				: new List<string> { parts };
 
-			HandleInternalCommands(key, parameter);
+			//check for batch and Command Files
+			if (key == IrtConst.InternalContainerId || key == IrtConst.InternalBatchId)
+			{
+				HandleInternalCommands(key, parameter);
+				return;
+			}
+
+			//check for Parameter Overload
+			var check = Irt.CheckOverload(IrtConst.InternCommands[key].Command, parameter.Count, IrtConst.InternCommands);
+
+
+			if (check == null)
+			{
+				_prompt.SendLog(this,IrtConst.SyntaxError);
+				return;
+			}
+
+			HandleInternalCommands(check, parameter);
 		}
 
 		/// <summary>
@@ -73,43 +90,44 @@ namespace Interpreter
 		/// </summary>
 		/// <param name="command">Key of the command</param>
 		/// <param name="parameter"></param>
-		private void HandleInternalCommands(int command, IReadOnlyList<string> parameter)
+		private void HandleInternalCommands(int? command, IReadOnlyList<string> parameter)
 		{
 			switch (command)
 			{
-				case 0:
+				case 1:
 					CommandHelp(parameter[0]);
 					break;
 
-				case 1:
+				case 2:
 					CommandList();
 					break;
 
-				case 2:
+				case 3:
 					CommandUsing(_nameSpace);
 					break;
 
-				case 3:
+				case 4:
 					CommandUse(parameter[0]);
 					break;
 
 				case 5:
-					CommandLogError();
-					break;
-
-				case 4:
 					CommandLogInfo();
 					break;
 
 				case 6:
+					CommandLogError();
+					break;
+
+
+				case 7:
 					CommandLogFull();
 					break;
 
-				case 7:
+				case 8:
 					CommandContainer(parameter[0]);
 					break;
 
-				case 8:
+				case 9:
 					CommandBatchExecute(parameter[0]);
 					break;
 
@@ -131,7 +149,6 @@ namespace Interpreter
 				return;
 			}
 
-			parameterPart = Irt.RemoveParenthesis(parameterPart, IrtConst.BaseOpen, IrtConst.BaseClose);
 			var key = Irt.CheckForKeyWord(parameterPart, _commands);
 
 			if (key == IrtConst.Error)

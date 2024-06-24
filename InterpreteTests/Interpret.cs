@@ -199,7 +199,7 @@ namespace InterpretTests
         ///     Some basic tests, the interpreter should execute commands correctly.
         /// </summary>
         [TestMethod]
-        public void ConsoleInterpreterdxecuteCommands()
+        public void ConsoleInterpreterExecuteCommands()
         {
             // Arrange
             var prompt = new Prompt();
@@ -237,8 +237,12 @@ namespace InterpretTests
             Assert.IsTrue(_outCommand.ErrorMessage.Contains("Error in the Syntax: "),
                 "Wrong or no error set: " + _outCommand.ErrorMessage);
 
-            // Act
-            prompt.ConsoleInput("Third");
+			// Act
+			prompt.ConsoleInput("help (third )");
+			Assert.IsTrue(_log.Contains("Special case no Parameter"), "Help not correctly displayed.");
+
+			// Act
+			prompt.ConsoleInput("Third");
 
             // Assert
             Assert.AreEqual(2, _outCommand.Command, "Wrong Id: " + _outCommand.Command);
@@ -344,14 +348,23 @@ namespace InterpretTests
             _prompt.SendLogs += SendLogs;
             _prompt.SendCommands += SendCommands;
             _prompt.Initiate(DctCommandOne, UserSpaceOne);
-            _prompt.ConsoleInput("Container{FirSt(1,2); Third() ; ; --test comment;Help()};;;;");
+
+			_prompt.ConsoleInput("Container{ Help()};");
+
+			Assert.AreEqual(true,
+				_log.Contains("Basic prompt, Version : 0.3. Author: Peter Geinitz (Wayfarer)"),
+				"Help not displayed" + _log);
+
+            //advanced tests
+
+			_prompt.ConsoleInput("Container{FirSt(1,2); Third() ; ; --test comment;Help()};;;;");
 
             Assert.AreEqual(true,
                 _log.Contains("Basic prompt, Version : 0.3. Author: Peter Geinitz (Wayfarer), not context sensitive"),
                 "Help not displayed" + _log);
 
-            Assert.AreEqual(_prompt.Log[1], "0", "Correct Parameter");
-            Assert.AreEqual(_prompt.Log[3], "2", "Correct Parameter");
+            Assert.AreEqual(_prompt.Log[3], "0", "Correct Parameter");
+            Assert.AreEqual(_prompt.Log[5], "2", "Correct Parameter");
             _prompt.Dispose();
         }
 
@@ -417,24 +430,6 @@ namespace InterpretTests
         {
             if (e.Command == -1) _log = e.ErrorMessage;
             _outCommand = e;
-        }
-
-        /// <summary>
-        ///     Handles the input help command logs help.
-        /// </summary>
-        [TestMethod]
-        public void HandleInputHelpCommandLogsHelp()
-        {
-            var logHandled = false;
-            _irtPrompt.SendInternalLog += (sender, e) =>
-            {
-                Assert.AreEqual(IrtConst.HelpGeneric, e);
-                logHandled = true;
-            };
-
-            _irtPrompt.HandleInput(IrtConst.InternalCommandHelp);
-
-            Assert.IsTrue(logHandled);
         }
     }
 }

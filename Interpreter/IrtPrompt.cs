@@ -81,7 +81,7 @@ namespace Interpreter
 			_irtExtension = new IrtExtension();
 			//notify log about loading up
 			var log = Logging.SetLastError(IrtConst.InformationStartup, 2);
-			OnStatus(log);
+			SendInternalLog?.Invoke(this, log);
 		}
 
 		/// <summary>
@@ -127,7 +127,7 @@ namespace Interpreter
 			// Handle help commands
 			if (IsHelpCommand(inputString))
 			{
-				OnStatus(IrtConst.HelpGeneric);
+				_prompt.SendLog(this, IrtConst.HelpGeneric);
 				return;
 			}
 
@@ -269,7 +269,7 @@ namespace Interpreter
 		}
 
 		/// <summary>
-		///     Determines whether [is help command] [the specified input].
+		///     Determines whether [is help command] [the specified input] without ().
 		/// </summary>
 		/// <param name="input">The input.</param>
 		/// <returns>
@@ -333,15 +333,6 @@ namespace Interpreter
 			{ Command = IrtConst.Error, Parameter = null, UsedNameSpace = _nameSpace, ErrorMessage = error };
 
 			_prompt.SendCommand(this, com);
-		}
-
-		/// <summary>
-		///     Sends everything
-		/// </summary>
-		/// <param name="sendLog">Debug and Status Messages</param>
-		private void OnStatus(string sendLog)
-		{
-			SendInternalLog?.Invoke(this, sendLog);
 		}
 	}
 }
