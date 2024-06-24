@@ -14,7 +14,7 @@ namespace Interpreter
     /// <summary>
     ///     Object that will hold the Information for the user about user confirmations
     /// </summary>
-    public class UserFeedback
+    public sealed class UserFeedback
     {
         /// <summary>
         ///     Gets or sets a value indicating whether this <see cref="UserFeedback" /> is before.
@@ -22,7 +22,7 @@ namespace Interpreter
         /// <value>
         ///     <c>true</c> if before; otherwise, <c>false</c>.
         /// </value>
-        public bool Before { get; set; }
+        public bool Before { get; init; }
 
         /// <summary>
         ///     Gets or sets the message.
@@ -30,7 +30,7 @@ namespace Interpreter
         /// <value>
         ///     The message.
         /// </value>
-        public string Message { get; set; }
+        public string Message { get; init; }
 
         /// <summary>
         ///     Gets or sets the options. The Hardcoded options like yes, no, cancel, only one is allowed
@@ -39,7 +39,7 @@ namespace Interpreter
         /// <value>
         ///     The options.
         /// </value>
-        public Dictionary<AvailableFeedback, string> Options { get; set; }
+        public Dictionary<AvailableFeedback, string> Options { get; init; }
 
         /// <summary>
         ///     Converts to string.
@@ -56,7 +56,7 @@ namespace Interpreter
             if (Options?.Count > 0)
             {
                 // Iterate through each key-value pair in Options
-                foreach (var kvp in Options) message.Append($"{kvp.Key} {kvp.Value}, "); // Format key-value pairs
+                foreach (var (key, value) in Options) message.Append($"{key} {value}, "); // Format key-value pairs
 
                 message.Length -= 2; // Remove the last ", " to avoid extra trailing comma
             }
