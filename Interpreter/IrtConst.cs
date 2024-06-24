@@ -311,7 +311,6 @@ namespace Interpreter
 		    /// </summary>
 		    internal const int InternalContainerId = 8;
 
-
 		    /// <summary>
 		    ///     Important Command Id for batch files. (const). Value: "9".
 		    /// </summary>
@@ -382,7 +381,7 @@ namespace Interpreter
                 /// <summary>
                 ///     The internal Extension commands, will be used for all external Userspaces.
                 /// </summary>
-                internal static readonly Dictionary<int, InCommand> InternalExtensionCommands = new()
+             internal static readonly Dictionary<int, InCommand> InternalExtensionCommands = new()
              {
                  {
                      0,
@@ -408,7 +407,7 @@ namespace Interpreter
                 /// <summary>
                 ///     The Dictionary for internal commands, all implemented and tested
                 /// </summary>
-                internal static readonly Dictionary<int, InCommand> InternCommands = new()
+           internal static readonly Dictionary<int, InCommand> InternCommands = new()
            {
                {
                    0,

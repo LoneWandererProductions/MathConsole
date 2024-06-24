@@ -163,7 +163,7 @@ namespace Interpreter
 		public void ConsoleInput(string input)
 		{
 			if (!CommandRegister.AwaitInput) _interpret?.HandleInput(input);
-			else HandleUserInput();
+			else HandleUserInput(input);
 		}
 
 		/// <inheritdoc />
@@ -195,7 +195,11 @@ namespace Interpreter
 			IrtPrompt.SwitchUserSpace(use);
 		}
 
-		private void HandleUserInput()
+		/// <summary>
+		/// Handles the user input.
+		/// </summary>
+		/// <param name="input">The input.</param>
+		private void HandleUserInput(string input)
 		{
 			if (_feedback == null)
 			{
@@ -207,6 +211,22 @@ namespace Interpreter
 			{
 				CommandRegister.AwaitInput = false;
 				return;
+			}
+
+			switch (input.ToUpper())
+			{
+				case string s when s == nameof(AvailableFeedback.Yes).ToUpper():
+					Console.WriteLine("You selected Yes");
+					break;
+				case string s when s == nameof(AvailableFeedback.No).ToUpper():
+					Console.WriteLine("You selected No");
+					break;
+				case string s when s == nameof(AvailableFeedback.Cancel).ToUpper():
+					Console.WriteLine("You selected Cancel");
+					break;
+				default:
+					Console.WriteLine("Invalid input");
+					break;
 			}
 
 			if (CommandRegister.AwaitedOutput != null) SendCommand(this, CommandRegister.AwaitedOutput);
