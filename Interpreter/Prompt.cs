@@ -223,7 +223,15 @@ namespace Interpreter
                 return;
             }
 
-            switch (input.ToUpper())
+            var feedback = new UserFeedback();
+
+            if (IrtConst.InternalFeedback.ContainsKey(CommandRegister.AwaitedInput)) feedback = IrtConst.InternalFeedback[CommandRegister.AwaitedInput];
+			if (_feedback.ContainsKey(CommandRegister.AwaitedInput)) feedback = _feedback[CommandRegister.AwaitedInput];
+
+
+            if(!CommandRegister.InitialMessageShown) SendLogs?.Invoke(this, feedback.ToString());
+
+			switch (input.ToUpper())
             {
                 case string s when s == nameof(AvailableFeedback.Yes).ToUpper():
                     Console.WriteLine("You selected Yes");
