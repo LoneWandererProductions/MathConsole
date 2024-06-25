@@ -319,7 +319,7 @@ namespace Interpreter
         /// <summary>
         ///     The Help feedback Object, only used for the Internal Help Extension
         /// </summary>
-        internal static UserFeedback HelpFeedback = new()
+        private static readonly UserFeedback HelpFeedback = new()
         {
             Before = true,
             Message = "You now have the following Options:",
@@ -336,21 +336,21 @@ namespace Interpreter
             }
         };
 
-		/// <summary>
-		/// The internal feedback
-		/// </summary>
-		internal static readonly Dictionary<int, UserFeedback> InternalFeedback = new()
-		{
-			{
-				-1,
-				HelpFeedback
-			}
-		};
+        /// <summary>
+        ///     The internal feedback
+        /// </summary>
+        internal static readonly Dictionary<int, UserFeedback> InternalFeedback = new()
+        {
+            {
+                -1,
+                HelpFeedback
+            }
+        };
 
-		/// <summary>
-		///     The internal Extension commands, will be used for all external Userspaces.
-		/// </summary>
-		internal static readonly Dictionary<int, InCommand> InternalExtensionCommands = new()
+        /// <summary>
+        ///     The internal Extension commands, will be used for all external Userspaces.
+        /// </summary>
+        internal static readonly Dictionary<int, InCommand> InternalExtensionCommands = new()
         {
             {
                 0,

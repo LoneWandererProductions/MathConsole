@@ -13,21 +13,21 @@ namespace Interpreter
     /// </summary>
     internal sealed class IrtFeedback
     {
-		/// <summary>
-		/// Gets or sets a value indicating whether [initial message was shown].
-		/// </summary>
-		/// <value>
-		///   <c>true</c> if [initial message shown]; otherwise, <c>false</c>.
-		/// </value>
-		internal bool InitialMessageShown { get; set; }
+        /// <summary>
+        ///     Gets or sets a value indicating whether [initial message was shown].
+        /// </summary>
+        /// <value>
+        ///     <c>true</c> if [initial message shown]; otherwise, <c>false</c>.
+        /// </value>
+        internal bool InitialMessageShown { get; set; }
 
-		/// <summary>
-		///     The await input check, if true await correct answer
-		/// </summary>
-		/// <value>
-		///     <c>true</c> if [await input]; otherwise, <c>false</c>.
-		/// </value>
-		internal bool AwaitInput { get; set; }
+        /// <summary>
+        ///     The await input check, if true await correct answer
+        /// </summary>
+        /// <value>
+        ///     <c>true</c> if [await input]; otherwise, <c>false</c>.
+        /// </value>
+        internal bool AwaitInput { get; set; }
 
         /// <summary>
         ///     Gets or sets the awaited input Id

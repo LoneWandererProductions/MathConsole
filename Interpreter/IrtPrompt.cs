@@ -317,10 +317,7 @@ namespace Interpreter
 
             //if yes inform the prompt to handle it correctly
             else
-            {
                 _prompt.SetFeedbackLoop(_com[key].FeedbackId, com);
-
-			}
         }
 
         /// <summary>

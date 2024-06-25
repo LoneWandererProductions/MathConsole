@@ -18,9 +18,9 @@ using ExtendedSystemObjects;
 namespace Interpreter
 {
     /// <summary>
-    /// Bucket List:
-    /// - Overloads
-    /// - nested Commands
+    ///     Bucket List:
+    ///     - Overloads
+    ///     - nested Commands
     /// </summary>
     /// <seealso cref="IPrompt" />
     /// <seealso cref="IDisposable" />
@@ -198,7 +198,7 @@ namespace Interpreter
         }
 
         /// <summary>
-        /// Set up the feedback loop.
+        ///     Set up the feedback loop.
         /// </summary>
         /// <param name="feedbackId">The feedback identifier.</param>
         /// <param name="com">The COM.</param>
@@ -213,13 +213,14 @@ namespace Interpreter
         }
 
         /// <summary>
-        /// Handles the user input.
+        ///     Handles the user input.
         /// </summary>
         /// <param name="input">The input.</param>
         private void HandleUserInput(string input)
         {
             // Check if awaited input exists in feedback dictionaries
-            if (!(_feedback.ContainsKey(CommandRegister.AwaitedInput) || IrtConst.InternalFeedback.ContainsKey(CommandRegister.AwaitedInput)))
+            if (!(_feedback.ContainsKey(CommandRegister.AwaitedInput) ||
+                  IrtConst.InternalFeedback.ContainsKey(CommandRegister.AwaitedInput)))
             {
                 CommandRegister.AwaitInput = false;
                 return;
@@ -231,16 +232,10 @@ namespace Interpreter
                 : IrtConst.InternalFeedback[CommandRegister.AwaitedInput];
 
             // Show initial message if not already shown
-            if (!CommandRegister.InitialMessageShown)
-            {
-                SendLogs?.Invoke(this, feedback.ToString());
-            }
+            if (!CommandRegister.InitialMessageShown) SendLogs?.Invoke(this, feedback.ToString());
 
             // Send awaited output command if not awaiting input
-            if (!CommandRegister.AwaitInput)
-            {
-                SendCommands(this, CommandRegister.AwaitedOutput);
-            }
+            if (!CommandRegister.AwaitInput) SendCommands(this, CommandRegister.AwaitedOutput);
 
             // Process the user input
             switch (input.ToUpper())
@@ -255,20 +250,21 @@ namespace Interpreter
                     HandleOption(feedback, AvailableFeedback.Cancel, nameof(AvailableFeedback.Cancel), true);
                     break;
                 default:
-                    SendLogs(this, "Option not allowed.");
+                    SendLogs?.Invoke(this, "Option not allowed.");
 
                     break;
             }
         }
 
         /// <summary>
-        /// Handles the option.
+        ///     Handles the option.
         /// </summary>
         /// <param name="feedback">The feedback.</param>
         /// <param name="option">The option.</param>
         /// <param name="optionName">Name of the option.</param>
         /// <param name="terminate">if set to <c>true</c> [terminate].</param>
-        private void HandleOption(UserFeedback feedback, AvailableFeedback option, string optionName, bool terminate = false)
+        private void HandleOption(UserFeedback feedback, AvailableFeedback option, string optionName,
+            bool terminate = false)
         {
             if (!feedback.Options.ContainsKey(option))
             {
