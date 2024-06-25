@@ -314,14 +314,13 @@ namespace Interpreter
             //does the Command come with needed User Feedback?
             if (_com[key].FeedbackId == 0)
                 _prompt.SendCommand(this, com);
+
             //if yes inform the prompt to handle it correctly
             else
-                _prompt.CommandRegister = new IrtFeedback
-                {
-                    AwaitedOutput = com,
-                    AwaitInput = true,
-                    AwaitedInput = _com[key].FeedbackId
-                };
+            {
+                _prompt.SetFeedbackLoop(_com[key].FeedbackId, com);
+
+			}
         }
 
         /// <summary>

@@ -336,10 +336,21 @@ namespace Interpreter
             }
         };
 
-        /// <summary>
-        ///     The internal Extension commands, will be used for all external Userspaces.
-        /// </summary>
-        internal static readonly Dictionary<int, InCommand> InternalExtensionCommands = new()
+		/// <summary>
+		/// The internal feedback
+		/// </summary>
+		internal static readonly Dictionary<int, UserFeedback> InternalFeedback = new()
+		{
+			{
+				-1,
+				HelpFeedback
+			}
+		};
+
+		/// <summary>
+		///     The internal Extension commands, will be used for all external Userspaces.
+		/// </summary>
+		internal static readonly Dictionary<int, InCommand> InternalExtensionCommands = new()
         {
             {
                 0,

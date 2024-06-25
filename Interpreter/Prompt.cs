@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Windows.Input;
 using ExtendedSystemObjects;
 
 namespace Interpreter
@@ -195,19 +196,28 @@ namespace Interpreter
             IrtPrompt.SwitchUserSpace(use);
         }
 
-        /// <summary>
-        ///     Handles the user input.
-        /// </summary>
-        /// <param name="input">The input.</param>
-        private void HandleUserInput(string input)
-        {
-            if (_feedback == null)
-            {
-                CommandRegister.AwaitInput = false;
-                return;
-            }
+		/// <summary>
+		/// Set up the feedback loop.
+		/// </summary>
+		/// <param name="feedbackId">The feedback identifier.</param>
+		/// <param name="com">The COM.</param>
+		internal void SetFeedbackLoop(int feedbackId, OutCommand com)
+		{
+			CommandRegister = new IrtFeedback
+			{
+				AwaitedOutput = com,
+				AwaitInput = true,
+				AwaitedInput = feedbackId
+			};
+		}
 
-            if (!_feedback.ContainsKey(CommandRegister.AwaitedInput))
+		/// <summary>
+		///     Handles the user input.
+		/// </summary>
+		/// <param name="input">The input.</param>
+		private void HandleUserInput(string input)
+        {
+			if (!_feedback.ContainsKey(CommandRegister.AwaitedInput) || !IrtConst.InternalFeedback.ContainsKey(CommandRegister.AwaitedInput))
             {
                 CommandRegister.AwaitInput = false;
                 return;
@@ -314,13 +324,13 @@ namespace Interpreter
             return use;
         }
 
-        /// <summary>
-        ///     NOTE: Leave out the finalizer altogether if this class doesn't
-        ///     own unmanaged resources, but leave the other methods
-        ///     exactly as they are.
-        ///     Finalizes an instance of the <see cref="Prompt" /> class.
-        /// </summary>
-        ~Prompt()
+		/// <summary>
+		///     NOTE: Leave out the finalizer altogether if this class doesn't
+		///     own unmanaged resources, but leave the other methods
+		///     exactly as they are.
+		///     Finalizes an instance of the <see cref="Prompt" /> class.
+		/// </summary>
+		~Prompt()
         {
             // Finalizer calls Dispose(false)
             Dispose(false);
