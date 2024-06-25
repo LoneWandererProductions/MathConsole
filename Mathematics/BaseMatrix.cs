@@ -173,7 +173,7 @@ namespace Mathematics
         ///     Lus the decomposition.
         /// </summary>
         /// <returns>Key Value Pair of L and U Matrix</returns>
-        /// <exception cref="System.NotImplementedException"></exception>
+        /// <exception cref="NotImplementedException"></exception>
         public KeyValuePair<BaseMatrix, BaseMatrix> LuDecomposition()
         {
             if (Height != Width) throw new NotImplementedException(MathResources.MatrixErrorInverseNotCubic);

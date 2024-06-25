@@ -13,18 +13,19 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Windows.Input;
 using ExtendedSystemObjects;
 
 namespace Interpreter
 {
+    /// <summary>
+    /// Bucket List:
+    /// - Overloads
+    /// - nested Commands
+    /// </summary>
+    /// <seealso cref="IPrompt" />
+    /// <seealso cref="IDisposable" />
     /// <inheritdoc cref="IDisposable" />
     /// <inheritdoc cref="IPrompt" />
-    /// <summary>
-    ///     Bucket List:
-    ///     - Overloads
-    ///     - nested Commands
-    /// </summary>
     public sealed class Prompt : IPrompt, IDisposable
     {
         /// <summary>
@@ -196,61 +197,97 @@ namespace Interpreter
             IrtPrompt.SwitchUserSpace(use);
         }
 
-		/// <summary>
-		/// Set up the feedback loop.
-		/// </summary>
-		/// <param name="feedbackId">The feedback identifier.</param>
-		/// <param name="com">The COM.</param>
-		internal void SetFeedbackLoop(int feedbackId, OutCommand com)
-		{
-			CommandRegister = new IrtFeedback
-			{
-				AwaitedOutput = com,
-				AwaitInput = true,
-				AwaitedInput = feedbackId
-			};
-		}
-
-		/// <summary>
-		///     Handles the user input.
-		/// </summary>
-		/// <param name="input">The input.</param>
-		private void HandleUserInput(string input)
+        /// <summary>
+        /// Set up the feedback loop.
+        /// </summary>
+        /// <param name="feedbackId">The feedback identifier.</param>
+        /// <param name="com">The COM.</param>
+        internal void SetFeedbackLoop(int feedbackId, OutCommand com)
         {
-			if (!_feedback.ContainsKey(CommandRegister.AwaitedInput) || !IrtConst.InternalFeedback.ContainsKey(CommandRegister.AwaitedInput))
+            CommandRegister = new IrtFeedback
+            {
+                AwaitedOutput = com,
+                AwaitInput = true,
+                AwaitedInput = feedbackId
+            };
+        }
+
+        /// <summary>
+        /// Handles the user input.
+        /// </summary>
+        /// <param name="input">The input.</param>
+        private void HandleUserInput(string input)
+        {
+            // Check if awaited input exists in feedback dictionaries
+            if (!(_feedback.ContainsKey(CommandRegister.AwaitedInput) || IrtConst.InternalFeedback.ContainsKey(CommandRegister.AwaitedInput)))
             {
                 CommandRegister.AwaitInput = false;
                 return;
             }
 
-            var feedback = new UserFeedback();
+            // Get the feedback from either dictionary
+            var feedback = _feedback.ContainsKey(CommandRegister.AwaitedInput)
+                ? _feedback[CommandRegister.AwaitedInput]
+                : IrtConst.InternalFeedback[CommandRegister.AwaitedInput];
 
-            if (IrtConst.InternalFeedback.ContainsKey(CommandRegister.AwaitedInput)) feedback = IrtConst.InternalFeedback[CommandRegister.AwaitedInput];
-			if (_feedback.ContainsKey(CommandRegister.AwaitedInput)) feedback = _feedback[CommandRegister.AwaitedInput];
-
-
-            if(!CommandRegister.InitialMessageShown) SendLogs?.Invoke(this, feedback.ToString());
-
-			switch (input.ToUpper())
+            // Show initial message if not already shown
+            if (!CommandRegister.InitialMessageShown)
             {
-                case string s when s == nameof(AvailableFeedback.Yes).ToUpper():
-                    Console.WriteLine("You selected Yes");
-                    break;
-                case string s when s == nameof(AvailableFeedback.No).ToUpper():
-                    Console.WriteLine("You selected No");
-                    break;
-                case string s when s == nameof(AvailableFeedback.Cancel).ToUpper():
-                    Console.WriteLine("You selected Cancel");
-                    break;
-                default:
-                    Console.WriteLine("Invalid input");
-                    break;
+                SendLogs?.Invoke(this, feedback.ToString());
             }
 
-            if (CommandRegister.AwaitedOutput != null) SendCommand(this, CommandRegister.AwaitedOutput);
+            // Send awaited output command if not awaiting input
+            if (!CommandRegister.AwaitInput)
+            {
+                SendCommands(this, CommandRegister.AwaitedOutput);
+            }
 
-            CommandRegister.AwaitInput = false;
+            // Process the user input
+            switch (input.ToUpper())
+            {
+                case var command when command == nameof(AvailableFeedback.Yes).ToUpper():
+                    HandleOption(feedback, AvailableFeedback.Yes, nameof(AvailableFeedback.Yes));
+                    break;
+                case var command when command == nameof(AvailableFeedback.No).ToUpper():
+                    HandleOption(feedback, AvailableFeedback.No, nameof(AvailableFeedback.No), true);
+                    break;
+                case var command when command == nameof(AvailableFeedback.Cancel).ToUpper():
+                    HandleOption(feedback, AvailableFeedback.Cancel, nameof(AvailableFeedback.Cancel), true);
+                    break;
+                default:
+                    SendLogs(this, "Option not allowed.");
+
+                    break;
+            }
         }
+
+        /// <summary>
+        /// Handles the option.
+        /// </summary>
+        /// <param name="feedback">The feedback.</param>
+        /// <param name="option">The option.</param>
+        /// <param name="optionName">Name of the option.</param>
+        /// <param name="terminate">if set to <c>true</c> [terminate].</param>
+        private void HandleOption(UserFeedback feedback, AvailableFeedback option, string optionName, bool terminate = false)
+        {
+            if (!feedback.Options.ContainsKey(option))
+            {
+                SendLogs(this, "Option not allowed.");
+                return;
+            }
+
+            SendLogs(this, $"You selected {optionName}");
+            if (terminate)
+            {
+                CommandRegister.AwaitInput = false;
+                CommandRegister = null;
+            }
+            else if (CommandRegister.AwaitInput)
+            {
+                SendCommands(this, CommandRegister.AwaitedOutput);
+            }
+        }
+
 
         /// <summary>
         ///     Return the selected Command
@@ -332,13 +369,13 @@ namespace Interpreter
             return use;
         }
 
-		/// <summary>
-		///     NOTE: Leave out the finalizer altogether if this class doesn't
-		///     own unmanaged resources, but leave the other methods
-		///     exactly as they are.
-		///     Finalizes an instance of the <see cref="Prompt" /> class.
-		/// </summary>
-		~Prompt()
+        /// <summary>
+        ///     NOTE: Leave out the finalizer altogether if this class doesn't
+        ///     own unmanaged resources, but leave the other methods
+        ///     exactly as they are.
+        ///     Finalizes an instance of the <see cref="Prompt" /> class.
+        /// </summary>
+        ~Prompt()
         {
             // Finalizer calls Dispose(false)
             Dispose(false);
