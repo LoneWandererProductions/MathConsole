@@ -65,7 +65,7 @@ namespace Interpreter
 			}
 
 			//check if we have some generic information about the options, if not, well return and show some Errors
-			if (feedback == null)
+			if (feedback == null || feedback.Options == null)
 			{
 				var error = Logging.SetLastError("No Options are available.", 0);
 				var com = new OutCommand
@@ -76,7 +76,11 @@ namespace Interpreter
 			}
 
 			// Show initial message if not already shown
-			if (!_prompt.CommandRegister.InitialMessageShown) _prompt.SendLogs?.Invoke(this, feedback.ToString());
+			if (!_prompt.CommandRegister.InitialMessageShown)
+			{
+				_prompt.CommandRegister.InitialMessageShown = true;
+				_prompt.SendLogs?.Invoke(this, feedback.ToString());
+			}
 
 			// Send awaited output command if not awaiting input
 			if (!_prompt.CommandRegister.AwaitInput) _prompt.SendCommands(this, _prompt.CommandRegister.AwaitedOutput);

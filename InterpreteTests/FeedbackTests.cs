@@ -8,6 +8,7 @@
 
 using Interpreter;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Collections.Generic;
 
 namespace InterpreteTests
@@ -29,11 +30,19 @@ namespace InterpreteTests
 		/// </summary>
 		private Prompt _prompt = new Prompt();
 
-		//[TestMethod]
-		public void HandleUserInput_ValidInput_ShowInitialMessageAndSendCommands()
+		[TestMethod]
+		public void HandleUserInputValidInputShowInitialMessageAndSendCommands()
 		{
 			// Arrange
-			var feedback = new UserFeedback();
+			_prompt.SendLogs += SendLogs;
+			_prompt.SendCommands += SendCommands;
+			var options = new Dictionary<AvailableFeedback, string>();
+			options.Add(AvailableFeedback.Yes, "");
+			var feedback = new UserFeedback()
+			{
+				Options = options,
+			};
+
 			_userFeedback[1] = feedback;
 
 			var register = new IrtFeedback()
@@ -53,8 +62,9 @@ namespace InterpreteTests
 			// Add more assertions based on expected behavior after handling input
 		}
 
+
 		[TestMethod]
-		public void HandleUserInput_InvalidAwaitedInput_NoCommandsSent()
+		public void HandleUserInputInvalidAwaitedInputNoCommandsSent()
 		{
 			// Arrange
 			var register = new IrtFeedback()
@@ -75,7 +85,7 @@ namespace InterpreteTests
 		}
 
 		[TestMethod]
-		public void HandleUserInput_NullFeedback_LogsError()
+		public void HandleUserInputNullFeedbackLogsError()
 		{
 			// Arrange
 			var register = new IrtFeedback()
@@ -94,5 +104,14 @@ namespace InterpreteTests
 			// Verify that an error command is sent or appropriate logging occurs
 			// Example: Assert.AreEqual(expectedErrorMessage, _prompt.LastErrorMessage);
 		}
+
+		private void SendLogs(object sender, string e)
+		{
+		}
+
+		private void SendCommands(object sender, OutCommand e)
+		{
+		}
+
 	}
 }
