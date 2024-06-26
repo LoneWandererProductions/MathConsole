@@ -38,15 +38,15 @@ namespace Interpreter
         /// </summary>
         private static int _count = -1;
 
-        /// <summary>
-        ///     The feedback
-        /// </summary>
-        private Dictionary<int, UserFeedback> _feedback;
+		/// <summary>
+		/// The feedback handler
+		/// </summary>
+		private IrtHandleFeedback _feedbackHandler;
 
-        /// <summary>
-        ///     User Input Windows
-        /// </summary>
-        private WindowPrompt _prompt;
+		/// <summary>
+		///     User Input Windows
+		/// </summary>
+		private WindowPrompt _prompt;
 
         /// <summary>
         ///     Gets or sets the command register.
@@ -117,7 +117,7 @@ namespace Interpreter
         {
             ResetState();
             CommandRegister = new IrtFeedback();
-            _feedback = userFeedback;
+            _feedbackHandler= new IrtHandleFeedback(userFeedback, this);
             var use = new UserSpace { UserSpaceName = userSpace, Commands = com, ExtensionCommands = extension };
 
             //Upper is needed because of the way we compare commands in the Interpreter
@@ -165,7 +165,7 @@ namespace Interpreter
         public void ConsoleInput(string input)
         {
             if (!CommandRegister.AwaitInput) _interpret?.HandleInput(input);
-            else HandleUserInput(input);
+            else _feedbackHandler.HandleUserInput(input);
         }
 
         /// <inheritdoc />
@@ -211,79 +211,6 @@ namespace Interpreter
                 AwaitedInput = feedbackId
             };
         }
-
-        /// <summary>
-        ///     Handles the user input.
-        /// </summary>
-        /// <param name="input">The input.</param>
-        private void HandleUserInput(string input)
-        {
-            // Check if awaited input exists in feedback dictionaries
-            if (!(_feedback.ContainsKey(CommandRegister.AwaitedInput) ||
-                  IrtConst.InternalFeedback.ContainsKey(CommandRegister.AwaitedInput)))
-            {
-                CommandRegister.AwaitInput = false;
-                return;
-            }
-
-            // Get the feedback from either dictionary
-            var feedback = _feedback.ContainsKey(CommandRegister.AwaitedInput)
-                ? _feedback[CommandRegister.AwaitedInput]
-                : IrtConst.InternalFeedback[CommandRegister.AwaitedInput];
-
-            // Show initial message if not already shown
-            if (!CommandRegister.InitialMessageShown) SendLogs?.Invoke(this, feedback.ToString());
-
-            // Send awaited output command if not awaiting input
-            if (!CommandRegister.AwaitInput) SendCommands(this, CommandRegister.AwaitedOutput);
-
-            // Process the user input
-            switch (input.ToUpper())
-            {
-                case var command when command == nameof(AvailableFeedback.Yes).ToUpper():
-                    HandleOption(feedback, AvailableFeedback.Yes, nameof(AvailableFeedback.Yes));
-                    break;
-                case var command when command == nameof(AvailableFeedback.No).ToUpper():
-                    HandleOption(feedback, AvailableFeedback.No, nameof(AvailableFeedback.No), true);
-                    break;
-                case var command when command == nameof(AvailableFeedback.Cancel).ToUpper():
-                    HandleOption(feedback, AvailableFeedback.Cancel, nameof(AvailableFeedback.Cancel), true);
-                    break;
-                default:
-                    SendLogs?.Invoke(this, "Option not allowed.");
-
-                    break;
-            }
-        }
-
-        /// <summary>
-        ///     Handles the option.
-        /// </summary>
-        /// <param name="feedback">The feedback.</param>
-        /// <param name="option">The option.</param>
-        /// <param name="optionName">Name of the option.</param>
-        /// <param name="terminate">if set to <c>true</c> [terminate].</param>
-        private void HandleOption(UserFeedback feedback, AvailableFeedback option, string optionName,
-            bool terminate = false)
-        {
-            if (!feedback.Options.ContainsKey(option))
-            {
-                SendLogs(this, "Option not allowed.");
-                return;
-            }
-
-            SendLogs(this, $"You selected {optionName}");
-            if (terminate)
-            {
-                CommandRegister.AwaitInput = false;
-                CommandRegister = null;
-            }
-            else if (CommandRegister.AwaitInput)
-            {
-                SendCommands(this, CommandRegister.AwaitedOutput);
-            }
-        }
-
 
         /// <summary>
         ///     Return the selected Command
