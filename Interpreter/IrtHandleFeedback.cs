@@ -6,7 +6,6 @@
  * PROGRAMER:   Peter Geinitz (Wayfarer)
  */
 
-using System;
 using System.Collections.Generic;
 
 namespace Interpreter
@@ -26,14 +25,26 @@ namespace Interpreter
 		/// </summary>
 		private Prompt _prompt;
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="IrtHandleFeedback"/> class.
+		/// </summary>
+		/// <param name="userFeedback">The user feedback.</param>
+		/// <param name="prompt">The prompt.</param>
 		public IrtHandleFeedback(Dictionary<int, UserFeedback> userFeedback, Prompt prompt)
 		{
 			_userFeedback = userFeedback;
 			_prompt = prompt;
 		}
 
+		/// <summary>
+		/// Handles the user input.
+		/// </summary>
+		/// <param name="input">The input.</param>
 		internal void HandleUserInput(string input)
 		{
+			//trim whitespaces and us Uppercases
+			input = input.Trim().ToUpper();
+
 			// Check if awaited input exists in feedback dictionaries
 			if (!(_userFeedback.ContainsKey(_prompt.CommandRegister.AwaitedInput) ||
 				  IrtConst.InternalFeedback.ContainsKey(_prompt.CommandRegister.AwaitedInput)))
@@ -42,10 +53,27 @@ namespace Interpreter
 				return;
 			}
 
-			// Get the feedback from either dictionary
-			var feedback = _userFeedback.ContainsKey(_prompt.CommandRegister.AwaitedInput)
-				? _userFeedback[_prompt.CommandRegister.AwaitedInput]
-				: IrtConst.InternalFeedback[_prompt.CommandRegister.AwaitedInput];
+			// Get the feedback from either user defined dictionary or from internal, if the key is negative
+			UserFeedback feedback =null;
+			if (_userFeedback.ContainsKey(_prompt.CommandRegister.AwaitedInput))
+			{
+				feedback = _userFeedback[_prompt.CommandRegister.AwaitedInput];
+			}
+			else if (IrtConst.InternalFeedback.ContainsKey(_prompt.CommandRegister.AwaitedInput))
+			{
+				feedback = IrtConst.InternalFeedback[_prompt.CommandRegister.AwaitedInput];
+			}
+
+			//check if we have some generic information about the options, if not, well return and show some Errors
+			if (feedback == null)
+			{
+				var error = Logging.SetLastError("No Options are available.", 0);
+				var com = new OutCommand
+				{ Command = IrtConst.Error, Parameter = null, ErrorMessage = error };
+
+				_prompt.SendCommand(this, com);
+				return;
+			}
 
 			// Show initial message if not already shown
 			if (!_prompt.CommandRegister.InitialMessageShown) _prompt.SendLogs?.Invoke(this, feedback.ToString());
