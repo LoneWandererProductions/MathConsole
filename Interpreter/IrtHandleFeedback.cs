@@ -42,7 +42,7 @@ namespace Interpreter
         /// <param name="input">The input.</param>
         internal void HandleUserInput(string input)
         {
-            //trim whitespaces and us Uppercases
+            //trim whitespaces and us Uppercase
             input = input.Trim().ToUpper();
 
             // Check if awaited input exists in feedback dictionaries
