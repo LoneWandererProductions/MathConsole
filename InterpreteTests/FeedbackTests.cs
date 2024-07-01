@@ -109,13 +109,11 @@ namespace InterpreteTests
             prompt.SendLogs += SendLogs;
             prompt.SendCommands += SendCommands;
 
-            var register = new IrtFeedback
+            prompt.CommandRegister = new IrtFeedback
             {
                 AwaitedInput = 1, // Assuming this key doesn't exist in _userFeedback or IrtConst.InternalFeedback
                 AwaitInput = true
             };
-
-            prompt.CommandRegister = register;
 
             var handleFeedback = new IrtHandleFeedback(_userFeedback, prompt);
 

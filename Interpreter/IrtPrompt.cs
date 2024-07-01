@@ -145,6 +145,8 @@ namespace Interpreter
             if (extensionResult.Status == IrtConst.Error)
                 extensionResult = _irtExtension.CheckForExtension(_inputString, _nameSpace, _extension);
 
+            OutCommand com;
+
             // Process the extension result
             switch (extensionResult.Status)
             {
@@ -158,14 +160,22 @@ namespace Interpreter
 
                 case IrtConst.ExtensionFound:
                     if (extensionResult.Extension.ExtensionNameSpace == IrtConst.InternalNameSpace)
+                    {
                         ProcessExtensionInternal(extensionResult.Extension);
-                    else
-                        ProcessInput(inputString, extensionResult.Extension);
 
-                    return;
+                    }
+                    else
+                    {
+                        com = ProcessInput(inputString, extensionResult.Extension);
+                        SetResult(com);
+                        return;
+                    }
+
+                    break;
             }
 
-            ProcessInput(inputString);
+            com = ProcessInput(inputString);
+            if(com != null) SetResult(com);
         }
 
         /// <summary>
@@ -209,19 +219,19 @@ namespace Interpreter
         /// </summary>
         /// <param name="inputString">Input string</param>
         /// <param name="extension">All Extensions</param>
-        private void ProcessInput(string inputString, ExtensionCommands extension = null)
+        private OutCommand ProcessInput(string inputString, ExtensionCommands extension = null)
         {
             var key = Irt.CheckForKeyWord(inputString, IrtConst.InternCommands);
             if (key != IrtConst.Error)
             {
                 _irtInternal.ProcessInput(key, inputString);
-                return;
+                return null;
             }
 
             if (_com == null)
             {
                 SetError(IrtConst.ErrorNoCommandsProvided);
-                return;
+                return null;
             }
 
             key = Irt.CheckForKeyWord(inputString, _com);
@@ -229,7 +239,7 @@ namespace Interpreter
             if (key == IrtConst.Error)
             {
                 SetErrorWithLog(IrtConst.KeyWordNotFoundError, _inputString);
-                return;
+                return null;
             }
 
             //do our normal Checks for User Commands
@@ -246,11 +256,17 @@ namespace Interpreter
             if (check == null)
             {
                 SetErrorWithLog(IrtConst.SyntaxError);
-                return;
+                return null;
             }
 
-            //add optional Extension data
-            SetResult((int)check, parameter, extension);
+
+            return new OutCommand
+            {
+                Command = (int)check,
+                Parameter = parameter,
+                UsedNameSpace = _nameSpace,
+                ExtensionCommand = extension
+            };
         }
 
         /// <summary>
@@ -309,30 +325,22 @@ namespace Interpreter
         }
 
         /// <summary>
-        ///     Decide the appropriate Action by command
-        ///     Optional set the User Input
+        /// Decide the appropriate Action by command
+        /// Optional set the User Input
         /// </summary>
-        /// <param name="key">Id of command</param>
-        /// <param name="parameter">List of Parameters</param>
-        /// <param name="extensionCommands"></param>
-        /// <returns>Result of our Command</returns>
-        private void SetResult(int key, List<string> parameter, ExtensionCommands extensionCommands)
+        /// <param name="command">The command.</param>
+        /// <returns>
+        /// Result of our Command
+        /// </returns>
+        private void SetResult(OutCommand command)
         {
-            var com = new OutCommand
-            {
-                Command = key,
-                Parameter = parameter,
-                UsedNameSpace = _nameSpace,
-                ExtensionCommand = extensionCommands
-            };
-
             //does the Command come with needed User Feedback?
-            if (_com[key].FeedbackId == 0)
-                _prompt.SendCommand(this, com);
+            if (_com[command.Command].FeedbackId == 0)
+                _prompt.SendCommand(this, command);
 
             //if yes inform the prompt to handle it correctly
             else
-                _prompt.SetFeedbackLoop(_com[key].FeedbackId, com);
+                _prompt.SetFeedbackLoop(_com[command.Command].FeedbackId, command);
         }
 
         /// <summary>
