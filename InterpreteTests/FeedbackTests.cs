@@ -166,7 +166,7 @@ namespace InterpreteTests
 			Assert.AreEqual("Option not allowed.", _log, "Error was not catched.");
 
 			prompt.ConsoleInput(" yeS   ");
-			
+
 			Assert.IsNotNull(_outCommand, "Out Command was not empty.");
 		}
 
