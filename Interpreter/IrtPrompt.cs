@@ -162,7 +162,7 @@ namespace Interpreter
                     if (extensionResult.Extension.ExtensionNameSpace == IrtConst.InternalNameSpace)
                     {
                         ProcessExtensionInternal(extensionResult.Extension);
-
+                        return;
                     }
                     else
                     {
