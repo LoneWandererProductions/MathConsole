@@ -72,7 +72,10 @@ namespace InterpreteTests
         }
 
 
-        [TestMethod]
+		/// <summary>
+		/// Handles the user input invalid awaited input no commands sent.
+		/// </summary>
+		[TestMethod]
         public void HandleUserInputInvalidAwaitedInputNoCommandsSent()
         {
             // Arrange
@@ -93,26 +96,35 @@ namespace InterpreteTests
             // Add more assertions based on expected behavior after handling input
         }
 
-        [TestMethod]
+		/// <summary>
+		/// Handles the user input null feedback logs error.
+		/// </summary>
+		[TestMethod]
         public void HandleUserInputNullFeedbackLogsError()
         {
-            // Arrange
-            var register = new IrtFeedback()
+			// Arrange
+			var prompt = new Prompt();
+			prompt.SendLogs += SendLogs;
+			prompt.SendCommands += SendCommands;
+
+			var register = new IrtFeedback()
             {
                 AwaitedInput = 1, // Assuming this key doesn't exist in _userFeedback or IrtConst.InternalFeedback
                 AwaitInput = true
             };
-            _prompt.CommandRegister = register;
 
-            var handleFeedback = new IrtHandleFeedback(_userFeedback, _prompt);
+			prompt.CommandRegister = register;
+
+            var handleFeedback = new IrtHandleFeedback(_userFeedback, prompt);
 
             // Act
             handleFeedback.HandleUserInput(" yES");
 
-            // Assert
-            // Verify that an error command is sent or appropriate logging occurs
-            // Example: Assert.AreEqual(expectedErrorMessage, _prompt.LastErrorMessage);
-        }
+			// Assert
+			// Verify that an error command is sent or appropriate logging occurs
+			// Example: Assert.AreEqual(expectedErrorMessage, _prompt.LastErrorMessage);
+			Assert.AreEqual("No Options were provided.", _log, "No error Message send");
+		}
 
         /// <summary>
         /// Feedback and extension test.
@@ -140,7 +152,7 @@ namespace InterpreteTests
             prompt.SendCommands += SendCommands;
             prompt.Initiate(dctCommandOne, "UserSpace 1");
             prompt.ConsoleInput("FirSt(1,2).Help()");
-            //prompt.ConsoleInput("FirSt(1,2).Help");
+            prompt.ConsoleInput("");
         }
 
         /// <summary>

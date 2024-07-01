@@ -50,7 +50,8 @@ namespace Interpreter
                   IrtConst.InternalFeedback.ContainsKey(_prompt.CommandRegister.AwaitedInput)))
             {
                 _prompt.CommandRegister.AwaitInput = false;
-                return;
+				_prompt.SendLogs(this, "No Options were provided.");
+				return;
             }
 
             // Get the feedback from either user defined dictionary or from internal, if the key is negative
