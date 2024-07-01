@@ -78,8 +78,10 @@ namespace InterpreteTests
 		[TestMethod]
         public void HandleUserInputInvalidAwaitedInputNoCommandsSent()
         {
-            // Arrange
-            var register = new IrtFeedback()
+			// Arrange
+			_prompt.SendLogs += SendLogs;
+			_prompt.SendCommands += SendCommands;
+			var register = new IrtFeedback()
             {
                 AwaitedInput = 999, // Assuming this key doesn't exist in _userFeedback or IrtConst.InternalFeedback
                 AwaitInput = true
@@ -132,7 +134,8 @@ namespace InterpreteTests
         [TestMethod]
         public void FeedbackExtension()
         {
-            var dctCommandOne = new Dictionary<int, InCommand>
+			// Arrange
+			var dctCommandOne = new Dictionary<int, InCommand>
             {
                 {
                     0, new InCommand {Command = "First", ParameterCount = 2, Description = "Help First"}
@@ -147,13 +150,25 @@ namespace InterpreteTests
                 }
             };
 
-            var prompt = new Prompt();
+			// Act
+			var prompt = new Prompt();
             prompt.SendLogs += SendLogs;
             prompt.SendCommands += SendCommands;
             prompt.Initiate(dctCommandOne, "UserSpace 1");
             prompt.ConsoleInput("FirSt(1,2).Help()");
             prompt.ConsoleInput("");
-        }
+
+			// Assert
+			Assert.AreEqual("Option not allowed.", _log, "Error was not catched.");
+
+			prompt.ConsoleInput("mehh");
+
+			Assert.AreEqual("Option not allowed.", _log, "Error was not catched.");
+
+			prompt.ConsoleInput(" yeS   ");
+			
+			Assert.IsNotNull(_outCommand, "Out Command was not empty.");
+		}
 
         /// <summary>
         ///     Listen to Messages

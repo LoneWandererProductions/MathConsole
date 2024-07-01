@@ -30,7 +30,8 @@ namespace Interpreter
         internal bool AwaitInput { get; set; }
 
         /// <summary>
-        ///     Gets or sets the awaited input Id
+        ///     Gets or sets the awaited input Id, 
+        ///     Can be user Dictionary or the Internal Feedback Id. This just offers the options we are allowed to select.
         /// </summary>
         /// <value>
         ///     The awaited input Id.

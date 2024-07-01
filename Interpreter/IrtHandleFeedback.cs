@@ -33,6 +33,7 @@ namespace Interpreter
         public IrtHandleFeedback(Dictionary<int, UserFeedback> userFeedback, Prompt prompt)
         {
             _userFeedback = userFeedback;
+            if(_userFeedback == null) _userFeedback = new Dictionary<int, UserFeedback>();
             _prompt = prompt;
         }
 
