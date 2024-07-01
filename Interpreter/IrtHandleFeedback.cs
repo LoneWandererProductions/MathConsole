@@ -11,34 +11,33 @@ using System.Collections.Generic;
 namespace Interpreter
 {
     /// <summary>
-    /// handle the request of the User
+    ///     handle the request of the User
     /// </summary>
     internal sealed class IrtHandleFeedback
     {
         /// <summary>
-        /// The user feedback
-        /// </summary>
-        private readonly Dictionary<int, UserFeedback> _userFeedback;
-
-        /// <summary>
-        /// The prompt
+        ///     The prompt
         /// </summary>
         private readonly Prompt _prompt;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="IrtHandleFeedback"/> class.
+        ///     The user feedback
+        /// </summary>
+        private readonly Dictionary<int, UserFeedback> _userFeedback;
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="IrtHandleFeedback" /> class.
         /// </summary>
         /// <param name="userFeedback">The user feedback.</param>
         /// <param name="prompt">The prompt.</param>
         public IrtHandleFeedback(Dictionary<int, UserFeedback> userFeedback, Prompt prompt)
         {
-            _userFeedback = userFeedback;
-            if(_userFeedback == null) _userFeedback = new Dictionary<int, UserFeedback>();
+            _userFeedback = userFeedback ?? new Dictionary<int, UserFeedback>();
             _prompt = prompt;
         }
 
         /// <summary>
-        /// Handles the user input.
+        ///     Handles the user input.
         /// </summary>
         /// <param name="input">The input.</param>
         internal void HandleUserInput(string input)
@@ -51,20 +50,16 @@ namespace Interpreter
                   IrtConst.InternalFeedback.ContainsKey(_prompt.CommandRegister.AwaitedInput)))
             {
                 _prompt.CommandRegister.AwaitInput = false;
-				_prompt.SendLogs(this, "No Options were provided.");
-				return;
+                _prompt.SendLogs(this, "No Options were provided.");
+                return;
             }
 
             // Get the feedback from either user defined dictionary or from internal, if the key is negative
             UserFeedback feedback = null;
             if (_userFeedback.ContainsKey(_prompt.CommandRegister.AwaitedInput))
-            {
                 feedback = _userFeedback[_prompt.CommandRegister.AwaitedInput];
-            }
             else if (IrtConst.InternalFeedback.ContainsKey(_prompt.CommandRegister.AwaitedInput))
-            {
                 feedback = IrtConst.InternalFeedback[_prompt.CommandRegister.AwaitedInput];
-            }
 
             //check if we have some generic information about the options, if not, well return and show some Errors
             if (feedback == null || feedback.Options == null)

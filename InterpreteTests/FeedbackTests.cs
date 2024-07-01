@@ -6,41 +6,41 @@
  * PROGRAMER:   Peter Geinitz (Wayfarer)
  */
 
-using Interpreter;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Interpreter;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace InterpreteTests
 {
     /// <summary>
-    /// Test user Feedback
+    ///     Test user Feedback
     /// </summary>
     [TestClass]
     public sealed class FeedbackTests
     {
         /// <summary>
-        /// The user feedback
-        /// </summary>
-        private readonly Dictionary<int, UserFeedback> _userFeedback = new();
-
-        /// <summary>
-        /// The prompt
-        /// </summary>
-        private readonly Prompt _prompt = new();
-
-        /// <summary>
-        /// The log
+        ///     The log
         /// </summary>
         private static string _log;
 
         /// <summary>
-        /// The out command
+        ///     The out command
         /// </summary>
         private static OutCommand _outCommand;
 
         /// <summary>
-        /// Handles the user input valid input show initial message and send commands.
+        ///     The prompt
+        /// </summary>
+        private readonly Prompt _prompt = new();
+
+        /// <summary>
+        ///     The user feedback
+        /// </summary>
+        private readonly Dictionary<int, UserFeedback> _userFeedback = new();
+
+        /// <summary>
+        ///     Handles the user input valid input show initial message and send commands.
         /// </summary>
         [TestMethod]
         public void HandleUserInputValidInputShowInitialMessageAndSendCommands()
@@ -48,14 +48,14 @@ namespace InterpreteTests
             // Arrange
             _prompt.SendLogs += SendLogs;
             _prompt.SendCommands += SendCommands;
-            var options = new Dictionary<AvailableFeedback, string> {{AvailableFeedback.Yes, ""}};
+            var options = new Dictionary<AvailableFeedback, string> { { AvailableFeedback.Yes, "" } };
 
-            _userFeedback[1] = new UserFeedback()
+            _userFeedback[1] = new UserFeedback
             {
-                Options = options,
+                Options = options
             };
 
-            _prompt.CommandRegister = new IrtFeedback()
+            _prompt.CommandRegister = new IrtFeedback
             {
                 AwaitedInput = 1,
                 AwaitInput = true
@@ -72,16 +72,16 @@ namespace InterpreteTests
         }
 
 
-		/// <summary>
-		/// Handles the user input invalid awaited input no commands sent.
-		/// </summary>
-		[TestMethod]
+        /// <summary>
+        ///     Handles the user input invalid awaited input no commands sent.
+        /// </summary>
+        [TestMethod]
         public void HandleUserInputInvalidAwaitedInputNoCommandsSent()
         {
-			// Arrange
-			_prompt.SendLogs += SendLogs;
-			_prompt.SendCommands += SendCommands;
-			var register = new IrtFeedback()
+            // Arrange
+            _prompt.SendLogs += SendLogs;
+            _prompt.SendCommands += SendCommands;
+            var register = new IrtFeedback
             {
                 AwaitedInput = 999, // Assuming this key doesn't exist in _userFeedback or IrtConst.InternalFeedback
                 AwaitInput = true
@@ -98,77 +98,77 @@ namespace InterpreteTests
             // Add more assertions based on expected behavior after handling input
         }
 
-		/// <summary>
-		/// Handles the user input null feedback logs error.
-		/// </summary>
-		[TestMethod]
+        /// <summary>
+        ///     Handles the user input null feedback logs error.
+        /// </summary>
+        [TestMethod]
         public void HandleUserInputNullFeedbackLogsError()
         {
-			// Arrange
-			var prompt = new Prompt();
-			prompt.SendLogs += SendLogs;
-			prompt.SendCommands += SendCommands;
+            // Arrange
+            var prompt = new Prompt();
+            prompt.SendLogs += SendLogs;
+            prompt.SendCommands += SendCommands;
 
-			var register = new IrtFeedback()
+            var register = new IrtFeedback
             {
                 AwaitedInput = 1, // Assuming this key doesn't exist in _userFeedback or IrtConst.InternalFeedback
                 AwaitInput = true
             };
 
-			prompt.CommandRegister = register;
+            prompt.CommandRegister = register;
 
             var handleFeedback = new IrtHandleFeedback(_userFeedback, prompt);
 
             // Act
             handleFeedback.HandleUserInput(" yES");
 
-			// Assert
-			// Verify that an error command is sent or appropriate logging occurs
-			// Example: Assert.AreEqual(expectedErrorMessage, _prompt.LastErrorMessage);
-			Assert.AreEqual("No Options were provided.", _log, "No error Message send");
-		}
+            // Assert
+            // Verify that an error command is sent or appropriate logging occurs
+            // Example: Assert.AreEqual(expectedErrorMessage, _prompt.LastErrorMessage);
+            Assert.AreEqual("No Options were provided.", _log, "No error Message send");
+        }
 
         /// <summary>
-        /// Feedback and extension test.
+        ///     Feedback and extension test.
         /// </summary>
         [TestMethod]
         public void FeedbackExtension()
         {
-			// Arrange
-			var dctCommandOne = new Dictionary<int, InCommand>
+            // Arrange
+            var dctCommandOne = new Dictionary<int, InCommand>
             {
                 {
-                    0, new InCommand {Command = "First", ParameterCount = 2, Description = "Help First"}
+                    0, new InCommand { Command = "First", ParameterCount = 2, Description = "Help First" }
                 },
                 {
                     1,
-                    new InCommand {Command = "Second", ParameterCount = 0, Description = "Second Command Namespace 1"}
+                    new InCommand { Command = "Second", ParameterCount = 0, Description = "Second Command Namespace 1" }
                 },
                 {
                     2,
-                    new InCommand {Command = "Third", ParameterCount = 0, Description = "Special case no Parameter"}
+                    new InCommand { Command = "Third", ParameterCount = 0, Description = "Special case no Parameter" }
                 }
             };
 
-			// Act
-			var prompt = new Prompt();
+            // Act
+            var prompt = new Prompt();
             prompt.SendLogs += SendLogs;
             prompt.SendCommands += SendCommands;
             prompt.Initiate(dctCommandOne, "UserSpace 1");
             prompt.ConsoleInput("FirSt(1,2).Help()");
             prompt.ConsoleInput("");
 
-			// Assert
-			Assert.AreEqual("Option not allowed.", _log, "Error was not catched.");
+            // Assert
+            Assert.AreEqual("Option not allowed.", _log, "Error was not catched.");
 
-			prompt.ConsoleInput("mehh");
+            prompt.ConsoleInput("mehh");
 
-			Assert.AreEqual("Option not allowed.", _log, "Error was not catched.");
+            Assert.AreEqual("Option not allowed.", _log, "Error was not catched.");
 
-			prompt.ConsoleInput(" yeS   ");
+            prompt.ConsoleInput(" yeS   ");
 
-			Assert.IsNotNull(_outCommand, "Out Command was not empty.");
-		}
+            Assert.IsNotNull(_outCommand, "Out Command was not empty.");
+        }
 
         /// <summary>
         ///     Listen to Messages

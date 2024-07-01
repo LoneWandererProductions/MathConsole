@@ -38,15 +38,15 @@ namespace Interpreter
         /// </summary>
         private static int _count = -1;
 
-		/// <summary>
-		/// The feedback handler
-		/// </summary>
-		private IrtHandleFeedback _feedbackHandler;
+        /// <summary>
+        ///     The feedback handler
+        /// </summary>
+        private IrtHandleFeedback _feedbackHandler;
 
-		/// <summary>
-		///     User Input Windows
-		/// </summary>
-		private WindowPrompt _prompt;
+        /// <summary>
+        ///     User Input Windows
+        /// </summary>
+        private WindowPrompt _prompt;
 
         /// <summary>
         ///     Gets or sets the command register.
@@ -117,7 +117,7 @@ namespace Interpreter
         {
             ResetState();
             CommandRegister = new IrtFeedback();
-            _feedbackHandler= new IrtHandleFeedback(userFeedback, this);
+            _feedbackHandler = new IrtHandleFeedback(userFeedback, this);
             var use = new UserSpace { UserSpaceName = userSpace, Commands = com, ExtensionCommands = extension };
 
             //Upper is needed because of the way we compare commands in the Interpreter

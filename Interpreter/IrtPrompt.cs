@@ -9,8 +9,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
-using System.Reflection.Metadata;
-using System.Windows.Input;
 
 namespace Interpreter
 {
@@ -187,22 +185,22 @@ namespace Interpreter
                     break;
 
                 case 1:
-					//TODO Implement
-					var com = new OutCommand
-					{
-						Command = -1,
-						Parameter = null,
-						UsedNameSpace = ""
-					};
+                    //TODO Implement
+                    var com = new OutCommand
+                    {
+                        Command = -1,
+                        Parameter = null,
+                        UsedNameSpace = ""
+                    };
 
-					_prompt.CommandRegister = new IrtFeedback()
-					{
-						AwaitedInput = -1,
-						AwaitInput = true,
-						AwaitedOutput = com
-					};
+                    _prompt.CommandRegister = new IrtFeedback
+                    {
+                        AwaitedInput = -1,
+                        AwaitInput = true,
+                        AwaitedOutput = com
+                    };
 
-					break;
+                    break;
             }
         }
 
