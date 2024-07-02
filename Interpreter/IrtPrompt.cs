@@ -145,38 +145,35 @@ namespace Interpreter
             if (extensionResult.Status == IrtConst.Error)
                 extensionResult = _irtExtension.CheckForExtension(_inputString, _nameSpace, _extension);
 
-            OutCommand com;
+			// Process the extension result
+			switch (extensionResult.Status)
+			{
+				case IrtConst.Error:
+					SetError(Logging.SetLastError($"{IrtConst.ErrorExtensions}{IrtConst.Error}", 0));
+					return;
 
-            // Process the extension result
-            switch (extensionResult.Status)
-            {
-                case IrtConst.Error:
-                    SetError(Logging.SetLastError($"{IrtConst.ErrorExtensions}{IrtConst.Error}", 0));
-                    return;
+				case IrtConst.ParameterMismatch:
+					SetError(Logging.SetLastError($"{IrtConst.ErrorExtensions}{IrtConst.ParameterMismatch}", 0));
+					return;
 
-                case IrtConst.ParameterMismatch:
-                    SetError(Logging.SetLastError($"{IrtConst.ErrorExtensions}{IrtConst.ParameterMismatch}", 0));
-                    return;
+				case IrtConst.ExtensionFound:
+					if (extensionResult.Extension.ExtensionNameSpace == IrtConst.InternalNameSpace)
+					{
+						ProcessExtensionInternal(extensionResult.Extension);
+					}
+					else
+					{
+						var command = ProcessInput(inputString, extensionResult.Extension);
+						SetResult(command);
+					}
+					return;
 
-                case IrtConst.ExtensionFound:
-                    if (extensionResult.Extension.ExtensionNameSpace == IrtConst.InternalNameSpace)
-                    {
-                        ProcessExtensionInternal(extensionResult.Extension);
-                        return;
-                    }
-                    else
-                    {
-                        com = ProcessInput(inputString, extensionResult.Extension);
-                        SetResult(com);
-                        return;
-                    }
-
-                    break;
-            }
-
-            com = ProcessInput(inputString);
-            if(com != null) SetResult(com);
-        }
+				default:
+					var com = ProcessInput(inputString);
+					if (com != null) SetResult(com);
+					break;
+			}
+		}
 
         /// <summary>
         ///     Processes the internal extension.
@@ -221,16 +218,16 @@ namespace Interpreter
         /// <param name="extension">All Extensions</param>
         private OutCommand ProcessInput(string inputString, ExtensionCommands extension = null)
         {
-            var key = Irt.CheckForKeyWord(inputString, IrtConst.InternCommands);
+			if (_com == null)
+			{
+				SetError(IrtConst.ErrorNoCommandsProvided);
+				return null;
+			}
+
+			var key = Irt.CheckForKeyWord(inputString, IrtConst.InternCommands);
             if (key != IrtConst.Error)
             {
                 _irtInternal.ProcessInput(key, inputString);
-                return null;
-            }
-
-            if (_com == null)
-            {
-                SetError(IrtConst.ErrorNoCommandsProvided);
                 return null;
             }
 
@@ -258,7 +255,6 @@ namespace Interpreter
                 SetErrorWithLog(IrtConst.SyntaxError);
                 return null;
             }
-
 
             return new OutCommand
             {
