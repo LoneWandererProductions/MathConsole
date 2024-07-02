@@ -302,6 +302,11 @@ namespace Interpreter
         internal const int ParameterCommand = 1;
 
         /// <summary>
+        ///     Help with Parameter Id. (const). Value: "1".
+        /// </summary>
+        internal const int InternalHelpWithParameter = 1;
+
+        /// <summary>
         ///     Important Command Id for Container. (const). Value: "8".
         /// </summary>
         internal const int InternalContainerId = 8;
@@ -388,7 +393,7 @@ namespace Interpreter
                 }
             },
             {
-                1,
+                InternalHelpWithParameter,
                 new InCommand
                 {
                     Command = InternalCommandHelp,

@@ -155,6 +155,8 @@ namespace InterpreteTests
             prompt.ConsoleInput("FirSt(1,2).Help()");
             prompt.ConsoleInput("");
 
+
+            Assert.IsFalse(_log.Contains("Help First"), "No help provided.");
             // Assert
             Assert.AreEqual("Option not allowed.", _log, "Error was not catched.");
 

@@ -25,6 +25,11 @@ namespace InterpreteTests
         private static OutCommand _outCommand;
 
         /// <summary>
+        /// The log
+        /// </summary>
+        private static string _log;
+
+        /// <summary>
         ///     Tests if SingleCheck correctly identifies balanced parentheses.
         /// </summary>
         [TestMethod]
@@ -450,6 +455,7 @@ namespace InterpreteTests
         private static void SendLogs(object sender, string e)
         {
             Trace.WriteLine(e);
+            _log = e;
         }
 
         /// <summary>
@@ -461,6 +467,7 @@ namespace InterpreteTests
         {
             if (e.Command == -1)
             {
+                return;
             }
 
             _outCommand = e;

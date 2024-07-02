@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using Microsoft.Windows.Themes;
 
 namespace Interpreter
 {
@@ -95,12 +96,12 @@ namespace Interpreter
             _nameSpace = use.UserSpaceName;
         }
 
-		/// <summary>
-		///     will do all the work
-		/// </summary>
-		/// <param name="inputString">Input string</param>
-		/// <returns>Results of our commands</returns>
-		internal void HandleInput(string inputString)
+        /// <summary>
+        ///     will do all the work
+        /// </summary>
+        /// <param name="inputString">Input string</param>
+        /// <returns>Results of our commands</returns>
+        internal void HandleInput(string inputString)
         {
             _inputString = inputString;
 
@@ -145,35 +146,36 @@ namespace Interpreter
             if (extensionResult.Status == IrtConst.Error)
                 extensionResult = _irtExtension.CheckForExtension(_inputString, _nameSpace, _extension);
 
-			// Process the extension result
-			switch (extensionResult.Status)
-			{
-				case IrtConst.Error:
-					SetError(Logging.SetLastError($"{IrtConst.ErrorExtensions}{IrtConst.Error}", 0));
-					return;
+            // Process the extension result
+            switch (extensionResult.Status)
+            {
+                case IrtConst.Error:
+                    SetError(Logging.SetLastError($"{IrtConst.ErrorExtensions}{IrtConst.Error}", 0));
+                    return;
 
-				case IrtConst.ParameterMismatch:
-					SetError(Logging.SetLastError($"{IrtConst.ErrorExtensions}{IrtConst.ParameterMismatch}", 0));
-					return;
+                case IrtConst.ParameterMismatch:
+                    SetError(Logging.SetLastError($"{IrtConst.ErrorExtensions}{IrtConst.ParameterMismatch}", 0));
+                    return;
 
-				case IrtConst.ExtensionFound:
-					if (extensionResult.Extension.ExtensionNameSpace == IrtConst.InternalNameSpace)
-					{
-						ProcessExtensionInternal(extensionResult.Extension);
-					}
-					else
-					{
-						var command = ProcessInput(inputString, extensionResult.Extension);
-						SetResult(command);
-					}
-					return;
+                case IrtConst.ExtensionFound:
+                    if (extensionResult.Extension.ExtensionNameSpace == IrtConst.InternalNameSpace)
+                    {
+                        ProcessExtensionInternal(extensionResult.Extension);
+                    }
+                    else
+                    {
+                        var command = ProcessInput(inputString, extensionResult.Extension);
+                        SetResult(command);
+                    }
 
-				default:
-					var com = ProcessInput(inputString);
-					if (com != null) SetResult(com);
-					break;
-			}
-		}
+                    return;
+
+                default:
+                    var com = ProcessInput(inputString);
+                    if (com != null) SetResult(com);
+                    break;
+            }
+        }
 
         /// <summary>
         ///     Processes the internal extension.
@@ -192,14 +194,14 @@ namespace Interpreter
                     break;
 
                 case 1:
-                    //TODO Implement
-                    var com = new OutCommand
-                    {
-                        Command = -1,
-                        Parameter = null,
-                        UsedNameSpace = ""
-                    };
+                    //get the command in question
+                    var com = ProcessInput(extension.BaseCommand);
 
+                    //print the help of the command in question
+                    var command = _com[com.Command];
+                    _irtInternal.ProcessInput(IrtConst.InternalHelpWithParameter, command.Command);
+
+                    //display the original account
                     _prompt.CommandRegister = new IrtFeedback
                     {
                         AwaitedInput = -1,
@@ -218,13 +220,13 @@ namespace Interpreter
         /// <param name="extension">All Extensions</param>
         private OutCommand ProcessInput(string inputString, ExtensionCommands extension = null)
         {
-			if (_com == null)
-			{
-				SetError(IrtConst.ErrorNoCommandsProvided);
-				return null;
-			}
+            if (_com == null)
+            {
+                SetError(IrtConst.ErrorNoCommandsProvided);
+                return null;
+            }
 
-			var key = Irt.CheckForKeyWord(inputString, IrtConst.InternCommands);
+            var key = Irt.CheckForKeyWord(inputString, IrtConst.InternCommands);
             if (key != IrtConst.Error)
             {
                 _irtInternal.ProcessInput(key, inputString);
