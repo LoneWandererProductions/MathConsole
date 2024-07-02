@@ -76,7 +76,6 @@ namespace Interpreter
             var check = Irt.CheckOverload(IrtConst.InternCommands[key].Command, parameter.Count,
                 IrtConst.InternCommands);
 
-
             if (check == null)
             {
                 _prompt.SendLog(this, IrtConst.SyntaxError);
@@ -90,7 +89,7 @@ namespace Interpreter
         ///     For Internal Commands
         /// </summary>
         /// <param name="command">Key of the command</param>
-        /// <param name="parameter"></param>
+        /// <param name="parameter">optinal parameters, can be empty or null.</param>
         private void HandleInternalCommands(int? command, IReadOnlyList<string> parameter)
         {
             switch (command)
@@ -118,7 +117,6 @@ namespace Interpreter
                 case 6:
                     CommandLogError();
                     break;
-
 
                 case 7:
                     CommandLogFull();

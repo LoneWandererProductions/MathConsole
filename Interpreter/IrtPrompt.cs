@@ -95,12 +95,12 @@ namespace Interpreter
             _nameSpace = use.UserSpaceName;
         }
 
-        /// <summary>
-        ///     will do all the work
-        /// </summary>
-        /// <param name="inputString">Input string</param>
-        /// <returns>Results of our commands</returns>
-        internal void HandleInput(string inputString)
+		/// <summary>
+		///     will do all the work
+		/// </summary>
+		/// <param name="inputString">Input string</param>
+		/// <returns>Results of our commands</returns>
+		internal void HandleInput(string inputString)
         {
             _inputString = inputString;
 

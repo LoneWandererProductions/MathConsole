@@ -71,7 +71,6 @@ namespace InterpreteTests
             // Add more assertions based on expected behavior after handling input
         }
 
-
         /// <summary>
         ///     Handles the user input invalid awaited input no commands sent.
         /// </summary>
@@ -81,12 +80,12 @@ namespace InterpreteTests
             // Arrange
             _prompt.SendLogs += SendLogs;
             _prompt.SendCommands += SendCommands;
-            var register = new IrtFeedback
+
+            _prompt.CommandRegister = new IrtFeedback
             {
                 AwaitedInput = 999, // Assuming this key doesn't exist in _userFeedback or IrtConst.InternalFeedback
                 AwaitInput = true
             };
-            _prompt.CommandRegister = register;
 
             var handleFeedback = new IrtHandleFeedback(_userFeedback, _prompt);
 
