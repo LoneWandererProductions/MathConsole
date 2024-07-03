@@ -166,6 +166,8 @@ namespace InterpreteTests
 
             prompt.ConsoleInput(" yeS   ");
 
+            Trace.WriteLine(_outCommand.ToString());
+
             Assert.IsNotNull(_outCommand, "Out Command was not empty.");
         }
 
