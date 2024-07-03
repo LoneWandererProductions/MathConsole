@@ -125,6 +125,7 @@ namespace Interpreter
             }
             else if (_prompt.CommandRegister.AwaitInput)
             {
+                //TODO add special case if command was from the internal Userspace.
                 _prompt.SendCommands(this, _prompt.CommandRegister.AwaitedOutput);
             }
         }
