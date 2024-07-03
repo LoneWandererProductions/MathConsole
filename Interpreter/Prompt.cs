@@ -196,7 +196,7 @@ namespace Interpreter
             space = space.ToUpper(CultureInfo.InvariantCulture);
             var use = CollectedSpaces[space];
             IrtPrompt.SwitchUserSpace(use);
-            //switch Userspace here as well
+            //switch UserSpace here as well
             _feedbackHandler.Use = use;
         }
 

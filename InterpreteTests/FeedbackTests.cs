@@ -111,7 +111,7 @@ namespace InterpreteTests
                 AwaitedInput = 1, // Assuming this key doesn't exist in _userFeedback or IrtConst.InternalFeedback
                 AwaitInput = true
             };
-            var use = new UserSpace {Commands = new Dictionary<int, InCommand>()};
+            var use = new UserSpace { Commands = new Dictionary<int, InCommand>() };
 
             var handleFeedback = new IrtHandleFeedback(_prompt, _userFeedback, use);
 

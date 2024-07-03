@@ -25,7 +25,7 @@ namespace InterpreteTests
         private static OutCommand _outCommand;
 
         /// <summary>
-        /// The log
+        ///     The log
         /// </summary>
         private static string _log;
 
@@ -465,10 +465,7 @@ namespace InterpreteTests
         /// <param name="e">OutCommand object</param>
         private static void SendCommands(object sender, OutCommand e)
         {
-            if (e.Command == -1)
-            {
-                return;
-            }
+            if (e.Command == -1) return;
 
             _outCommand = e;
         }

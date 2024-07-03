@@ -26,14 +26,6 @@ namespace Interpreter
         private readonly Dictionary<int, UserFeedback> _userFeedback;
 
         /// <summary>
-        /// The collected Userspace
-        /// </summary>
-        /// <value>
-        /// The use.
-        /// </value>
-        internal UserSpace Use { get; set; }
-
-        /// <summary>
         ///     Initializes a new instance of the <see cref="IrtHandleFeedback" /> class.
         /// </summary>
         /// <param name="userFeedback">The user feedback.</param>
@@ -45,6 +37,14 @@ namespace Interpreter
             _prompt = prompt;
             Use = use;
         }
+
+        /// <summary>
+        ///     The collected Userspace
+        /// </summary>
+        /// <value>
+        ///     The use.
+        /// </value>
+        internal UserSpace Use { get; set; }
 
         /// <summary>
         ///     Handles the user input.
@@ -118,7 +118,8 @@ namespace Interpreter
         /// <param name="option">The option.</param>
         /// <param name="optionName">Name of the option.</param>
         /// <param name="terminate">if set to <c>true</c> [terminate].</param>
-        private void HandleOption(UserFeedback feedback, AvailableFeedback option, string optionName, bool terminate = false)
+        private void HandleOption(UserFeedback feedback, AvailableFeedback option, string optionName,
+            bool terminate = false)
         {
             if (!feedback.Options.ContainsKey(option))
             {
@@ -161,6 +162,5 @@ namespace Interpreter
                 _prompt.CommandRegister.Clear(true);
             }
         }
-
     }
 }

@@ -29,7 +29,7 @@ namespace Interpreter
         /// <value>
         ///     The commands.
         /// </value>
-        internal Dictionary<int, InCommand> Commands { get; set; }
+        internal Dictionary<int, InCommand> Commands { get; init; }
 
         /// <summary>
         ///     Gets or sets the extension commands.

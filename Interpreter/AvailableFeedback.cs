@@ -9,22 +9,22 @@
 namespace Interpreter
 {
     /// <summary>
-    /// Allowed user Feedback
+    ///     Allowed user Feedback
     /// </summary>
     public enum AvailableFeedback
     {
         /// <summary>
-        /// The yes
+        ///     The yes
         /// </summary>
         Yes = 0,
 
         /// <summary>
-        /// The no
+        ///     The no
         /// </summary>
         No = 1,
 
         /// <summary>
-        /// The cancel
+        ///     The cancel
         /// </summary>
         Cancel = 2
     }

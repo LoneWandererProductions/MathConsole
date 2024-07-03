@@ -198,7 +198,7 @@ namespace Interpreter
                     var key = Irt.CheckForKeyWord(extension.BaseCommand, IrtConst.InternCommands);
                     if (key != IrtConst.Error)
                     {
-                        SetErrorWithLog("Extension for this Namespace not supported," , IrtConst.InternalNameSpace);
+                        SetErrorWithLog("Extension for this Namespace not supported,", IrtConst.InternalNameSpace);
                         return;
                     }
 
@@ -330,12 +330,12 @@ namespace Interpreter
         }
 
         /// <summary>
-        /// Decide the appropriate Action by command
-        /// Optional set the User Input
+        ///     Decide the appropriate Action by command
+        ///     Optional set the User Input
         /// </summary>
         /// <param name="command">The command.</param>
         /// <returns>
-        /// Result of our Command
+        ///     Result of our Command
         /// </returns>
         private void SetResult(OutCommand command)
         {

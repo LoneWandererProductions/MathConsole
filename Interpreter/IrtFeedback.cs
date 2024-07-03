@@ -6,8 +6,6 @@
  * PROGRAMER:   Peter Geinitz (Wayfarer)
  */
 
-using System;
-
 namespace Interpreter
 {
     /// <summary>
@@ -32,11 +30,11 @@ namespace Interpreter
         internal bool AwaitInput { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether [last selected option].
-        /// Will be used for if Checks.
+        ///     Gets or sets a value indicating whether [last selected option].
+        ///     Will be used for if Checks.
         /// </summary>
         /// <value>
-        ///   <c>true</c> if [last selected option]; otherwise, <c>false</c>.
+        ///     <c>true</c> if [last selected option]; otherwise, <c>false</c>.
         /// </value>
         internal bool? LastSelectedOption { get; set; }
 
@@ -58,7 +56,7 @@ namespace Interpreter
         internal OutCommand AwaitedOutput { get; set; }
 
         /// <summary>
-        /// Clears this instance.
+        ///     Clears this instance.
         /// </summary>
         /// <param name="lastSelectedOption">if set to <c>true</c> [last selected option].</param>
         internal void Clear(bool? lastSelectedOption)
