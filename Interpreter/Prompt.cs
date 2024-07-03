@@ -117,8 +117,9 @@ namespace Interpreter
         {
             ResetState();
             CommandRegister = new IrtFeedback();
-            _feedbackHandler = new IrtHandleFeedback(userFeedback, this);
+            CommandRegister = new IrtFeedback();
             var use = new UserSpace { UserSpaceName = userSpace, Commands = com, ExtensionCommands = extension };
+            _feedbackHandler = new IrtHandleFeedback(this, userFeedback, use);
 
             //Upper is needed because of the way we compare commands in the Interpreter
             CollectedSpaces.AddDistinct(userSpace.ToUpper(), use);
@@ -195,6 +196,8 @@ namespace Interpreter
             space = space.ToUpper(CultureInfo.InvariantCulture);
             var use = CollectedSpaces[space];
             IrtPrompt.SwitchUserSpace(use);
+            //switch Userspace here as well
+            _feedbackHandler.Use = use;
         }
 
         /// <summary>

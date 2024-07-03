@@ -9,7 +9,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
-using Microsoft.Windows.Themes;
 
 namespace Interpreter
 {
@@ -77,7 +76,7 @@ namespace Interpreter
             _com = use.Commands;
             _extension = use.ExtensionCommands;
             _nameSpace = use.UserSpaceName;
-            _irtInternal = new IrtInternal(use.Commands, this, use.UserSpaceName, _prompt);
+            _irtInternal = new IrtInternal(use.Commands, use.UserSpaceName, _prompt);
             //prepare our Extension handler
             _irtExtension = new IrtExtension();
             //notify log about loading up
@@ -195,6 +194,14 @@ namespace Interpreter
 
                 case 1:
                     //get the command in question
+                    //check if we use the Internal Namespace
+                    var key = Irt.CheckForKeyWord(extension.BaseCommand, IrtConst.InternCommands);
+                    if (key != IrtConst.Error)
+                    {
+                        SetErrorWithLog("Extension for this Namespace not supported," , IrtConst.InternalNameSpace);
+                        return;
+                    }
+
                     var com = ProcessInput(extension.BaseCommand);
 
                     //print the help of the command in question

@@ -26,14 +26,24 @@ namespace Interpreter
         private readonly Dictionary<int, UserFeedback> _userFeedback;
 
         /// <summary>
+        /// The collected Userspace
+        /// </summary>
+        /// <value>
+        /// The use.
+        /// </value>
+        internal UserSpace Use { get; set; }
+
+        /// <summary>
         ///     Initializes a new instance of the <see cref="IrtHandleFeedback" /> class.
         /// </summary>
         /// <param name="userFeedback">The user feedback.</param>
         /// <param name="prompt">The prompt.</param>
-        public IrtHandleFeedback(Dictionary<int, UserFeedback> userFeedback, Prompt prompt)
+        /// <param name="use">The current Userspace</param>
+        public IrtHandleFeedback(Prompt prompt, Dictionary<int, UserFeedback> userFeedback, UserSpace use)
         {
             _userFeedback = userFeedback ?? new Dictionary<int, UserFeedback>();
             _prompt = prompt;
+            Use = use;
         }
 
         /// <summary>
@@ -62,7 +72,7 @@ namespace Interpreter
                 feedback = IrtConst.InternalFeedback[_prompt.CommandRegister.AwaitedInput];
 
             //check if we have some generic information about the options, if not, well return and show some Errors
-            if (feedback == null || feedback.Options == null)
+            if (feedback?.Options == null)
             {
                 var error = Logging.SetLastError("No Options are available.", 0);
                 var com = new OutCommand
@@ -108,8 +118,7 @@ namespace Interpreter
         /// <param name="option">The option.</param>
         /// <param name="optionName">Name of the option.</param>
         /// <param name="terminate">if set to <c>true</c> [terminate].</param>
-        private void HandleOption(UserFeedback feedback, AvailableFeedback option, string optionName,
-            bool terminate = false)
+        private void HandleOption(UserFeedback feedback, AvailableFeedback option, string optionName, bool terminate = false)
         {
             if (!feedback.Options.ContainsKey(option))
             {
@@ -118,16 +127,40 @@ namespace Interpreter
             }
 
             _prompt.SendLogs(this, $"You selected {optionName}");
-            if (terminate)
+
+            switch (terminate)
             {
-                _prompt.CommandRegister.AwaitInput = false;
-                _prompt.CommandRegister = null;
+                case true:
+                    switch (option)
+                    {
+                        case AvailableFeedback.Cancel:
+                            _prompt.CommandRegister.Clear(null);
+                            _prompt.CommandRegister.LastSelectedOption = null;
+                            return;
+                        case AvailableFeedback.No:
+                            _prompt.CommandRegister.Clear(false);
+                            _prompt.CommandRegister.LastSelectedOption = false;
+                            return;
+                    }
+
+                    break;
             }
-            else if (_prompt.CommandRegister.AwaitInput)
+
+            if (!_prompt.CommandRegister.AwaitInput) return;
+
+            var command = _prompt.CommandRegister.AwaitedOutput;
+
+            if (command == null)
             {
-                //TODO add special case if command was from the internal Userspace.
-                _prompt.SendCommands(this, _prompt.CommandRegister.AwaitedOutput);
+                _prompt.SendLogs(this, "Output was not set.");
+                _prompt.CommandRegister.Clear(null);
+            }
+            else
+            {
+                _prompt.SendCommands(this, command);
+                _prompt.CommandRegister.Clear(true);
             }
         }
+
     }
 }

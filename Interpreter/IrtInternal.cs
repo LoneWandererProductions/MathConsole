@@ -27,11 +27,6 @@ namespace Interpreter
         private readonly Dictionary<int, InCommand> _commands;
 
         /// <summary>
-        ///     The irt prompt
-        /// </summary>
-        private readonly IrtPrompt _irtPrompt;
-
-        /// <summary>
         ///     The prompt
         /// </summary>
         private readonly Prompt _prompt;
@@ -40,13 +35,11 @@ namespace Interpreter
         ///     Initializes a new instance of the <see cref="IrtInternal" /> class.
         /// </summary>
         /// <param name="commands">The commands.</param>
-        /// <param name="irtPrompt">The irt prompt.</param>
         /// <param name="nameSpace">The name space.</param>
         /// <param name="prompt">The prompt</param>
-        internal IrtInternal(Dictionary<int, InCommand> commands, IrtPrompt irtPrompt, string nameSpace, Prompt prompt)
+        internal IrtInternal(Dictionary<int, InCommand> commands, string nameSpace, Prompt prompt)
         {
             _commands = commands;
-            _irtPrompt = irtPrompt;
             _nameSpace = nameSpace;
             _prompt = prompt;
         }
@@ -89,7 +82,7 @@ namespace Interpreter
         ///     For Internal Commands
         /// </summary>
         /// <param name="command">Key of the command</param>
-        /// <param name="parameter">optinal parameters, can be empty or null.</param>
+        /// <param name="parameter">optional parameters, can be empty or null.</param>
         private void HandleInternalCommands(int? command, IReadOnlyList<string> parameter)
         {
             switch (command)
@@ -263,7 +256,8 @@ namespace Interpreter
             {
                 //just because we run a container or a batch, we still have to log it
                 _prompt.AddToLog(com);
-                _irtPrompt.HandleInput(com);
+                //mostly use the prompt to add a layer of security
+                _prompt.ConsoleInput(com);
             }
         }
 

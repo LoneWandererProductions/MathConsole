@@ -332,11 +332,11 @@ namespace Interpreter
             {
                 {
                     AvailableFeedback.Yes,
-                    "If you want to execute the Command type yes."
+                    "If you want to execute the Command type yes"
                 },
                 {
                     AvailableFeedback.No,
-                    "If you want to stop executing the Command type no."
+                    " if you want to stop executing the Command."
                 }
             }
         };
@@ -372,7 +372,7 @@ namespace Interpreter
                 {
                     Command = InternalHelpExtension,
                     Description =
-                        "help(parameter) : displays the help for the command and asks if you want to execute it.",
+                        "help(parameter) : displays the help for the command and asks if you want to execute it, not compatible with internal commands.",
                     ParameterCount = 0
                 }
             }

@@ -61,7 +61,7 @@ namespace InterpreteTests
                 AwaitInput = true
             };
 
-            var handleFeedback = new IrtHandleFeedback(_userFeedback, _prompt);
+            var handleFeedback = new IrtHandleFeedback(_prompt, _userFeedback, new UserSpace());
 
             // Act
             handleFeedback.HandleUserInput(" yES");
@@ -87,7 +87,7 @@ namespace InterpreteTests
                 AwaitInput = true
             };
 
-            var handleFeedback = new IrtHandleFeedback(_userFeedback, _prompt);
+            var handleFeedback = new IrtHandleFeedback(_prompt, _userFeedback, new UserSpace());
 
             // Act
             handleFeedback.HandleUserInput(" yES");
@@ -104,17 +104,16 @@ namespace InterpreteTests
         public void HandleUserInputNullFeedbackLogsError()
         {
             // Arrange
-            var prompt = new Prompt();
-            prompt.SendLogs += SendLogs;
-            prompt.SendCommands += SendCommands;
-
-            prompt.CommandRegister = new IrtFeedback
+            _prompt.SendLogs += SendLogs;
+            _prompt.SendCommands += SendCommands;
+            _prompt.CommandRegister = new IrtFeedback
             {
                 AwaitedInput = 1, // Assuming this key doesn't exist in _userFeedback or IrtConst.InternalFeedback
                 AwaitInput = true
             };
+            var use = new UserSpace {Commands = new Dictionary<int, InCommand>()};
 
-            var handleFeedback = new IrtHandleFeedback(_userFeedback, prompt);
+            var handleFeedback = new IrtHandleFeedback(_prompt, _userFeedback, use);
 
             // Act
             handleFeedback.HandleUserInput(" yES");
@@ -169,6 +168,16 @@ namespace InterpreteTests
             Trace.WriteLine(_outCommand.ToString());
 
             Assert.IsNotNull(_outCommand, "Out Command was not empty.");
+
+            prompt.ConsoleInput("List().Help()");
+            Assert.IsTrue(_log.Contains("Extension for this"), "Namespace was not catched.");
+
+            prompt.ConsoleInput("YeS   ");
+
+            Assert.IsTrue(_log.Contains("KeyWord not Found"), "Wrong keyword not catched.");
+
+            Trace.WriteLine(_log);
+            Trace.WriteLine(_outCommand.ToString());
         }
 
         /// <summary>
