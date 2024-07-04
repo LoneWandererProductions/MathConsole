@@ -147,9 +147,17 @@ namespace Interpreter
                     break;
             }
 
+            //yes case and terminate was false
             if (!_prompt.CommandRegister.AwaitInput) return;
 
             var command = _prompt.CommandRegister.AwaitedOutput;
+
+            if (_prompt.CommandRegister.IsInternalCommand)
+            {
+                _prompt.CommandRegister.HandleInternalCommand();
+				_prompt.CommandRegister.Clear(true);
+				return;
+            }
 
             if (command == null)
             {

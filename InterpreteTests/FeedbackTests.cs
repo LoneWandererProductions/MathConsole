@@ -170,11 +170,11 @@ namespace InterpreteTests
             Assert.IsNotNull(_outCommand, "Out Command was not empty.");
 
             prompt.ConsoleInput("List().Help()");
-            Assert.IsTrue(_log.Contains("Extension for this"), "Namespace was not catched.");
+            Assert.IsTrue(_log.Contains("LIST Description: List: "), "Wrong help provided.");
 
             prompt.ConsoleInput("YeS   ");
 
-            Assert.IsTrue(_log.Contains("KeyWord not Found"), "Wrong keyword not catched.");
+            Assert.IsTrue(_log.Contains("Special case"), "Wrong Commands listed");
 
             Trace.WriteLine(_log);
             Trace.WriteLine(_outCommand.ToString());
