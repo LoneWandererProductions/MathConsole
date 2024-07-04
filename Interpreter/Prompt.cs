@@ -1,9 +1,9 @@
 ﻿/*
- * COPYRIGHT:   See COPYING in the top level directory
+ * COPYRIGHT:   See COPYING in the top-level directory
  * PROJECT:     Interpreter
  * FILE:        Interpreter/Prompt.cs
  * PURPOSE:     Handle the Input, Entry point for all Commands
- * PROGRAMER:   Peter Geinitz (Wayfarer)
+ * PROGRAMMER:  Peter Geinitz (Wayfarer)
  */
 
 // ReSharper disable MemberCanBeInternal
@@ -17,19 +17,18 @@ using ExtendedSystemObjects;
 
 namespace Interpreter
 {
+    /// <inheritdoc cref="IPrompt" />
     /// <summary>
     ///     Bucket List:
     ///     - Overloads
-    ///     - nested Commands
+    ///     - Nested Commands
     /// </summary>
-    /// <seealso cref="IPrompt" />
-    /// <seealso cref="IDisposable" />
-    /// <inheritdoc cref="IDisposable" />
-    /// <inheritdoc cref="IPrompt" />
+    /// <seealso cref="T:Interpreter.IPrompt" />
+    /// <seealso cref="T:System.IDisposable" />
     public sealed class Prompt : IPrompt, IDisposable
     {
         /// <summary>
-        ///     Used to interpret Commands
+        ///     Used to interpret commands
         /// </summary>
         private static IrtPrompt _interpret;
 
@@ -44,53 +43,52 @@ namespace Interpreter
         private IrtHandleFeedback _feedbackHandler;
 
         /// <summary>
-        ///     User Input Windows
+        ///     User input window
         /// </summary>
         private WindowPrompt _prompt;
 
         /// <summary>
         ///     Gets or sets the command register.
         /// </summary>
-        /// <value>
-        ///     The command register.
-        /// </value>
         internal IrtFeedback CommandRegister { get; set; }
 
         /// <summary>
-        ///     The collected Namespaces
+        ///     The collected namespaces
         /// </summary>
         public Dictionary<string, UserSpace> CollectedSpaces { get; private set; }
 
         /// <summary>
-        ///     Send selected Command to the Subscriber
+        ///     Sends selected command to the subscriber
         /// </summary>
         public EventHandler<OutCommand> SendCommands { get; set; }
 
         /// <summary>
-        ///     Send Message to the Subscriber
+        ///     Sends message to the subscriber
         /// </summary>
         public EventHandler<string> SendLogs { get; set; }
 
         /// <summary>
         ///     Gets the log.
         /// </summary>
-        /// <value>
-        ///     The log.
-        /// </value>
         public Dictionary<int, string> Log { get; private set; }
 
         /// <summary>
         ///     Gets or sets a value indicating whether this <see cref="Prompt" /> is disposed.
         /// </summary>
-        /// <value>
-        ///     <c>true</c> if disposed; otherwise, <c>false</c>.
-        /// </value>
-        public bool Disposed { get; set; }
+        public bool Disposed { get; private set; }
 
         /// <summary>
-        ///     Logs all activities
+        ///     Maximum number of lines in the log
         /// </summary>
         private static int MaxLines => 1000;
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="Prompt" /> class.
+        /// </summary>
+        public Prompt()
+        {
+            ResetState();
+        }
 
         /// <inheritdoc />
         /// <summary>
@@ -102,16 +100,49 @@ namespace Interpreter
             GC.SuppressFinalize(this);
         }
 
+        /// <summary>
+        ///     Disposes of the resources used by the <see cref="Prompt" /> class.
+        /// </summary>
+        /// <param name="disposing">Indicates whether the method call comes from a Dispose method (true) or from a finalizer (false).</param>
+        private void Dispose(bool disposing)
+        {
+            if (Disposed) return;
+
+            if (disposing)
+            {
+                // Dispose managed resources
+                _interpret = null;
+                CollectedSpaces = null;
+                Log = null;
+                _prompt?.Close();
+                _prompt = null;
+                _feedbackHandler = null;
+                CommandRegister = null;
+            }
+
+            // Note: If there are unmanaged resources, they should be released here.
+
+            Disposed = true;
+        }
+
+        /// <summary>
+        ///     Destructor to ensure resources are released.
+        /// </summary>
+        ~Prompt()
+        {
+            Dispose(false);
+        }
+
         /// <inheritdoc />
         /// <summary>
-        ///     Start the Sender and Interpreter
-        ///     UserSpace will never overwrite the System Commands.
-        ///     Parenthesis are not defined by the UserSpace but by the definition of the User, so both ( or [ can be valid
+        ///     Start the sender and interpreter.
+        ///     UserSpace will never overwrite the system commands.
+        ///     Parentheses are not defined by the UserSpace but by the definition of the User, so both ( or [ can be valid.
         /// </summary>
-        /// <param name="com">Command Register</param>
+        /// <param name="com">Command register</param>
         /// <param name="userSpace">UserSpace of the register</param>
-        /// <param name="extension">Optional Extension Methods</param>
-        /// <param name="userFeedback">Optional user Feedback Methods</param>
+        /// <param name="extension">Optional extension methods</param>
+        /// <param name="userFeedback">Optional user feedback methods</param>
         public void Initiate(Dictionary<int, InCommand> com, string userSpace,
             Dictionary<int, InCommand> extension = null, Dictionary<int, UserFeedback> userFeedback = null)
         {
@@ -120,7 +151,7 @@ namespace Interpreter
             var use = new UserSpace { UserSpaceName = userSpace, Commands = com, ExtensionCommands = extension };
             _feedbackHandler = new IrtHandleFeedback(this, userFeedback, use);
 
-            //Upper is needed because of the way we compare commands in the Interpreter
+            // Upper is needed because of the way we compare commands in the interpreter
             CollectedSpaces.AddDistinct(userSpace.ToUpper(), use);
 
             _interpret = new IrtPrompt(this);
@@ -129,10 +160,12 @@ namespace Interpreter
         }
 
         /// <inheritdoc />
-        /// <summary>Start the Sender and Interpreter</summary>
-        /// <param name="com">Command Register</param>
+        /// <summary>
+        ///     Adds commands to the interpreter.
+        /// </summary>
+        /// <param name="com">Command register</param>
         /// <param name="userSpace">UserSpace of the register</param>
-        /// <param name="extension">Optional Extension Methods</param>
+        /// <param name="extension">Optional extension methods</param>
         public void AddCommands(Dictionary<int, InCommand> com, string userSpace,
             Dictionary<int, InCommand> extension = null)
         {
@@ -148,8 +181,7 @@ namespace Interpreter
 
         /// <inheritdoc />
         /// <summary>
-        ///     Start a Window for the Input.
-        ///     Included and optional
+        ///     Starts a window for user input.
         /// </summary>
         public void StartWindow()
         {
@@ -159,7 +191,7 @@ namespace Interpreter
 
         /// <inheritdoc />
         /// <summary>
-        ///     Handle it within the code, no User Input
+        ///     Handles console input.
         /// </summary>
         /// <param name="input">Input string</param>
         public void ConsoleInput(string input)
@@ -170,9 +202,9 @@ namespace Interpreter
 
         /// <inheritdoc />
         /// <summary>
-        ///     Callback from the Outside, here for window
+        ///     Handles callback for window feedback.
         /// </summary>
-        /// <param name="message">Feedback Message for Display</param>
+        /// <param name="message">Feedback message for display</param>
         public void CallbacksWindow(string message)
         {
             _prompt?.FeedbackMessage(message);
@@ -180,30 +212,32 @@ namespace Interpreter
 
         /// <inheritdoc />
         /// <summary>
-        ///     Generic Callback from Outside, will appear in the window as SendLog Event
+        ///     Handles generic callback from outside.
         /// </summary>
-        /// <param name="message">Feedback Message for Display</param>
+        /// <param name="message">Feedback message for display</param>
         public void Callback(string message)
         {
             SendLogs?.Invoke(nameof(Callback), message);
         }
 
-        /// <summary>Switches the name spaces.</summary>
-        /// <param name="space">The Namespace we would like to use.</param>
+        /// <summary>
+        ///     Switches the namespaces.
+        /// </summary>
+        /// <param name="space">The namespace to use</param>
         internal void SwitchNameSpaces(string space)
         {
             space = space.ToUpper(CultureInfo.InvariantCulture);
             var use = CollectedSpaces[space];
             IrtPrompt.SwitchUserSpace(use);
-            //switch UserSpace here as well
+            // Switch UserSpace here as well
             _feedbackHandler.Use = use;
         }
 
         /// <summary>
-        ///     Set up the feedback loop.
+        ///     Sets up the feedback loop.
         /// </summary>
-        /// <param name="feedbackId">The feedback identifier.</param>
-        /// <param name="com">The COM.</param>
+        /// <param name="feedbackId">The feedback identifier</param>
+        /// <param name="com">The command</param>
         internal void SetFeedbackLoop(int feedbackId, OutCommand com)
         {
             CommandRegister = new IrtFeedback
@@ -215,22 +249,21 @@ namespace Interpreter
         }
 
         /// <summary>
-        ///     Return the selected Command
+        ///     Returns the selected command.
         /// </summary>
         /// <param name="sender">Object</param>
-        /// <param name="e">Type</param>
+        /// <param name="e">Event arguments</param>
         internal void SendCommand(object sender, OutCommand e)
         {
             AddToLog(e.Command == IrtConst.Error ? e.ErrorMessage : e.Command.ToString());
-
             SendCommands?.Invoke(nameof(Prompt), e);
         }
 
         /// <summary>
-        ///     Send the News Out
+        ///     Sends log messages.
         /// </summary>
         /// <param name="sender">Object</param>
-        /// <param name="e">Type</param>
+        /// <param name="e">Event arguments</param>
         internal void SendLog(object sender, string e)
         {
             AddToLog(e);
@@ -238,31 +271,9 @@ namespace Interpreter
         }
 
         /// <summary>
-        ///     Releases unmanaged and - optionally - managed resources.
+        ///     Adds a message to the log.
         /// </summary>
-        /// <param name="disposing">
-        ///     <c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only
-        ///     unmanaged resources.
-        /// </param>
-        private void Dispose(bool disposing)
-        {
-            if (Disposed) return;
-
-            if (disposing)
-            {
-                _interpret = null;
-                CollectedSpaces = null;
-                Log = null;
-                _prompt?.Close();
-            }
-
-            Disposed = true;
-        }
-
-        /// <summary>
-        ///     Adds to log.
-        /// </summary>
-        /// <param name="message">The message.</param>
+        /// <param name="message">The message</param>
         internal void AddToLog(string message)
         {
             if (_count == MaxLines) Log.Remove(Log.Keys.First());
@@ -272,7 +283,7 @@ namespace Interpreter
         }
 
         /// <summary>
-        ///     Resets the state.
+        ///     Resets the state of the instance.
         /// </summary>
         private void ResetState()
         {
@@ -282,28 +293,17 @@ namespace Interpreter
         }
 
         /// <summary>
-        ///     Creates the user space.
+        ///     Creates a new UserSpace.
         /// </summary>
-        /// <param name="userSpace">The user space.</param>
-        /// <param name="com">The COM.</param>
-        /// <returns>New UserSpace</returns>
+        /// <param name="userSpace">The user space</param>
+        /// <param name="com">The command register</param>
+        /// <returns>The created UserSpace</returns>
         private UserSpace CreateUserSpace(string userSpace, Dictionary<int, InCommand> com)
         {
             var use = new UserSpace { UserSpaceName = userSpace, Commands = com };
             CollectedSpaces.AddDistinct(userSpace.ToUpper(), use);
             return use;
         }
-
-        /// <summary>
-        ///     NOTE: Leave out the finalizer altogether if this class doesn't
-        ///     own unmanaged resources, but leave the other methods
-        ///     exactly as they are.
-        ///     Finalizes an instance of the <see cref="Prompt" /> class.
-        /// </summary>
-        ~Prompt()
-        {
-            // Finalizer calls Dispose(false)
-            Dispose(false);
-        }
     }
 }
+
