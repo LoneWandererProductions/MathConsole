@@ -25,7 +25,7 @@ namespace Interpreter
         /// <summary>
         ///     The commands
         /// </summary>
-        private readonly Dictionary<int, InCommand> _commands;
+        private Dictionary<int, InCommand> _commands;
 
         /// <summary>
         ///     The prompt
@@ -43,10 +43,9 @@ namespace Interpreter
         /// <param name="commands">The commands.</param>
         /// <param name="nameSpace">The name space.</param>
         /// <param name="prompt">The prompt</param>
-        internal IrtInternal(IDictionary<int, InCommand> commands, string nameSpace, Prompt prompt)
+        internal IrtInternal(Dictionary<int, InCommand> commands, string nameSpace, Prompt prompt)
         {
-            //needed to create a new Instance and not a reference
-            _commands = new Dictionary<int, InCommand>(commands);
+            _commands = commands;
             _nameSpace = nameSpace;
             _prompt = prompt;
         }
@@ -320,7 +319,8 @@ namespace Interpreter
             if (disposing)
             {
                 // Dispose managed resources here if needed
-                _commands.Clear();
+                // Set the local dictionary reference to null to remove references without clearing the dictionary
+                _commands = null;
             }
 
             // Dispose unmanaged resources here if needed
