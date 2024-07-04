@@ -1,8 +1,9 @@
-﻿/*COPYRIGHT:   See COPYING in the top level directory
+﻿/*
+ * COPYRIGHT:   See COPYING in the top level directory
  * PROJECT:     Interpreter
- * FILE:        Interpreter / IrtPrompt.cs
+ * FILE:        Interpreter/IrtPrompt.cs
  * PURPOSE:     Handle the Input
- * PROGRAMER:   Peter Geinitz(Wayfarer)
+ * PROGRAMMER:  Peter Geinitz (Wayfarer)
  */
 
 using System;
@@ -15,7 +16,7 @@ namespace Interpreter
     /// <summary>
     ///     Basic command Line Interpreter, bare bones for now
     /// </summary>
-    internal sealed class IrtPrompt
+    internal sealed class IrtPrompt : IDisposable
     {
         /// <summary>
         ///     Command Register
@@ -35,7 +36,7 @@ namespace Interpreter
         /// <summary>
         ///     The prompt
         /// </summary>
-        private readonly Prompt _prompt;
+        private Prompt _prompt;
 
         /// <summary>
         ///     The original input string
@@ -43,12 +44,12 @@ namespace Interpreter
         private string _inputString;
 
         /// <summary>
-        ///     The irt extension
+        ///     The IRT extension
         /// </summary>
         private IrtExtension _irtExtension;
 
         /// <summary>
-        ///     The irt internal
+        ///     The IRT internal
         /// </summary>
         private IrtInternal _irtInternal;
 
@@ -62,24 +63,24 @@ namespace Interpreter
         }
 
         /// <summary>
-        ///     Send selected Command to the Subscriber
+        ///     Event to send selected command to the subscriber
         /// </summary>
         internal event EventHandler<string> SendInternalLog;
 
         /// <summary>
-        ///     Get the Engine Running
+        ///     Get the engine running
         /// </summary>
-        /// <param name="use">The Command Structure</param>
+        /// <param name="use">The command structure</param>
         internal void Initiate(UserSpace use)
         {
-            //set the basic parameter
+            // Set the basic parameters
             _com = use.Commands;
             _extension = use.ExtensionCommands;
             _nameSpace = use.UserSpaceName;
             _irtInternal = new IrtInternal(use.Commands, use.UserSpaceName, _prompt);
-            //prepare our Extension handler
             _irtExtension = new IrtExtension();
-            //notify log about loading up
+
+            // Notify log about loading up
             var log = Logging.SetLastError(IrtConst.InformationStartup, 2);
             SendInternalLog?.Invoke(this, log);
         }
@@ -96,10 +97,9 @@ namespace Interpreter
         }
 
         /// <summary>
-        ///     will do all the work
+        ///     Handles the input string and processes commands.
         /// </summary>
         /// <param name="inputString">Input string</param>
-        /// <returns>Results of our commands</returns>
         internal void HandleInput(string inputString)
         {
             _inputString = inputString;
@@ -131,7 +131,7 @@ namespace Interpreter
                 return;
             }
 
-            //first Check if the Parenthesis are right?
+            // Check if the parentheses are correct
             if (!Irt.ValidateParameters(inputString))
             {
                 SetErrorWithLog(IrtConst.ParenthesisError);
@@ -139,8 +139,7 @@ namespace Interpreter
             }
 
             // Check for extensions in the internal namespace first, then in the external namespace if needed
-            var extensionResult = _irtExtension.CheckForExtension(_inputString, IrtConst.InternalNameSpace,
-                IrtConst.InternalExtensionCommands);
+            var extensionResult = _irtExtension.CheckForExtension(_inputString, IrtConst.InternalNameSpace, IrtConst.InternalExtensionCommands);
 
             if (extensionResult.Status == IrtConst.Error)
                 extensionResult = _irtExtension.CheckForExtension(_inputString, _nameSpace, _extension);
@@ -166,7 +165,6 @@ namespace Interpreter
                         var command = ProcessInput(inputString, extensionResult.Extension);
                         SetResult(command);
                     }
-
                     return;
 
                 default:
@@ -184,30 +182,23 @@ namespace Interpreter
         {
             switch (extension.ExtensionCommand)
             {
-                // switch internal Namespace
                 case 0:
-                    //first switch Namespace
+                    // Switch namespace
                     _prompt.SwitchNameSpaces(extension.ExtensionParameter[0]);
-                    //set input without Extension Method and execute cleaned command
                     _prompt.ConsoleInput(extension.BaseCommand);
                     break;
 
                 case 1:
-                    //get the command in question
-                    //check if we use the Internal Namespace
                     var key = Irt.CheckForKeyWord(extension.BaseCommand, IrtConst.InternCommands);
                     if (key != IrtConst.Error)
                     {
                         var command = IrtConst.InternCommands[key];
 
-                        //will be disposed afterwards, just for this case we need the Internal Command library
-                        // Create a new instance of IrtInternal for processing
                         using (var irtInternal = new IrtInternal(IrtConst.InternCommands, IrtConst.InternalNameSpace, _prompt))
                         {
                             irtInternal.ProcessInput(IrtConst.InternalHelpWithParameter, command.Command);
                         }
 
-                        //Prepare input object
                         _prompt.CommandRegister = new IrtFeedback
                         {
                             AwaitedInput = -1,
@@ -221,12 +212,9 @@ namespace Interpreter
                     else
                     {
                         var com = ProcessInput(extension.BaseCommand);
-
-                        //print the help of the command in question
                         var command = _com[com.Command];
                         _irtInternal.ProcessInput(IrtConst.InternalHelpWithParameter, command.Command);
 
-                        //display the original account
                         _prompt.CommandRegister = new IrtFeedback
                         {
                             AwaitedInput = -1,
@@ -234,10 +222,9 @@ namespace Interpreter
                             AwaitedOutput = com
                         };
                     }
-
                     break;
+
                 default:
-                    // Handle unexpected extension commands or log an error if necessary
                     _prompt.SendLogs(this, "Unknown extension command.");
                     break;
             }
@@ -247,7 +234,7 @@ namespace Interpreter
         ///     Processes the input string.
         /// </summary>
         /// <param name="inputString">Input string</param>
-        /// <param name="extension">All Extensions</param>
+        /// <param name="extension">Optional extension commands</param>
         private OutCommand ProcessInput(string inputString, ExtensionCommands extension = null)
         {
             if (_com == null)
@@ -264,24 +251,18 @@ namespace Interpreter
             }
 
             key = Irt.CheckForKeyWord(inputString, _com);
-
             if (key == IrtConst.Error)
             {
                 SetErrorWithLog(IrtConst.KeyWordNotFoundError, _inputString);
                 return null;
             }
 
-            //do our normal Checks for User Commands
             var (status, splitParameter) = Irt.ProcessParameters(inputString, key, _com);
-
-            //actual not possible yet, this must be implemented from user side and I have not build support for it yet
             var parameter = status == IrtConst.ParameterCommand
                 ? Irt.SplitParameter(splitParameter, IrtConst.Splitter)
                 : new List<string> { splitParameter };
 
-            //check for Parameter Overload
             var check = Irt.CheckOverload(_com[key].Command, parameter.Count, _com);
-
             if (check == null)
             {
                 SetErrorWithLog(IrtConst.SyntaxError);
@@ -301,26 +282,22 @@ namespace Interpreter
         ///     Cleans the input string.
         /// </summary>
         /// <param name="input">The input.</param>
-        /// <returns>Mostly cleaned Input string and all Uppercase.</returns>
+        /// <returns>True if input string is cleaned and valid; otherwise false.</returns>
         private static bool CleanInputString(ref string input)
         {
-            // Ensure the input string has well-formed parentheses and convert it to uppercase once.
             input = Irt.WellFormedParenthesis(input).ToUpper(CultureInfo.InvariantCulture);
-
-            // Define the sets of open and close parentheses to check for.
             var openParenthesis = new[] { IrtConst.BaseOpen, IrtConst.AdvancedOpen };
             var closeParenthesis = new[] { IrtConst.BaseClose, IrtConst.AdvancedClose };
 
-            // Verify that all types of parentheses are correctly paired and balanced in the input string.
             return Irt.CheckMultiple(input, openParenthesis, closeParenthesis);
         }
 
         /// <summary>
-        ///     Determines whether [is comment command] [the specified input].
+        ///     Determines whether the specified input is a comment command.
         /// </summary>
         /// <param name="input">The input.</param>
         /// <returns>
-        ///     <c>true</c> if [is comment command] [the specified input]; otherwise, <c>false</c>.
+        ///     <c>true</c> if the specified input is a comment command; otherwise, <c>false</c>.
         /// </returns>
         private static bool IsCommentCommand(string input)
         {
@@ -328,16 +305,16 @@ namespace Interpreter
         }
 
         /// <summary>
-        ///     Determines whether [is help command] [the specified input] without ().
+        ///     Determines whether the specified input is a help command.
         /// </summary>
         /// <param name="input">The input.</param>
         /// <returns>
-        ///     <c>true</c> if [is help command] [the specified input]; otherwise, <c>false</c>.
+        ///     <c>true</c> if the specified input is a help command; otherwise, <c>false</c>.
         /// </returns>
         private static bool IsHelpCommand(string input)
         {
             input = input.Replace(IrtConst.BaseOpen.ToString(), string.Empty)
-                .Replace(IrtConst.BaseClose.ToString(), string.Empty);
+                         .Replace(IrtConst.BaseClose.ToString(), string.Empty);
             return input.Equals(IrtConst.InternalCommandHelp, StringComparison.InvariantCultureIgnoreCase);
         }
 
@@ -345,7 +322,7 @@ namespace Interpreter
         ///     Sets the error with log.
         /// </summary>
         /// <param name="errorMessage">The error message.</param>
-        /// <param name="additionalInfo">The additional information.</param>
+        /// <param name="additionalInfo">Additional information.</param>
         private void SetErrorWithLog(string errorMessage, string additionalInfo = "")
         {
             var log = Logging.SetLastError(errorMessage, 0);
@@ -353,33 +330,72 @@ namespace Interpreter
         }
 
         /// <summary>
-        ///     Decide the appropriate Action by command
-        ///     Optional set the User Input
+        ///     Sets the result of a command.
         /// </summary>
         /// <param name="command">The command.</param>
-        /// <returns>
-        ///     Result of our Command
-        /// </returns>
         private void SetResult(OutCommand command)
         {
-            //does the Command come with needed User Feedback?
             if (_com[command.Command].FeedbackId == 0)
                 _prompt.SendCommand(this, command);
-
-            //if yes inform the prompt to handle it correctly
             else
                 _prompt.SetFeedbackLoop(_com[command.Command].FeedbackId, command);
         }
 
         /// <summary>
-        ///     Set the error Status of the Output command
+        ///     Sets the error status of the output command.
         /// </summary>
+        /// <param name="error">The error message.</param>
         private void SetError(string error)
         {
             var com = new OutCommand
-                { Command = IrtConst.Error, Parameter = null, UsedNameSpace = _nameSpace, ErrorMessage = error };
+            {
+                Command = IrtConst.Error,
+                Parameter = null,
+                UsedNameSpace = _nameSpace,
+                ErrorMessage = error
+            };
 
             _prompt.SendCommand(this, com);
+        }
+
+        private bool _disposed = false;
+
+        /// <inheritdoc />
+        /// <summary>
+        ///     Dispose of the resources used by the IrtPrompt.
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        ///     Dispose the resources.
+        /// </summary>
+        /// <param name="disposing">Indicates whether the method call comes from a Dispose method (true) or from a finalizer (false).</param>
+        private void Dispose(bool disposing)
+        {
+            if (_disposed)
+                return;
+
+            if (disposing)
+            {
+                // Dispose managed resources here if needed
+                _irtInternal?.Dispose();
+            }
+
+            // Dispose unmanaged resources here if needed
+
+            _disposed = true;
+        }
+
+        /// <summary>
+        ///     Destructor to ensure the resources are released.
+        /// </summary>
+        ~IrtPrompt()
+        {
+            Dispose(false);
         }
     }
 }
