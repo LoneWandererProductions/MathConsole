@@ -92,49 +92,6 @@ namespace Interpreter
 
         /// <inheritdoc />
         /// <summary>
-        ///     Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        /// <summary>
-        ///     Disposes of the resources used by the <see cref="Prompt" /> class.
-        /// </summary>
-        /// <param name="disposing">Indicates whether the method call comes from a Dispose method (true) or from a finalizer (false).</param>
-        private void Dispose(bool disposing)
-        {
-            if (Disposed) return;
-
-            if (disposing)
-            {
-                // Dispose managed resources
-                _interpret = null;
-                CollectedSpaces = null;
-                Log = null;
-                _prompt?.Close();
-                _prompt = null;
-                _feedbackHandler = null;
-                CommandRegister = null;
-            }
-
-            // Note: If there are unmanaged resources, they should be released here.
-
-            Disposed = true;
-        }
-
-        /// <summary>
-        ///     Destructor to ensure resources are released.
-        /// </summary>
-        ~Prompt()
-        {
-            Dispose(false);
-        }
-
-        /// <inheritdoc />
-        /// <summary>
         ///     Start the sender and interpreter.
         ///     UserSpace will never overwrite the system commands.
         ///     Parentheses are not defined by the UserSpace but by the definition of the User, so both ( or [ can be valid.
@@ -303,6 +260,49 @@ namespace Interpreter
             var use = new UserSpace { UserSpaceName = userSpace, Commands = com };
             CollectedSpaces.AddDistinct(userSpace.ToUpper(), use);
             return use;
+        }
+
+        /// <inheritdoc />
+        /// <summary>
+        ///     Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        ///     Disposes of the resources used by the <see cref="Prompt" /> class.
+        /// </summary>
+        /// <param name="disposing">Indicates whether the method call comes from a Dispose method (true) or from a finalizer (false).</param>
+        private void Dispose(bool disposing)
+        {
+            if (Disposed) return;
+
+            if (disposing)
+            {
+                // Dispose managed resources
+                _interpret = null;
+                CollectedSpaces = null;
+                Log = null;
+                _prompt?.Close();
+                _prompt = null;
+                _feedbackHandler = null;
+                CommandRegister = null;
+            }
+
+            // Note: If there are unmanaged resources, they should be released here.
+
+            Disposed = true;
+        }
+
+        /// <summary>
+        ///     Destructor to ensure resources are released.
+        /// </summary>
+        ~Prompt()
+        {
+            Dispose(false);
         }
     }
 }
