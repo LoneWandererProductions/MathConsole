@@ -117,7 +117,6 @@ namespace Interpreter
         {
             ResetState();
             CommandRegister = new IrtFeedback();
-            CommandRegister = new IrtFeedback();
             var use = new UserSpace { UserSpaceName = userSpace, Commands = com, ExtensionCommands = extension };
             _feedbackHandler = new IrtHandleFeedback(this, userFeedback, use);
 
