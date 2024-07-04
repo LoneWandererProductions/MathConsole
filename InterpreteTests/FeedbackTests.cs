@@ -121,7 +121,7 @@ namespace InterpreteTests
             // Assert
             // Verify that an error command is sent or appropriate logging occurs
             // Example: Assert.AreEqual(expectedErrorMessage, _prompt.LastErrorMessage);
-            Assert.AreEqual("No Options were provided.", _log, "No error Message send");
+            Assert.AreEqual("No valid Options available.", _log, "No error Message send");
         }
 
         /// <summary>
