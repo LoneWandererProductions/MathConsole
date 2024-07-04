@@ -6,6 +6,9 @@
  * PROGRAMER:   Peter Geinitz (Wayfarer)
  */
 
+// ReSharper disable MemberCanBeInternal
+
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -61,6 +64,17 @@ namespace Interpreter
             message.Length -= 2; // Remove the last ", " to avoid extra trailing comma
 
             return message.ToString();
+        }
+
+        /// <summary>
+        /// Returns a hash code for this instance.
+        /// </summary>
+        /// <returns>
+        /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
+        /// </returns>
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Before, Message, Options);
         }
     }
 }
