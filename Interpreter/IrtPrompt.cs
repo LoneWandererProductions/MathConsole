@@ -198,48 +198,49 @@ namespace Interpreter
                     var key = Irt.CheckForKeyWord(extension.BaseCommand, IrtConst.InternCommands);
                     if (key != IrtConst.Error)
                     {
-						var command = IrtConst.InternCommands[key];
+                        var command = IrtConst.InternCommands[key];
 
-						//will be disposed afterwards, just for this case we need the Internal Command library
-						// Create a new instance of IrtInternal for processing
-						var irtInternal = new IrtInternal(IrtConst.InternCommands,IrtConst.InternalNameSpace, _prompt);
-						irtInternal.ProcessInput(IrtConst.InternalHelpWithParameter, command.Command);
+                        //will be disposed afterwards, just for this case we need the Internal Command library
+                        // Create a new instance of IrtInternal for processing
+                        using (var irtInternal = new IrtInternal(IrtConst.InternCommands, IrtConst.InternalNameSpace, _prompt))
+                        {
+                            irtInternal.ProcessInput(IrtConst.InternalHelpWithParameter, command.Command);
+                        }
 
-
-						//Prepare input object
-						_prompt.CommandRegister = new IrtFeedback
-						{
-							AwaitedInput = -1,
-							AwaitInput = true,
-							IsInternalCommand = true,
+                        //Prepare input object
+                        _prompt.CommandRegister = new IrtFeedback
+                        {
+                            AwaitedInput = -1,
+                            AwaitInput = true,
+                            IsInternalCommand = true,
                             InternalInput = extension.BaseCommand,
                             CommandHandler = _irtInternal,
                             Key = key
-						};
-					}
+                        };
+                    }
                     else
                     {
+                        var com = ProcessInput(extension.BaseCommand);
 
-						var com = ProcessInput(extension.BaseCommand);
+                        //print the help of the command in question
+                        var command = _com[com.Command];
+                        _irtInternal.ProcessInput(IrtConst.InternalHelpWithParameter, command.Command);
 
-						//print the help of the command in question
-						var command = _com[com.Command];
-						_irtInternal.ProcessInput(IrtConst.InternalHelpWithParameter, command.Command);
+                        //display the original account
+                        _prompt.CommandRegister = new IrtFeedback
+                        {
+                            AwaitedInput = -1,
+                            AwaitInput = true,
+                            AwaitedOutput = com
+                        };
+                    }
 
-						//display the original account
-						_prompt.CommandRegister = new IrtFeedback
-						{
-							AwaitedInput = -1,
-							AwaitInput = true,
-							AwaitedOutput = com
-						};
-					}
                     break;
-				default:
-					// Handle unexpected extension commands or log an error if necessary
-					_prompt.SendLogs(this, "Unknown extension command.");
-					break;
-			}
+                default:
+                    // Handle unexpected extension commands or log an error if necessary
+                    _prompt.SendLogs(this, "Unknown extension command.");
+                    break;
+            }
         }
 
         /// <summary>

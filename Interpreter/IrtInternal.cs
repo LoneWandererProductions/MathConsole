@@ -11,11 +11,12 @@ using System.Collections.Generic;
 
 namespace Interpreter
 {
+    /// <inheritdoc />
     /// <summary>
     ///     Instance to handle all internal Commands
     /// </summary>
     internal sealed class IrtInternal : IDisposable
-	{
+    {
         /// <summary>
         ///     The name space
         /// </summary>
@@ -31,20 +32,21 @@ namespace Interpreter
         /// </summary>
         private readonly Prompt _prompt;
 
-		/// <summary>
-		///     Indicates whether the object has been disposed.
-		/// </summary>
-		private bool _disposed;
+        /// <summary>
+        ///     Indicates whether the object has been disposed.
+        /// </summary>
+        private bool _disposed;
 
-		/// <summary>
-		///     Initializes a new instance of the <see cref="IrtInternal" /> class.
-		/// </summary>
-		/// <param name="commands">The commands.</param>
-		/// <param name="nameSpace">The name space.</param>
-		/// <param name="prompt">The prompt</param>
-		internal IrtInternal(Dictionary<int, InCommand> commands, string nameSpace, Prompt prompt)
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="IrtInternal" /> class.
+        /// </summary>
+        /// <param name="commands">The commands.</param>
+        /// <param name="nameSpace">The name space.</param>
+        /// <param name="prompt">The prompt</param>
+        internal IrtInternal(IDictionary<int, InCommand> commands, string nameSpace, Prompt prompt)
         {
-            _commands = commands;
+            //needed to create a new Instance and not a reference
+            _commands = new Dictionary<int, InCommand>(commands);
             _nameSpace = nameSpace;
             _prompt = prompt;
         }
@@ -296,41 +298,42 @@ namespace Interpreter
             _prompt.SendLogs?.Invoke(this, sendLog);
         }
 
-		/// <summary>
-		///     Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-		/// </summary>
-		public void Dispose()
-		{
-			Dispose(true);
-			GC.SuppressFinalize(this);
-		}
+        /// <inheritdoc />
+        /// <summary>
+        ///     Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
 
-		/// <summary>
-		///     Disposes of the resources used by the class.
-		/// </summary>
-		/// <param name="disposing">Indicates whether the method call comes from a Dispose method (true) or from a finalizer (false).</param>
-		private void Dispose(bool disposing)
-		{
-			if (_disposed)
-				return;
+        /// <summary>
+        ///     Disposes of the resources used by the class.
+        /// </summary>
+        /// <param name="disposing">Indicates whether the method call comes from a Dispose method (true) or from a finalizer (false).</param>
+        private void Dispose(bool disposing)
+        {
+            if (_disposed)
+                return;
 
-			if (disposing)
-			{
-				// Dispose managed resources here if needed
-				_commands.Clear();
-			}
+            if (disposing)
+            {
+                // Dispose managed resources here if needed
+                _commands.Clear();
+            }
 
-			// Dispose unmanaged resources here if needed
+            // Dispose unmanaged resources here if needed
 
-			_disposed = true;
-		}
+            _disposed = true;
+        }
 
-		/// <summary>
-		/// Finalizes an instance of the <see cref="IrtInternal"/> class.
-		/// </summary>
-		~IrtInternal()
-		{
-			Dispose(false);
-		}
-	}
+        /// <summary>
+        /// Finalizes an instance of the <see cref="IrtInternal"/> class.
+        /// </summary>
+        ~IrtInternal()
+        {
+            Dispose(false);
+        }
+    }
 }
