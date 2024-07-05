@@ -1,8 +1,8 @@
 ﻿/*
  * COPYRIGHT:   See COPYING in the top level directory
  * PROJECT:     Interpreter
- * FILE:        Interpreter/IrtPrompt.cs
- * PURPOSE:     Handle the Input
+ * FILE:        Interpreter/IrtHandlePrompt.cs
+ * PURPOSE:     Handle the Input for prompt and connect to the other modules
  * PROGRAMMER:  Peter Geinitz (Wayfarer)
  */
 
@@ -16,7 +16,7 @@ namespace Interpreter
     /// <summary>
     ///     Basic command Line Interpreter, bare bones for now
     /// </summary>
-    internal sealed class IrtPrompt : IDisposable
+    internal sealed class IrtHandlePrompt : IDisposable
     {
         /// <summary>
         ///     Command Register
@@ -48,16 +48,28 @@ namespace Interpreter
         /// </summary>
         private IrtExtension _irtExtension;
 
-        /// <summary>
-        ///     The IRT internal
-        /// </summary>
-        private IrtInternal _irtInternal;
+		/// <summary>
+		/// The irt handle extension internal
+		/// </summary>
+		private IrtHandleExtensionInternal _IrtHandleExtensionInternal;
 
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="IrtPrompt" /> class.
-        /// </summary>
-        /// <param name="prompt">The prompt.</param>
-        public IrtPrompt(Prompt prompt)
+		/// <summary>
+		/// The IRT internal
+		/// </summary>
+		private IrtHandleInternal _irtHandleInternal;
+
+		/// <summary>
+		/// Prevents a default instance of the <see cref="IrtHandlePrompt"/> class from being created.
+		/// </summary>
+		private IrtHandlePrompt()
+		{
+		}
+
+		/// <summary>
+		///     Initializes a new instance of the <see cref="IrtHandlePrompt" /> class.
+		/// </summary>
+		/// <param name="prompt">The prompt.</param>
+		public IrtHandlePrompt(Prompt prompt)
         {
             _prompt = prompt;
         }
@@ -77,11 +89,12 @@ namespace Interpreter
             _com = use.Commands;
             _extension = use.ExtensionCommands;
             _nameSpace = use.UserSpaceName;
-            _irtInternal = new IrtInternal(use.Commands, use.UserSpaceName, _prompt);
-            _irtExtension = new IrtExtension();
+			_irtExtension = new IrtExtension();
+			_irtHandleInternal = new IrtHandleInternal(use.Commands, use.UserSpaceName, _prompt);
+            _IrtHandleExtensionInternal = new IrtHandleExtensionInternal(this, use.Commands, _prompt, _irtHandleInternal);
 
-            // Notify log about loading up
-            var log = Logging.SetLastError(IrtConst.InformationStartup, 2);
+			// Notify log about loading up
+			var log = Logging.SetLastError(IrtConst.InformationStartup, 2);
             SendInternalLog?.Invoke(this, log);
         }
 
@@ -158,7 +171,7 @@ namespace Interpreter
                 case IrtConst.ExtensionFound:
                     if (extensionResult.Extension.ExtensionNameSpace == IrtConst.InternalNameSpace)
                     {
-                        ProcessExtensionInternal(extensionResult.Extension);
+						_IrtHandleExtensionInternal.ProcessExtensionInternal(extensionResult.Extension);
                     }
                     else
                     {
@@ -175,67 +188,11 @@ namespace Interpreter
         }
 
         /// <summary>
-        ///     Processes the internal extension.
-        /// </summary>
-        /// <param name="extension">The extension.</param>
-        private void ProcessExtensionInternal(ExtensionCommands extension)
-        {
-            switch (extension.ExtensionCommand)
-            {
-                case 0:
-                    // Switch namespace
-                    _prompt.SwitchNameSpaces(extension.ExtensionParameter[0]);
-                    _prompt.ConsoleInput(extension.BaseCommand);
-                    break;
-
-                case 1:
-                    var key = Irt.CheckForKeyWord(extension.BaseCommand, IrtConst.InternCommands);
-                    if (key != IrtConst.Error)
-                    {
-                        var command = IrtConst.InternCommands[key];
-
-                        using (var irtInternal = new IrtInternal(IrtConst.InternCommands, IrtConst.InternalNameSpace, _prompt))
-                        {
-                            irtInternal.ProcessInput(IrtConst.InternalHelpWithParameter, command.Command);
-                        }
-
-                        _prompt.CommandRegister = new IrtFeedback
-                        {
-                            AwaitedInput = -1,
-                            AwaitInput = true,
-                            IsInternalCommand = true,
-                            InternalInput = extension.BaseCommand,
-                            CommandHandler = _irtInternal,
-                            Key = key
-                        };
-                    }
-                    else
-                    {
-                        var com = ProcessInput(extension.BaseCommand);
-                        var command = _com[com.Command];
-                        _irtInternal.ProcessInput(IrtConst.InternalHelpWithParameter, command.Command);
-
-                        _prompt.CommandRegister = new IrtFeedback
-                        {
-                            AwaitedInput = -1,
-                            AwaitInput = true,
-                            AwaitedOutput = com
-                        };
-                    }
-                    break;
-
-                default:
-                    _prompt.SendLogs(this, "Unknown extension command.");
-                    break;
-            }
-        }
-
-        /// <summary>
         ///     Processes the input string.
         /// </summary>
         /// <param name="inputString">Input string</param>
         /// <param name="extension">Optional extension commands</param>
-        private OutCommand ProcessInput(string inputString, ExtensionCommands extension = null)
+        internal OutCommand ProcessInput(string inputString, ExtensionCommands extension = null)
         {
             if (_com == null)
             {
@@ -246,7 +203,7 @@ namespace Interpreter
             var key = Irt.CheckForKeyWord(inputString, IrtConst.InternCommands);
             if (key != IrtConst.Error)
             {
-                _irtInternal.ProcessInput(key, inputString);
+				_irtHandleInternal.ProcessInput(key, inputString);
                 return null;
             }
 
@@ -381,8 +338,8 @@ namespace Interpreter
 
             if (disposing)
             {
-                // Dispose managed resources here if needed
-                _irtInternal?.Dispose();
+				// Dispose managed resources here if needed
+				_irtHandleInternal?.Dispose();
             }
 
             // Dispose unmanaged resources here if needed
@@ -393,7 +350,7 @@ namespace Interpreter
         /// <summary>
         ///     Destructor to ensure the resources are released.
         /// </summary>
-        ~IrtPrompt()
+        ~IrtHandlePrompt()
         {
             Dispose(false);
         }

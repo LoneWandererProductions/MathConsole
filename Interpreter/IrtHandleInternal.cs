@@ -1,7 +1,7 @@
 ﻿/*
  * COPYRIGHT:   See COPYING in the top level directory
  * PROJECT:     Interpreter
- * FILE:        Interpreter/IrtInternal.cs
+ * FILE:        Interpreter/IrtHandleInternal.cs
  * PURPOSE:     Handle the Input for all Internal commands. Must be mire clean since it will handle all batch and container Commands.
  * PROGRAMER:   Peter Geinitz (Wayfarer)
  */
@@ -15,7 +15,7 @@ namespace Interpreter
     /// <summary>
     ///     Instance to handle all internal Commands
     /// </summary>
-    internal sealed class IrtInternal : IDisposable
+    internal sealed class IrtHandleInternal : IDisposable
     {
         /// <summary>
         ///     The name space
@@ -38,12 +38,12 @@ namespace Interpreter
         private bool _disposed;
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="IrtInternal" /> class.
+        ///     Initializes a new instance of the <see cref="IrtHandleInternal" /> class.
         /// </summary>
         /// <param name="commands">The commands.</param>
         /// <param name="nameSpace">The name space.</param>
         /// <param name="prompt">The prompt</param>
-        internal IrtInternal(Dictionary<int, InCommand> commands, string nameSpace, Prompt prompt)
+        internal IrtHandleInternal(Dictionary<int, InCommand> commands, string nameSpace, Prompt prompt)
         {
             _commands = commands;
             _nameSpace = nameSpace;
@@ -219,7 +219,7 @@ namespace Interpreter
         private void CommandLogFull()
         {
             foreach (var entry in new List<string>(_prompt.Log.Values))
-                _prompt.SendLogs?.Invoke(nameof(IrtInternal), entry);
+                _prompt.SendLogs?.Invoke(nameof(IrtHandleInternal), entry);
         }
 
         /// <summary>
@@ -329,9 +329,9 @@ namespace Interpreter
         }
 
         /// <summary>
-        /// Finalizes an instance of the <see cref="IrtInternal"/> class.
+        /// Finalizes an instance of the <see cref="IrtHandleInternal"/> class.
         /// </summary>
-        ~IrtInternal()
+        ~IrtHandleInternal()
         {
             Dispose(false);
         }

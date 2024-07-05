@@ -25,6 +25,14 @@ namespace Interpreter
         /// </summary>
         private readonly Dictionary<int, UserFeedback> _userFeedback;
 
+		/// <summary>
+		/// Prevents a default instance of the <see cref="IrtHandleFeedback"/> class from being created.
+        /// We need this class to use the constructur
+		/// </summary>
+		private IrtHandleFeedback()
+        {
+        }
+
         /// <summary>
         ///     Initializes a new instance of the <see cref="IrtHandleFeedback"/> class.
         /// </summary>
