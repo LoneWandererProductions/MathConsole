@@ -67,7 +67,7 @@ namespace Interpreter
             //check for batch and Command Files
             if (key == IrtConst.InternalContainerId || key == IrtConst.InternalBatchId)
             {
-                HandleInternalCommands(key, parameter);
+                HandleInternalCommands(key, parameter, inputString);
                 return;
             }
 
@@ -85,11 +85,12 @@ namespace Interpreter
         }
 
         /// <summary>
-        ///     For Internal Commands
+        /// For Internal Commands
         /// </summary>
         /// <param name="command">Key of the command</param>
         /// <param name="parameter">optional parameters, can be empty or null.</param>
-        private void HandleInternalCommands(int? command, IReadOnlyList<string> parameter)
+        /// <param name="inputString">The input string. Complete if in case we have a container</param>
+        private void HandleInternalCommands(int? command, IReadOnlyList<string> parameter, string inputString = "")
         {
             switch (command)
             {
@@ -122,7 +123,11 @@ namespace Interpreter
                     break;
 
                 case 8:
-                    CommandContainer(parameter[0]);
+                    using (var irtContainer = new IrtHandleContainer(this))
+                    {
+                        irtContainer.CommandContainer(parameter[0], inputString);
+                    }
+
                     break;
 
                 case 9:
@@ -223,18 +228,6 @@ namespace Interpreter
         }
 
         /// <summary>
-        ///     Processes the container.
-        /// </summary>
-        /// <param name="parameterPart">Parameter Part.</param>
-        private void CommandContainer(string parameterPart)
-        {
-            parameterPart = Irt.RemoveLastOccurrence(parameterPart, IrtConst.AdvancedClose);
-            parameterPart = Irt.RemoveFirstOccurrence(parameterPart, IrtConst.AdvancedOpen);
-
-            GenerateCommands(parameterPart);
-        }
-
-        /// <summary>
         ///     Batch execute of Commands in a file.
         /// </summary>
         /// <param name="parameterPart">The Parameter.</param>
@@ -256,7 +249,7 @@ namespace Interpreter
         ///     Generates the commands.
         /// </summary>
         /// <param name="parameterPart">The parameter part.</param>
-        private void GenerateCommands(string parameterPart)
+        internal void GenerateCommands(string parameterPart)
         {
             foreach (var com in Irt.SplitParameter(parameterPart, IrtConst.NewCommand))
             {
