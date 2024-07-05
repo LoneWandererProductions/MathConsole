@@ -28,15 +28,15 @@ namespace Interpreter
         private readonly Dictionary<int, UserFeedback> _userFeedback;
 
         /// <summary>
-        /// Prevents a default instance of the <see cref="IrtHandleFeedback"/> class from being created.
-        /// We need this class to use the constructor
+        ///     Prevents a default instance of the <see cref="IrtHandleFeedback" /> class from being created.
+        ///     We need this class to use the constructor
         /// </summary>
         private IrtHandleFeedback()
         {
         }
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="IrtHandleFeedback"/> class.
+        ///     Initializes a new instance of the <see cref="IrtHandleFeedback" /> class.
         /// </summary>
         /// <param name="prompt">The prompt instance.</param>
         /// <param name="userFeedback">The user feedback dictionary.</param>
@@ -89,27 +89,16 @@ namespace Interpreter
                 _prompt.SendLogs?.Invoke(this, feedback.ToString());
             }
 
-            if (!_prompt.CommandRegister.AwaitInput)
-            {
-                _prompt.SendCommands(this, _prompt.CommandRegister.AwaitedOutput);
-            }
+            if (!_prompt.CommandRegister.AwaitInput) _prompt.SendCommands(this, _prompt.CommandRegister.AwaitedOutput);
 
             if (input == nameof(AvailableFeedback.Yes).ToUpper())
-            {
                 HandleOption(feedback, AvailableFeedback.Yes, nameof(AvailableFeedback.Yes));
-            }
             else if (input == nameof(AvailableFeedback.No).ToUpper())
-            {
                 HandleOption(feedback, AvailableFeedback.No, nameof(AvailableFeedback.No));
-            }
             else if (input == nameof(AvailableFeedback.Cancel).ToUpper())
-            {
                 HandleOption(feedback, AvailableFeedback.Cancel, nameof(AvailableFeedback.Cancel));
-            }
             else
-            {
                 _prompt.SendLogs?.Invoke(this, IrtConst.ErrorFeedbackOptionNotAllowed);
-            }
         }
 
         /// <summary>

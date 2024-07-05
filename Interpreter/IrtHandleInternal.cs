@@ -23,14 +23,14 @@ namespace Interpreter
         private static string _nameSpace;
 
         /// <summary>
-        ///     The commands
-        /// </summary>
-        private Dictionary<int, InCommand> _commands;
-
-        /// <summary>
         ///     The prompt
         /// </summary>
         private readonly Prompt _prompt;
+
+        /// <summary>
+        ///     The commands
+        /// </summary>
+        private Dictionary<int, InCommand> _commands;
 
         /// <summary>
         ///     Indicates whether the object has been disposed.
@@ -48,6 +48,16 @@ namespace Interpreter
             _commands = commands;
             _nameSpace = nameSpace;
             _prompt = prompt;
+        }
+
+        /// <inheritdoc />
+        /// <summary>
+        ///     Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         /// <summary>
@@ -85,7 +95,7 @@ namespace Interpreter
         }
 
         /// <summary>
-        /// For Internal Commands
+        ///     For Internal Commands
         /// </summary>
         /// <param name="command">Key of the command</param>
         /// <param name="parameter">optional parameters, can be empty or null.</param>
@@ -290,31 +300,22 @@ namespace Interpreter
             _prompt.SendLogs?.Invoke(this, sendLog);
         }
 
-        /// <inheritdoc />
-        /// <summary>
-        ///     Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
         /// <summary>
         ///     Disposes of the resources used by the class.
         /// </summary>
-        /// <param name="disposing">Indicates whether the method call comes from a Dispose method (true) or from a finalizer (false).</param>
+        /// <param name="disposing">
+        ///     Indicates whether the method call comes from a Dispose method (true) or from a finalizer
+        ///     (false).
+        /// </param>
         private void Dispose(bool disposing)
         {
             if (_disposed)
                 return;
 
             if (disposing)
-            {
                 // Dispose managed resources here if needed
                 // Set the local dictionary reference to null to remove references without clearing the dictionary
                 _commands = null;
-            }
 
             // Dispose unmanaged resources here if needed
 
@@ -322,7 +323,7 @@ namespace Interpreter
         }
 
         /// <summary>
-        /// Finalizes an instance of the <see cref="IrtHandleInternal"/> class.
+        ///     Finalizes an instance of the <see cref="IrtHandleInternal" /> class.
         /// </summary>
         ~IrtHandleInternal()
         {

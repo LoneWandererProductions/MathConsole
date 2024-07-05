@@ -157,22 +157,22 @@ namespace Interpreter
         internal const string ErrorInvalidInput = "Input was null or empty.";
 
         /// <summary>
-        /// The error feedback (const). Value: "No valid Options available.".
+        ///     The error feedback (const). Value: "No valid Options available.".
         /// </summary>
         internal const string ErrorFeedbackOptions = "No valid Options available.";
 
         /// <summary>
-        /// The error feedback Option not allowed (const). Value: "Option not allowed.".
+        ///     The error feedback Option not allowed (const). Value: "Option not allowed.".
         /// </summary>
         internal const string ErrorFeedbackOptionNotAllowed = "Option not allowed.";
 
         /// <summary>
-        /// The error Internal Extension not found (const). Value: "Unknown Internal extension command.".
+        ///     The error Internal Extension not found (const). Value: "Unknown Internal extension command.".
         /// </summary>
         internal const string ErrorInternalExtensionNotFound = "Unknown Internal extension command.";
 
         /// <summary>
-        /// The feedback Message (const). Value: "You selected: ".
+        ///     The feedback Message (const). Value: "You selected: ".
         /// </summary>
         internal const string FeedbackMessage = "You selected: ";
 

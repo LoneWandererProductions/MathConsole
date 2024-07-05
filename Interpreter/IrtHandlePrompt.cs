@@ -42,6 +42,11 @@ namespace Interpreter
         private readonly Prompt _prompt;
 
         /// <summary>
+        ///     The disposed
+        /// </summary>
+        private bool _disposed;
+
+        /// <summary>
         ///     The original input string
         /// </summary>
         private string _inputString;
@@ -52,22 +57,17 @@ namespace Interpreter
         private IrtExtension _irtExtension;
 
         /// <summary>
-        /// The irt handle extension internal
+        ///     The irt handle extension internal
         /// </summary>
         private IrtHandleExtensionInternal _irtHandleExtensionInternal;
 
         /// <summary>
-        /// The IRT internal
+        ///     The IRT internal
         /// </summary>
         private IrtHandleInternal _irtHandleInternal;
 
         /// <summary>
-        /// The disposed
-        /// </summary>
-        private bool _disposed;
-
-        /// <summary>
-        /// Prevents a default instance of the <see cref="IrtHandlePrompt"/> class from being created.
+        ///     Prevents a default instance of the <see cref="IrtHandlePrompt" /> class from being created.
         /// </summary>
         private IrtHandlePrompt()
         {
@@ -80,6 +80,16 @@ namespace Interpreter
         public IrtHandlePrompt(Prompt prompt)
         {
             _prompt = prompt;
+        }
+
+        /// <inheritdoc />
+        /// <summary>
+        ///     Dispose of the resources used by the IrtPrompt.
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         /// <summary>
@@ -99,7 +109,8 @@ namespace Interpreter
             _nameSpace = use.UserSpaceName;
             _irtExtension = new IrtExtension();
             _irtHandleInternal = new IrtHandleInternal(use.Commands, use.UserSpaceName, _prompt);
-            _irtHandleExtensionInternal = new IrtHandleExtensionInternal(this, use.Commands, _prompt, _irtHandleInternal);
+            _irtHandleExtensionInternal =
+                new IrtHandleExtensionInternal(this, use.Commands, _prompt, _irtHandleInternal);
 
             // Notify log about loading up
             var log = Logging.SetLastError(IrtConst.InformationStartup, 2);
@@ -160,7 +171,8 @@ namespace Interpreter
             }
 
             // Check for extensions in the internal namespace first, then in the external namespace if needed
-            var extensionResult = _irtExtension.CheckForExtension(_inputString, IrtConst.InternalNameSpace, IrtConst.InternalExtensionCommands);
+            var extensionResult = _irtExtension.CheckForExtension(_inputString, IrtConst.InternalNameSpace,
+                IrtConst.InternalExtensionCommands);
 
             if (extensionResult.Status == IrtConst.Error)
                 extensionResult = _irtExtension.CheckForExtension(_inputString, _nameSpace, _extension);
@@ -233,7 +245,7 @@ namespace Interpreter
             if (check != null)
                 return new OutCommand
                 {
-                    Command = (int) check,
+                    Command = (int)check,
                     Parameter = parameter,
                     UsedNameSpace = _nameSpace,
                     ExtensionCommand = extension
@@ -324,30 +336,21 @@ namespace Interpreter
             _prompt.SendCommand(this, com);
         }
 
-        /// <inheritdoc />
-        /// <summary>
-        ///     Dispose of the resources used by the IrtPrompt.
-        /// </summary>
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
         /// <summary>
         ///     Dispose the resources.
         /// </summary>
-        /// <param name="disposing">Indicates whether the method call comes from a Dispose method (true) or from a finalizer (false).</param>
+        /// <param name="disposing">
+        ///     Indicates whether the method call comes from a Dispose method (true) or from a finalizer
+        ///     (false).
+        /// </param>
         private void Dispose(bool disposing)
         {
             if (_disposed)
                 return;
 
             if (disposing)
-            {
                 // Dispose managed resources here if needed
                 _irtHandleInternal?.Dispose();
-            }
 
             // Dispose unmanaged resources here if needed
 

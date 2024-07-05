@@ -39,35 +39,35 @@ namespace Interpreter
         internal int AwaitedInput { get; init; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether this instance is internal command.
+        ///     Gets or sets a value indicating whether this instance is internal command.
         /// </summary>
         /// <value>
-        ///   <c>true</c> if this instance is internal command; otherwise, <c>false</c>.
+        ///     <c>true</c> if this instance is internal command; otherwise, <c>false</c>.
         /// </value>
         internal bool IsInternalCommand { get; set; }
 
         /// <summary>
-        /// Gets or sets the internal input.
+        ///     Gets or sets the internal input.
         /// </summary>
         /// <value>
-        /// The internal input.
+        ///     The internal input.
         /// </value>
-        internal string InternalInput { get; set; }
+        internal string InternalInput { get; init; }
 
         /// <summary>
-        /// Gets or sets the command handler.
-        /// Prepare and deliver our own Command Interpreter and let him do most of the work
+        ///     Gets or sets the command handler.
+        ///     Prepare and deliver our own Command Interpreter and let him do most of the work
         /// </summary>
         /// <value>
-        /// The command handler.
+        ///     The command handler.
         /// </value>
         internal IrtHandleInternal CommandHandler { get; set; }
 
         /// <summary>
-        /// Gets or sets the key.
+        ///     Gets or sets the key.
         /// </summary>
         /// <value>
-        /// The key.
+        ///     The key.
         /// </value>
         internal int Key { get; init; }
 
@@ -89,7 +89,7 @@ namespace Interpreter
         internal OutCommand AwaitedOutput { get; set; }
 
         /// <summary>
-        /// Handles the internal command.
+        ///     Handles the internal command.
         /// </summary>
         internal void HandleInternalCommand()
         {
