@@ -6,6 +6,8 @@
  * PROGRAMMER:  Peter Geinitz (Wayfarer)
  */
 
+// ReSharper disable UnusedMember.Local
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -13,6 +15,7 @@ using System.Globalization;
 
 namespace Interpreter
 {
+    /// <inheritdoc />
     /// <summary>
     ///     Basic command Line Interpreter, bare bones for now
     /// </summary>
@@ -36,7 +39,7 @@ namespace Interpreter
         /// <summary>
         ///     The prompt
         /// </summary>
-        private Prompt _prompt;
+        private readonly Prompt _prompt;
 
         /// <summary>
         ///     The original input string
@@ -48,28 +51,33 @@ namespace Interpreter
         /// </summary>
         private IrtExtension _irtExtension;
 
-		/// <summary>
-		/// The irt handle extension internal
-		/// </summary>
-		private IrtHandleExtensionInternal _IrtHandleExtensionInternal;
+        /// <summary>
+        /// The irt handle extension internal
+        /// </summary>
+        private IrtHandleExtensionInternal _irtHandleExtensionInternal;
 
-		/// <summary>
-		/// The IRT internal
-		/// </summary>
-		private IrtHandleInternal _irtHandleInternal;
+        /// <summary>
+        /// The IRT internal
+        /// </summary>
+        private IrtHandleInternal _irtHandleInternal;
 
-		/// <summary>
-		/// Prevents a default instance of the <see cref="IrtHandlePrompt"/> class from being created.
-		/// </summary>
-		private IrtHandlePrompt()
-		{
-		}
+        /// <summary>
+        /// The disposed
+        /// </summary>
+        private bool _disposed;
 
-		/// <summary>
-		///     Initializes a new instance of the <see cref="IrtHandlePrompt" /> class.
-		/// </summary>
-		/// <param name="prompt">The prompt.</param>
-		public IrtHandlePrompt(Prompt prompt)
+        /// <summary>
+        /// Prevents a default instance of the <see cref="IrtHandlePrompt"/> class from being created.
+        /// </summary>
+        private IrtHandlePrompt()
+        {
+        }
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="IrtHandlePrompt" /> class.
+        /// </summary>
+        /// <param name="prompt">The prompt.</param>
+        public IrtHandlePrompt(Prompt prompt)
         {
             _prompt = prompt;
         }
@@ -89,12 +97,12 @@ namespace Interpreter
             _com = use.Commands;
             _extension = use.ExtensionCommands;
             _nameSpace = use.UserSpaceName;
-			_irtExtension = new IrtExtension();
-			_irtHandleInternal = new IrtHandleInternal(use.Commands, use.UserSpaceName, _prompt);
-            _IrtHandleExtensionInternal = new IrtHandleExtensionInternal(this, use.Commands, _prompt, _irtHandleInternal);
+            _irtExtension = new IrtExtension();
+            _irtHandleInternal = new IrtHandleInternal(use.Commands, use.UserSpaceName, _prompt);
+            _irtHandleExtensionInternal = new IrtHandleExtensionInternal(this, use.Commands, _prompt, _irtHandleInternal);
 
-			// Notify log about loading up
-			var log = Logging.SetLastError(IrtConst.InformationStartup, 2);
+            // Notify log about loading up
+            var log = Logging.SetLastError(IrtConst.InformationStartup, 2);
             SendInternalLog?.Invoke(this, log);
         }
 
@@ -171,13 +179,14 @@ namespace Interpreter
                 case IrtConst.ExtensionFound:
                     if (extensionResult.Extension.ExtensionNameSpace == IrtConst.InternalNameSpace)
                     {
-						_IrtHandleExtensionInternal.ProcessExtensionInternal(extensionResult.Extension);
+                        _irtHandleExtensionInternal.ProcessExtensionInternal(extensionResult.Extension);
                     }
                     else
                     {
                         var command = ProcessInput(inputString, extensionResult.Extension);
                         SetResult(command);
                     }
+
                     return;
 
                 default:
@@ -203,7 +212,7 @@ namespace Interpreter
             var key = Irt.CheckForKeyWord(inputString, IrtConst.InternCommands);
             if (key != IrtConst.Error)
             {
-				_irtHandleInternal.ProcessInput(key, inputString);
+                _irtHandleInternal.ProcessInput(key, inputString);
                 return null;
             }
 
@@ -220,19 +229,19 @@ namespace Interpreter
                 : new List<string> { splitParameter };
 
             var check = Irt.CheckOverload(_com[key].Command, parameter.Count, _com);
-            if (check == null)
-            {
-                SetErrorWithLog(IrtConst.SyntaxError);
-                return null;
-            }
 
-            return new OutCommand
-            {
-                Command = (int)check,
-                Parameter = parameter,
-                UsedNameSpace = _nameSpace,
-                ExtensionCommand = extension
-            };
+            if (check != null)
+                return new OutCommand
+                {
+                    Command = (int) check,
+                    Parameter = parameter,
+                    UsedNameSpace = _nameSpace,
+                    ExtensionCommand = extension
+                };
+
+            SetErrorWithLog(IrtConst.SyntaxError);
+
+            return null;
         }
 
         /// <summary>
@@ -271,7 +280,7 @@ namespace Interpreter
         private static bool IsHelpCommand(string input)
         {
             input = input.Replace(IrtConst.BaseOpen.ToString(), string.Empty)
-                         .Replace(IrtConst.BaseClose.ToString(), string.Empty);
+                .Replace(IrtConst.BaseClose.ToString(), string.Empty);
             return input.Equals(IrtConst.InternalCommandHelp, StringComparison.InvariantCultureIgnoreCase);
         }
 
@@ -315,8 +324,6 @@ namespace Interpreter
             _prompt.SendCommand(this, com);
         }
 
-        private bool _disposed = false;
-
         /// <inheritdoc />
         /// <summary>
         ///     Dispose of the resources used by the IrtPrompt.
@@ -338,8 +345,8 @@ namespace Interpreter
 
             if (disposing)
             {
-				// Dispose managed resources here if needed
-				_irtHandleInternal?.Dispose();
+                // Dispose managed resources here if needed
+                _irtHandleInternal?.Dispose();
             }
 
             // Dispose unmanaged resources here if needed

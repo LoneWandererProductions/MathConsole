@@ -6,6 +6,8 @@
  * PROGRAMMER:  Peter Geinitz (Wayfarer)
  */
 
+// ReSharper disable UnusedMember.Local
+
 using System.Collections.Generic;
 
 namespace Interpreter
@@ -25,11 +27,11 @@ namespace Interpreter
         /// </summary>
         private readonly Dictionary<int, UserFeedback> _userFeedback;
 
-		/// <summary>
-		/// Prevents a default instance of the <see cref="IrtHandleFeedback"/> class from being created.
-        /// We need this class to use the constructur
-		/// </summary>
-		private IrtHandleFeedback()
+        /// <summary>
+        /// Prevents a default instance of the <see cref="IrtHandleFeedback"/> class from being created.
+        /// We need this class to use the constructor
+        /// </summary>
+        private IrtHandleFeedback()
         {
         }
 
