@@ -133,7 +133,7 @@ namespace Interpreter
                     break;
 
                 case 8:
-                    using (var irtContainer = new IrtHandleContainer(this))
+                    using (var irtContainer = new IrtHandleContainer(this, _prompt))
                     {
                         irtContainer.CommandContainer(parameter[0], inputString);
                     }
@@ -141,7 +141,11 @@ namespace Interpreter
                     break;
 
                 case 9:
-                    CommandBatchExecute(parameter[0]);
+                    using (var irtContainer = new IrtHandleContainer(this, _prompt))
+                    {
+                        irtContainer.CommandBatchExecute(parameter[0], inputString);
+                    }
+
                     break;
 
                 default:
@@ -238,43 +242,10 @@ namespace Interpreter
         }
 
         /// <summary>
-        ///     Batch execute of Commands in a file.
-        /// </summary>
-        /// <param name="parameterPart">The Parameter.</param>
-        private void CommandBatchExecute(string parameterPart)
-        {
-            parameterPart = Irt.RemoveParenthesis(parameterPart, IrtConst.BaseOpen, IrtConst.BaseClose);
-            parameterPart = IrtHelper.ReadBatchFile(parameterPart);
-
-            if (string.IsNullOrEmpty(parameterPart))
-            {
-                SetError(IrtConst.ErrorFileNotFound);
-                return;
-            }
-
-            GenerateCommands(parameterPart);
-        }
-
-        /// <summary>
-        ///     Generates the commands.
-        /// </summary>
-        /// <param name="parameterPart">The parameter part.</param>
-        internal void GenerateCommands(string parameterPart)
-        {
-            foreach (var com in Irt.SplitParameter(parameterPart, IrtConst.NewCommand))
-            {
-                //just because we run a container or a batch, we still have to log it
-                _prompt.AddToLog(com);
-                //mostly use the prompt to add a layer of security
-                _prompt.ConsoleInput(com);
-            }
-        }
-
-        /// <summary>
         ///     Sets the error.
         /// </summary>
         /// <param name="error">The error.</param>
-        private void SetError(string error)
+        internal void SetError(string error)
         {
             var com = new OutCommand
                 { Command = IrtConst.Error, Parameter = null, UsedNameSpace = _nameSpace, ErrorMessage = error };

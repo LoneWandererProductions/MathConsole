@@ -22,7 +22,12 @@ namespace Interpreter
         /// <summary>
         ///     The irt handle internal
         /// </summary>
-        private readonly IrtHandleInternal _irtHandleInternal;
+        private IrtHandleInternal _irtHandleInternal;
+
+        /// <summary>
+        /// The prompt
+        /// </summary>
+        private Prompt _prompt;
 
         /// <summary>
         ///     The disposed
@@ -40,9 +45,11 @@ namespace Interpreter
         ///     Initializes a new instance of the <see cref="IrtHandleContainer" /> class.
         /// </summary>
         /// <param name="irtHandleInternal">The irt handle internal.</param>
-        internal IrtHandleContainer(IrtHandleInternal irtHandleInternal)
+        /// <param name="prompt"></param>
+        internal IrtHandleContainer(IrtHandleInternal irtHandleInternal, Prompt prompt)
         {
             _irtHandleInternal = irtHandleInternal;
+            _prompt = prompt;
         }
 
         /// <inheritdoc />
@@ -65,7 +72,41 @@ namespace Interpreter
             parameterPart = Irt.RemoveLastOccurrence(parameterPart, IrtConst.AdvancedClose);
             parameterPart = Irt.RemoveFirstOccurrence(parameterPart, IrtConst.AdvancedOpen);
 
-            _irtHandleInternal.GenerateCommands(parameterPart);
+            GenerateCommands(parameterPart);
+        }
+
+        /// <summary>
+        /// Commands the batch execute.
+        /// </summary>
+        /// <param name="parameterPart">The parameter part.</param>
+        /// <param name="inputString">The input string.</param>
+        internal void CommandBatchExecute(string parameterPart, string inputString)
+        {
+            parameterPart = Irt.RemoveParenthesis(parameterPart, IrtConst.BaseOpen, IrtConst.BaseClose);
+            parameterPart = IrtHelper.ReadBatchFile(parameterPart);
+
+            if (string.IsNullOrEmpty(parameterPart))
+            {
+                _irtHandleInternal.SetError(IrtConst.ErrorFileNotFound);
+                return;
+            }
+
+            GenerateCommands(parameterPart);
+        }
+
+        /// <summary>
+        ///     Generates the commands.
+        /// </summary>
+        /// <param name="parameterPart">The parameter part.</param>
+        private void GenerateCommands(string parameterPart)
+        {
+            foreach (var com in Irt.SplitParameter(parameterPart, IrtConst.NewCommand))
+            {
+                //just because we run a container or a batch, we still have to log it
+                _prompt.AddToLog(com);
+                //mostly use the prompt to add a layer of security
+                _prompt.ConsoleInput(com);
+            }
         }
 
         /// <summary>
@@ -77,17 +118,14 @@ namespace Interpreter
         /// </param>
         private void Dispose(bool disposing)
         {
-            if (!_disposed)
-            {
-                if (disposing)
-                    // Dispose managed resources
-                    _irtHandleInternal?.Dispose();
+            if (_disposed) return;
+            if (!disposing) return;
 
-                // Set large fields to null
-                // Example: _largeManagedResource = null;
+            // Dispose managed resources
+            _irtHandleInternal = null;
+            _prompt = null;
 
-                _disposed = true;
-            }
+            _disposed = true;
         }
 
         /// <summary>
