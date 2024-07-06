@@ -127,33 +127,26 @@ namespace Interpreter
                             // TODO: Handle if condition
                             break;
 
-                        // else
-                        case 1:
-                            // TODO: Handle else condition
-                            break;
-
                         // goto
                         case 2:
                             // If it is a jump command, change the current position
-                            if (IsJumpCommand(com, key, out var jumpPosition, commands))
-                            {
-                                // Ensure the new position is within bounds
-                                currentPosition = Math.Clamp(jumpPosition, 0, commands.Count - 1);
-                                continue; // Skip the increment to jump to the new position
-                            }
-
-                            break;
-
-                        // label
-                        case 3:
-                            // TODO: Handle label
+                            currentPosition = IsJumpCommand(com, key, out var jumpPosition, commands) ? Math.Clamp(jumpPosition, 0, commands.Count - 1) : IrtConst.Error;
                             break;
                     }
+                }
+
+                // Check for error condition to break the loop
+                if (currentPosition == IrtConst.Error)
+                {
+                    var message = Logging.SetLastError($"{IrtConst.JumpLabelNotFoundError}{com}", 0);
+                    _prompt.SendLogs(this, message);
+                    break;
                 }
 
                 currentPosition++; // Move to the next command
             }
         }
+
 
         /// <summary>
         /// Checks if the input is a jump command and extracts the jump position.
@@ -163,7 +156,7 @@ namespace Interpreter
         /// <param name="position">The extracted jump position.</param>
         /// <param name="commands"></param>
         /// <returns><c>true</c> if it is a jump command; otherwise, <c>false</c>.</returns>
-        private bool IsJumpCommand(string input, int key, out int position, IReadOnlyList<string> commands)
+        private static bool IsJumpCommand(string input, int key, out int position, IReadOnlyList<string> commands)
         {
             position = 0;
 

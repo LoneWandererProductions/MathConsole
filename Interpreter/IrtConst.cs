@@ -192,6 +192,11 @@ namespace Interpreter
         internal const string KeyWordNotFoundError = "error KeyWord not Found: ";
 
         /// <summary>
+        ///     The key word not found error (const). Value: "error KeyWord not Found: ".
+        /// </summary>
+        internal const string JumpLabelNotFoundError = "error jump label not found: ";
+
+        /// <summary>
         ///     The syntax error (const). Value: "Error in the Syntax".
         /// </summary>
         internal const string SyntaxError = "Error in the Syntax: ";
