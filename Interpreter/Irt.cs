@@ -212,7 +212,7 @@ namespace Interpreter
         /// </summary>
         /// <param name="input">Command String</param>
         /// <param name="com">Command Register</param>
-        /// <returns>Id of Register used</returns>
+        /// <returns>Id of Register used, if nothing was found, return -1.</returns>
         internal static int CheckForKeyWord(string input, Dictionary<int, InCommand> com)
         {
             if (input.Contains(IrtConst.AdvancedOpen))
@@ -322,7 +322,7 @@ namespace Interpreter
         /// <param name="key">The key.</param>
         /// <param name="commands">The commands in use.</param>
         /// <returns>return Parameter</returns>
-        internal static (int Status, string Parameter) ProcessParameters(string input, int key,
+        internal static (int Status, string Parameter) GetParameters(string input, int key,
             IReadOnlyDictionary<int, InCommand> commands)
         {
             var command = commands[key].Command.ToUpper(CultureInfo.InvariantCulture);

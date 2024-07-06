@@ -235,7 +235,7 @@ namespace Interpreter
                 return null;
             }
 
-            var (status, splitParameter) = Irt.ProcessParameters(inputString, key, _com);
+            var (status, splitParameter) = Irt.GetParameters(inputString, key, _com);
             var parameter = status == IrtConst.ParameterCommand
                 ? Irt.SplitParameter(splitParameter, IrtConst.Splitter)
                 : new List<string> { splitParameter };

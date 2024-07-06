@@ -9,6 +9,7 @@
 // ReSharper disable UnusedMember.Local
 
 using System;
+using System.Linq;
 
 namespace Interpreter
 {
@@ -66,8 +67,7 @@ namespace Interpreter
         ///     Processes the container.
         /// </summary>
         /// <param name="parameterPart">Parameter Part.</param>
-        /// <param name="inputString">Full input string.</param>
-        internal void CommandContainer(string parameterPart, string inputString)
+        internal void CommandContainer(string parameterPart)
         {
             parameterPart = Irt.RemoveLastOccurrence(parameterPart, IrtConst.AdvancedClose);
             parameterPart = Irt.RemoveFirstOccurrence(parameterPart, IrtConst.AdvancedOpen);
@@ -79,8 +79,7 @@ namespace Interpreter
         /// Commands the batch execute.
         /// </summary>
         /// <param name="parameterPart">The parameter part.</param>
-        /// <param name="inputString">The input string.</param>
-        internal void CommandBatchExecute(string parameterPart, string inputString)
+        internal void CommandBatchExecute(string parameterPart)
         {
             parameterPart = Irt.RemoveParenthesis(parameterPart, IrtConst.BaseOpen, IrtConst.BaseClose);
             parameterPart = IrtHelper.ReadBatchFile(parameterPart);
@@ -96,17 +95,54 @@ namespace Interpreter
 
         /// <summary>
         ///     Generates the commands.
+        ///     Here we generate our list
         /// </summary>
         /// <param name="parameterPart">The parameter part.</param>
         private void GenerateCommands(string parameterPart)
         {
-            foreach (var com in Irt.SplitParameter(parameterPart, IrtConst.NewCommand))
+            var commands = Irt.SplitParameter(parameterPart, IrtConst.NewCommand).ToList();
+            var currentPosition = 0;
+
+            while (currentPosition < commands.Count)
             {
-                //just because we run a container or a batch, we still have to log it
-                _prompt.AddToLog(com);
-                //mostly use the prompt to add a layer of security
-                _prompt.ConsoleInput(com);
+                var com = commands[currentPosition];
+
+                // Check if it contains a Keyword
+                var key = Irt.CheckForKeyWord(com, IrtConst.InternContainerCommands);
+
+                if (key == IrtConst.Error)
+                {
+                    //just because we run a container or a batch, we still have to log it
+                    _prompt.AddToLog(com);
+                    //mostly use the prompt to add a layer of security
+                    _prompt.ConsoleInput(com);
+                }
+                else
+                {
+                    // If it is a jump command, change the current position
+                    if (IsJumpCommand(com, key, out var jumpPosition))
+                    {
+                        // Ensure the new position is within bounds
+                        currentPosition = Math.Clamp(jumpPosition, 0, commands.Count - 1);
+                        continue; // Skip incrementing currentPosition
+                    }
+                    else
+                    {
+                        // Handle other commands if necessary
+                        // TODO: Add handling for other commands
+                    }
+                }
             }
+        }
+
+        private bool IsJumpCommand(string input,int key, out int position)
+        {
+            position = 0;
+
+            var (status, parts) = Irt.GetParameters(input, key, IrtConst.InternContainerCommands);
+            //Todo find the label marker, I think i will dump this in irt
+
+            return false;
         }
 
         /// <summary>
@@ -118,11 +154,12 @@ namespace Interpreter
         /// </param>
         private void Dispose(bool disposing)
         {
-            if (_disposed) return;
-            if (!disposing) return;
+            if (_disposed)
+                return;
 
-            // Dispose managed resources
-            _irtHandleInternal = null;
+            if (disposing)
+                // Dispose managed resources
+                _irtHandleInternal = null;
             _prompt = null;
 
             _disposed = true;

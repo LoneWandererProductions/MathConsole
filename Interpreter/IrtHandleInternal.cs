@@ -67,7 +67,7 @@ namespace Interpreter
         /// <param name="inputString">The input string.</param>
         internal void ProcessInput(int key, string inputString)
         {
-            var (status, parts) = Irt.ProcessParameters(inputString, key, IrtConst.InternCommands);
+            var (status, parts) = Irt.GetParameters(inputString, key, IrtConst.InternCommands);
 
             //handle normal command and batch/containers
             var parameter = status == IrtConst.ParameterCommand
@@ -135,7 +135,7 @@ namespace Interpreter
                 case 8:
                     using (var irtContainer = new IrtHandleContainer(this, _prompt))
                     {
-                        irtContainer.CommandContainer(parameter[0], inputString);
+                        irtContainer.CommandContainer(parameter[0]);
                     }
 
                     break;
@@ -143,7 +143,7 @@ namespace Interpreter
                 case 9:
                     using (var irtContainer = new IrtHandleContainer(this, _prompt))
                     {
-                        irtContainer.CommandBatchExecute(parameter[0], inputString);
+                        irtContainer.CommandBatchExecute(parameter[0]);
                     }
 
                     break;
