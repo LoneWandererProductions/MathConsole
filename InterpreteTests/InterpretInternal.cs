@@ -156,7 +156,7 @@ namespace InterpreteTests
         ///     Checks for key word with non existing command returns error.
         /// </summary>
         [TestMethod]
-        public void CheckForKeyWordWithNonExistingCommand_ReturnsError()
+        public void CheckForKeyWordWithNonExistingCommandReturnsError()
         {
             var commands = new Dictionary<int, InCommand>
             {
@@ -231,7 +231,7 @@ namespace InterpreteTests
         ///     Checks for key word with existing command returns correct key.
         /// </summary>
         [TestMethod]
-        public void CheckForKeyWordWithExistingCommand_ReturnsCorrectKey()
+        public void CheckForKeyWordWithExistingCommandReturnsCorrectKey()
         {
             var commands = new Dictionary<int, InCommand>
             {
