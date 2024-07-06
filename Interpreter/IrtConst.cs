@@ -57,6 +57,11 @@ namespace Interpreter
         private const string InternalBatchExecute = "BATCHEXECUTE";
 
         /// <summary>
+        ///     The internal command print (const). Value: "PRINT".
+        /// </summary>
+        private const string InternalPrint = "PRINT";
+
+        /// <summary>
         ///     The internal command help (const). Value: "HELP".
         /// </summary>
         internal const string InternalCommandHelp = "HELP";
@@ -124,7 +129,7 @@ namespace Interpreter
         /// <summary>
         ///     The internal command label, used by goto (const). Value: "LABEL".
         /// </summary>
-        private const string InternalLabel = "LABEL";
+        internal const string InternalLabel = "LABEL";
 
         /// <summary>
         ///     The error no commands provided (const). Value: "No Commands were provided".
@@ -499,38 +504,8 @@ namespace Interpreter
                 10,
                 new InCommand
                 {
-                    Command = InternalIf,
-                    Description =
-                        "If : intended for batch commands and Container, aks for condition and executes everything after the following {}. The Parameter is the ",
-                    ParameterCount = 1
-                }
-            },
-            {
-                11,
-                new InCommand
-                {
-                    Command = InternalElse,
-                    Description =
-                        "Else :must be followed after an If and the {} if not we will throw an error, if the If clause was wrong everything after else {} will be excuted.",
-                    ParameterCount = 0
-                }
-            },
-            {
-                12,
-                new InCommand
-                {
-                    Command = InternalGoto,
-                    Description =
-                        "Goto : intended for batch commands and Container, if reached, code will jump to Label with Parameter equal to Goto Parameter, else we will get an error.",
-                    ParameterCount = 1
-                }
-            },
-            {
-                13,
-                new InCommand
-                {
-                    Command = InternalLabel,
-                    Description = "label : intended for batch commands and Container, Entry point for Goto Command.",
+                    Command = InternalPrint,
+                    Description = "Print : Just print the content within in the parenthesis.",
                     ParameterCount = 1
                 }
             }
@@ -615,9 +590,6 @@ namespace Interpreter
                 $"{InternCommands[InternalContainerId].Command} : {InternCommands[InternalContainerId].Description}",
                 $"{InternCommands[InternalBatchId].Command} : {InternCommands[InternalBatchId].Description}",
                 $"{InternCommands[10].Command} : {InternCommands[10].Description}",
-                $"{InternCommands[11].Command} : {InternCommands[11].Description}",
-                $"{InternCommands[12].Command} : {InternCommands[12].Description}",
-                $"{InternCommands[13].Command} : {InternCommands[13].Description}",
                 "Furthermore, there are Extension Commands that alter the behaviour of all Commands. They are added with a '.' to an existing command.",
                 "The Internal Extensions are:",
                 $"{InternalExtensionCommands[0].Command} : {InternalExtensionCommands[0].Description}",

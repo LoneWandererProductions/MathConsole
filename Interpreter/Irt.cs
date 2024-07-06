@@ -335,6 +335,41 @@ namespace Interpreter
         }
 
         /// <summary>
+        /// Checks if the input string follows the format of "command(label)" with optional whitespace and case insensitivity.
+        /// </summary>
+        /// <param name="input">The input string to check.</param>
+        /// <param name="command">The expected command.</param>
+        /// <param name="label">The expected label.</param>
+        /// <returns>True if the string matches the format; otherwise, false.</returns>
+        internal static bool CheckFormat(string input, string command, string label)
+        {
+            if (string.IsNullOrWhiteSpace(input)) return false;
+
+            // Trim the input to remove leading and trailing whitespace
+            var trimmedInput = input.Trim();
+
+            // Convert to upper case for case-insensitive comparison
+            var upperInput = trimmedInput.ToUpperInvariant();
+            var upperCommand = command.ToUpperInvariant();
+            var upperLabel = label.ToUpperInvariant();
+
+            // Check if it starts with "command(" and ends with ")"
+            var start = upperCommand + IrtConst.BaseOpen;
+            var end = IrtConst.BaseClose.ToString();
+
+            if (!upperInput.StartsWith(start, StringComparison.Ordinal) || !upperInput.EndsWith(end, StringComparison.Ordinal))
+                return false;
+
+            // Extract the content within the parentheses
+            var contentStartIndex = upperCommand.Length + 1;
+            var contentLength = upperInput.Length - contentStartIndex - 1;
+            var content = upperInput.Substring(contentStartIndex, contentLength).Trim();
+
+            // Check if the content matches the expected label
+            return content == upperLabel;
+        }
+
+        /// <summary>
         ///     Checks if the string starts and ends with the specified characters.
         /// </summary>
         /// <param name="input">Input string to check.</param>

@@ -152,7 +152,6 @@ namespace InterpreteTests
             Assert.AreEqual(IrtConst.ParenthesisError, result);
         }
 
-
         /// <summary>
         ///     Checks for key word with non existing command returns error.
         /// </summary>
@@ -314,7 +313,6 @@ namespace InterpreteTests
             CollectionAssert.AreEqual(new List<string> { "help" }, result);
         }
 
-
         /// <summary>
         ///     Tests internal extension functionality.
         /// </summary>
@@ -447,16 +445,172 @@ namespace InterpreteTests
             Assert.AreEqual(4, _outCommand.ExtensionCommand.ExtensionCommand, "Wrong Id: ");
         }
 
+        private static IReadOnlyDictionary<int, InCommand> GetSampleCommands()
+        {
+            return new Dictionary<int, InCommand>
+            {
+                { 1, new InCommand { Command = "CMD1" } },
+                { 2, new InCommand { Command = "CMD2" } }
+            };
+        }
+
+        /// <summary>
+        /// Gets the parameters with advanced open returns batch command.
+        /// </summary>
+        [TestMethod]
+        public void GetParametersWithAdvancedOpenReturnsBatchCommand()
+        {
+            // Arrange
+            var input = "CMD1{param}";
+            var key = 1;
+            var commands = GetSampleCommands();
+
+            // Act
+            var result = Irt.GetParameters(input, key, commands);
+
+            // Assert
+            Assert.AreEqual(IrtConst.BatchCommand, result.Status);
+            Assert.AreEqual("{param}", result.Parameter);
+        }
+
+        /// <summary>
+        /// Gets the parameters with normal parameters returns parameter command.
+        /// </summary>
+        [TestMethod]
+        public void GetParametersWithNormalParametersReturnsParameterCommand()
+        {
+            // Arrange
+            var input = "CMD1(param)";
+            var key = 1;
+            var commands = GetSampleCommands();
+
+            // Act
+            var result = Irt.GetParameters(input, key, commands);
+
+            // Assert
+            Assert.AreEqual(IrtConst.ParameterCommand, result.Status);
+            Assert.AreEqual("param", result.Parameter);
+        }
+
+        /// <summary>
+        /// Gets the parameters with whitespace returns parameter command.
+        /// </summary>
+        [TestMethod]
+        public void GetParametersWithWhitespaceReturnsParameterCommand()
+        {
+            // Arrange
+            var input = "   CMD1   (   param   )   ";
+            var key = 1;
+            var commands = GetSampleCommands();
+
+            // Act
+            var result = Irt.GetParameters(input, key, commands);
+
+            // Assert
+            Assert.AreEqual(IrtConst.ParameterCommand, result.Status);
+            Assert.AreEqual("param", result.Parameter);
+        }
+
+        /// <summary>
+        /// Checks the format valid format returns true.
+        /// </summary>
+        [TestMethod]
+        public void CheckFormatValidFormatReturnsTrue()
+        {
+            // Arrange
+            var input = "command(label)";
+            var command = "command";
+            var label = "label";
+
+            // Act
+            var result = Irt.CheckFormat(input, command, label);
+
+            // Assert
+            Assert.IsTrue(result);
+        }
+
+        /// <summary>
+        /// Checks the format invalid format returns false.
+        /// </summary>
+        [TestMethod]
+        public void CheckFormatInvalidFormatReturnsFalse()
+        {
+            // Arrange
+            var input = "invalid(label)";
+            var command = "command";
+            var label = "label";
+
+            // Act
+            var result = Irt.CheckFormat(input, command, label);
+
+            // Assert
+            Assert.IsFalse(result);
+        }
+
+        /// <summary>
+        /// Checks the format empty input returns false.
+        /// </summary>
+        [TestMethod]
+        public void CheckFormatEmptyInputReturnsFalse()
+        {
+            // Arrange
+            var input = "";
+            var command = "command";
+            var label = "label";
+
+            // Act
+            var result = Irt.CheckFormat(input, command, label);
+
+            // Assert
+            Assert.IsFalse(result);
+        }
+
+        /// <summary>
+        /// Checks the format null input returns false.
+        /// </summary>
+        [TestMethod]
+        public void CheckFormatNullInputReturnsFalse()
+        {
+            // Arrange
+            string input = null;
+            var command = "command";
+            var label = "label";
+
+            // Act
+            var result = Irt.CheckFormat(input, command, label);
+
+            // Assert
+            Assert.IsFalse(result);
+        }
+
+        /// <summary>
+        /// Checks the format different label returns false.
+        /// </summary>
+        [TestMethod]
+        public void CheckFormatDifferentLabelReturnsFalse()
+        {
+            // Arrange
+            var input = "command(otherlabel)";
+            var command = "command";
+            var label = "label";
+
+            // Act
+            var result = Irt.CheckFormat(input, command, label);
+
+            // Assert
+            Assert.IsFalse(result);
+        }
+
         /// <summary>
         ///     Logs the messages.
         /// </summary>
         /// <param name="sender">Sender object</param>
         /// <param name="e">Message string</param>
         private static void SendLogs(object sender, string e)
-        {
-            Trace.WriteLine(e);
-            _log = e;
-        }
+            {
+                Trace.WriteLine(e);
+                _log = e;
+            }
 
         /// <summary>
         ///     Captures the commands.

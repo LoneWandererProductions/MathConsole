@@ -148,6 +148,10 @@ namespace Interpreter
 
                     break;
 
+                case 10:
+                    CommandPrint(parameter[0]);
+                    break;
+
                 default:
                     OnStatus(string.Concat(IrtConst.KeyWordNotFoundError, command));
                     break;
@@ -239,6 +243,15 @@ namespace Interpreter
         {
             foreach (var entry in new List<string>(_prompt.Log.Values))
                 _prompt.SendLogs?.Invoke(nameof(IrtHandleInternal), entry);
+        }
+
+        /// <summary>
+        /// Commands the print.
+        /// </summary>
+        /// <param name="message">The message.</param>
+        private void CommandPrint(string message)
+        {
+            _prompt.SendLogs?.Invoke(nameof(IrtHandleInternal), message);
         }
 
         /// <summary>

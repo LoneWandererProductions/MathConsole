@@ -163,20 +163,19 @@ namespace Interpreter
         /// <param name="position">The extracted jump position.</param>
         /// <param name="commands"></param>
         /// <returns><c>true</c> if it is a jump command; otherwise, <c>false</c>.</returns>
-        private bool IsJumpCommand(string input, int key, out int position, List<string> commands)
+        private bool IsJumpCommand(string input, int key, out int position, IReadOnlyList<string> commands)
         {
             position = 0;
 
-            var (status, parts) = Irt.GetParameters(input, key, IrtConst.InternContainerCommands);
+            var (status, label) = Irt.GetParameters(input, key, IrtConst.InternContainerCommands);
 
-            if (status == 0 || parts.Length > 1)
+            if (status != IrtConst.ParameterCommand || string.IsNullOrEmpty(label))
             {
                 return false;
             }
 
             // Example logic to determine the jump position from the label
-            //string label = parts[1].Trim();
-            position = FindLabelPosition("label", commands);
+            position = FindLabelPosition(label, commands);
 
             return position >= 0;
         }
@@ -189,11 +188,13 @@ namespace Interpreter
         /// <returns>
         /// The position of the label, or -1 if not found.
         /// </returns>
-        private int FindLabelPosition(string label, IReadOnlyList<string> commands)
+        private static int FindLabelPosition(string label, IReadOnlyList<string> commands)
         {
             for (var i = 0; i < commands.Count; i++)
             {
-                if (commands[i].Contains(label)) // Customize this condition to match your label logic
+                var input = commands[i];
+                var check = Irt.CheckFormat(IrtConst.InternalLabel, label, input);
+                if (check) // Customize this condition to match your label logic
                 {
                     return i;
                 }
