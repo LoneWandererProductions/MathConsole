@@ -536,6 +536,54 @@ namespace Interpreter
             }
         };
 
+
+        /// <summary>
+        /// The intern container commands
+        /// </summary>
+        internal static readonly Dictionary<int, InCommand> InternContainerCommands = new()
+        {
+            {
+                0,
+                new InCommand
+                {
+                    Command = InternalIf,
+                    Description =
+                        "If : intended for batch commands and Container, aks for condition and executes everything after the following {}. The Parameter is the ",
+                    ParameterCount = 1
+                }
+            },
+            {
+                1,
+                new InCommand
+                {
+                    Command = InternalElse,
+                    Description =
+                        "Else :must be followed after an If and the {} if not we will throw an error, if the If clause was wrong everything after else {} will be executed.",
+                    ParameterCount = 0
+                }
+            },
+            {
+                2,
+                new InCommand
+                {
+                    Command = InternalGoto,
+                    Description =
+                        "Goto : intended for batch commands and Container, if reached, code will jump to Label with Parameter equal to Goto Parameter, else we will get an error.",
+                    ParameterCount = 1
+                }
+            },
+            {
+                3,
+                new InCommand
+                {
+                    Command = InternalLabel,
+                    Description = "label : intended for batch commands and Container, Entry point for Goto Command.",
+                    ParameterCount = 1
+                }
+            }
+        };
+
+
         /// <summary>
         ///     Basic internal Help
         /// </summary>
@@ -573,7 +621,12 @@ namespace Interpreter
                 "Furthermore, there are Extension Commands that alter the behaviour of all Commands. They are added with a '.' to an existing command.",
                 "The Internal Extensions are:",
                 $"{InternalExtensionCommands[0].Command} : {InternalExtensionCommands[0].Description}",
-                $"{InternalExtensionCommands[1].Command} : {InternalExtensionCommands[1].Description}"
+                $"{InternalExtensionCommands[1].Command} : {InternalExtensionCommands[1].Description}",
+                "The following are internal Commands used in Container Constructs and Batch Commands:",
+                $"{InternContainerCommands[0].Command} : {InternContainerCommands[0].Description}",
+                $"{InternContainerCommands[1].Command} : {InternContainerCommands[1].Description}",
+                $"{InternContainerCommands[2].Command} : {InternContainerCommands[2].Description}",
+                $"{InternContainerCommands[3].Command} : {InternContainerCommands[3].Description}"
             );
         }
     }
