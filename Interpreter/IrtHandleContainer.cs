@@ -9,6 +9,7 @@
 // ReSharper disable UnusedMember.Local
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Interpreter
@@ -112,37 +113,93 @@ namespace Interpreter
 
                 if (key == IrtConst.Error)
                 {
-                    //just because we run a container or a batch, we still have to log it
+                    // Just because we run a container or a batch, we still have to log it
                     _prompt.AddToLog(com);
-                    //mostly use the prompt to add a layer of security
+                    // Mostly use the prompt to add a layer of security
                     _prompt.ConsoleInput(com);
                 }
                 else
                 {
-                    // If it is a jump command, change the current position
-                    if (IsJumpCommand(com, key, out var jumpPosition))
+                    switch (key)
                     {
-                        // Ensure the new position is within bounds
-                        currentPosition = Math.Clamp(jumpPosition, 0, commands.Count - 1);
-                        continue; // Skip incrementing currentPosition
-                    }
-                    else
-                    {
-                        // Handle other commands if necessary
-                        // TODO: Add handling for other commands
+                        // if
+                        case 0:
+                            // TODO: Handle if condition
+                            break;
+
+                        // else
+                        case 1:
+                            // TODO: Handle else condition
+                            break;
+
+                        // goto
+                        case 2:
+                            // If it is a jump command, change the current position
+                            if (IsJumpCommand(com, key, out var jumpPosition, commands))
+                            {
+                                // Ensure the new position is within bounds
+                                currentPosition = Math.Clamp(jumpPosition, 0, commands.Count - 1);
+                                continue; // Skip the increment to jump to the new position
+                            }
+
+                            break;
+
+                        // label
+                        case 3:
+                            // TODO: Handle label
+                            break;
                     }
                 }
+
+                currentPosition++; // Move to the next command
             }
         }
 
-        private bool IsJumpCommand(string input,int key, out int position)
+        /// <summary>
+        /// Checks if the input is a jump command and extracts the jump position.
+        /// </summary>
+        /// <param name="input">The input command.</param>
+        /// <param name="key">The key indicating the command type.</param>
+        /// <param name="position">The extracted jump position.</param>
+        /// <param name="commands"></param>
+        /// <returns><c>true</c> if it is a jump command; otherwise, <c>false</c>.</returns>
+        private bool IsJumpCommand(string input, int key, out int position, List<string> commands)
         {
             position = 0;
 
             var (status, parts) = Irt.GetParameters(input, key, IrtConst.InternContainerCommands);
-            //Todo find the label marker, I think i will dump this in irt
 
-            return false;
+            if (status == 0 || parts.Length > 1)
+            {
+                return false;
+            }
+
+            // Example logic to determine the jump position from the label
+            //string label = parts[1].Trim();
+            position = FindLabelPosition("label", commands);
+
+            return position >= 0;
+        }
+
+        /// <summary>
+        /// Finds the position of the label in the list of commands.
+        /// </summary>
+        /// <param name="label">The label to find.</param>
+        /// <param name="commands">The commands.</param>
+        /// <returns>
+        /// The position of the label, or -1 if not found.
+        /// </returns>
+        private int FindLabelPosition(string label, IReadOnlyList<string> commands)
+        {
+            for (var i = 0; i < commands.Count; i++)
+            {
+                if (commands[i].Contains(label)) // Customize this condition to match your label logic
+                {
+                    return i;
+                }
+            }
+
+            return -1; // Label not found
         }
 
         /// <summary>
