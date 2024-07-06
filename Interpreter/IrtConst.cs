@@ -518,7 +518,7 @@ namespace Interpreter
 
 
         /// <summary>
-        /// The intern container commands
+        ///     The intern container commands
         /// </summary>
         internal static readonly Dictionary<int, InCommand> InternContainerCommands = new()
         {

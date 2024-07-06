@@ -335,7 +335,7 @@ namespace Interpreter
         }
 
         /// <summary>
-        /// Checks if the input string follows the format of "command(label)" with optional whitespace and case insensitivity.
+        ///     Checks if the input string follows the format of "command(label)" with optional whitespace and case insensitivity.
         /// </summary>
         /// <param name="input">The input string to check.</param>
         /// <param name="command">The expected command.</param>
@@ -357,7 +357,8 @@ namespace Interpreter
             var start = upperCommand + IrtConst.BaseOpen;
             var end = IrtConst.BaseClose.ToString();
 
-            if (!upperInput.StartsWith(start, StringComparison.Ordinal) || !upperInput.EndsWith(end, StringComparison.Ordinal))
+            if (!upperInput.StartsWith(start, StringComparison.Ordinal) ||
+                !upperInput.EndsWith(end, StringComparison.Ordinal))
                 return false;
 
             // Extract the content within the parentheses

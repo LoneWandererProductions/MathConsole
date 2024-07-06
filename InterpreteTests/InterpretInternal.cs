@@ -455,7 +455,7 @@ namespace InterpreteTests
         }
 
         /// <summary>
-        /// Gets the parameters with advanced open returns batch command.
+        ///     Gets the parameters with advanced open returns batch command.
         /// </summary>
         [TestMethod]
         public void GetParametersWithAdvancedOpenReturnsBatchCommand()
@@ -474,7 +474,7 @@ namespace InterpreteTests
         }
 
         /// <summary>
-        /// Gets the parameters with normal parameters returns parameter command.
+        ///     Gets the parameters with normal parameters returns parameter command.
         /// </summary>
         [TestMethod]
         public void GetParametersWithNormalParametersReturnsParameterCommand()
@@ -493,7 +493,7 @@ namespace InterpreteTests
         }
 
         /// <summary>
-        /// Gets the parameters with whitespace returns parameter command.
+        ///     Gets the parameters with whitespace returns parameter command.
         /// </summary>
         [TestMethod]
         public void GetParametersWithWhitespaceReturnsParameterCommand()
@@ -512,7 +512,7 @@ namespace InterpreteTests
         }
 
         /// <summary>
-        /// Checks the format valid format returns true.
+        ///     Checks the format valid format returns true.
         /// </summary>
         [TestMethod]
         public void CheckFormatValidFormatReturnsTrue()
@@ -530,7 +530,7 @@ namespace InterpreteTests
         }
 
         /// <summary>
-        /// Checks the format invalid format returns false.
+        ///     Checks the format invalid format returns false.
         /// </summary>
         [TestMethod]
         public void CheckFormatInvalidFormatReturnsFalse()
@@ -548,7 +548,7 @@ namespace InterpreteTests
         }
 
         /// <summary>
-        /// Checks the format empty input returns false.
+        ///     Checks the format empty input returns false.
         /// </summary>
         [TestMethod]
         public void CheckFormatEmptyInputReturnsFalse()
@@ -566,25 +566,24 @@ namespace InterpreteTests
         }
 
         /// <summary>
-        /// Checks the format null input returns false.
+        ///     Checks the format null input returns false.
         /// </summary>
         [TestMethod]
         public void CheckFormatNullInputReturnsFalse()
         {
             // Arrange
-            string input = null;
             var command = "command";
             var label = "label";
 
             // Act
-            var result = Irt.CheckFormat(input, command, label);
+            var result = Irt.CheckFormat(null, command, label);
 
             // Assert
             Assert.IsFalse(result);
         }
 
         /// <summary>
-        /// Checks the format different label returns false.
+        ///     Checks the format different label returns false.
         /// </summary>
         [TestMethod]
         public void CheckFormatDifferentLabelReturnsFalse()
@@ -607,10 +606,10 @@ namespace InterpreteTests
         /// <param name="sender">Sender object</param>
         /// <param name="e">Message string</param>
         private static void SendLogs(object sender, string e)
-            {
-                Trace.WriteLine(e);
-                _log = e;
-            }
+        {
+            Trace.WriteLine(e);
+            _log = e;
+        }
 
         /// <summary>
         ///     Captures the commands.

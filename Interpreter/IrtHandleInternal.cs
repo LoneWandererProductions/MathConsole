@@ -77,7 +77,7 @@ namespace Interpreter
             //check for batch and Command Files
             if (key == IrtConst.InternalContainerId || key == IrtConst.InternalBatchId)
             {
-                HandleInternalCommands(key, parameter, inputString);
+                HandleInternalCommands(key, parameter);
                 return;
             }
 
@@ -99,8 +99,7 @@ namespace Interpreter
         /// </summary>
         /// <param name="command">Key of the command</param>
         /// <param name="parameter">optional parameters, can be empty or null.</param>
-        /// <param name="inputString">The input string. Complete if in case we have a container</param>
-        private void HandleInternalCommands(int? command, IReadOnlyList<string> parameter, string inputString = "")
+        private void HandleInternalCommands(int? command, IReadOnlyList<string> parameter)
         {
             switch (command)
             {
@@ -246,7 +245,7 @@ namespace Interpreter
         }
 
         /// <summary>
-        /// Commands the print.
+        ///     Commands the print.
         /// </summary>
         /// <param name="message">The message.</param>
         private void CommandPrint(string message)

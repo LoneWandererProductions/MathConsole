@@ -22,19 +22,19 @@ namespace Interpreter
     internal sealed class IrtHandleContainer : IDisposable
     {
         /// <summary>
+        ///     The disposed
+        /// </summary>
+        private bool _disposed;
+
+        /// <summary>
         ///     The irt handle internal
         /// </summary>
         private IrtHandleInternal _irtHandleInternal;
 
         /// <summary>
-        /// The prompt
+        ///     The prompt
         /// </summary>
         private Prompt _prompt;
-
-        /// <summary>
-        ///     The disposed
-        /// </summary>
-        private bool _disposed;
 
         /// <summary>
         ///     Prevents a default instance of the <see cref="IrtHandleContainer" /> class from being created.
@@ -77,7 +77,7 @@ namespace Interpreter
         }
 
         /// <summary>
-        /// Commands the batch execute.
+        ///     Commands the batch execute.
         /// </summary>
         /// <param name="parameterPart">The parameter part.</param>
         internal void CommandBatchExecute(string parameterPart)
@@ -130,7 +130,9 @@ namespace Interpreter
                         // goto
                         case 2:
                             // If it is a jump command, change the current position
-                            currentPosition = IsJumpCommand(com, key, out var jumpPosition, commands) ? Math.Clamp(jumpPosition, 0, commands.Count - 1) : IrtConst.Error;
+                            currentPosition = IsJumpCommand(com, key, out var jumpPosition, commands)
+                                ? Math.Clamp(jumpPosition, 0, commands.Count - 1)
+                                : IrtConst.Error;
                             break;
                     }
                 }
@@ -149,7 +151,7 @@ namespace Interpreter
 
 
         /// <summary>
-        /// Checks if the input is a jump command and extracts the jump position.
+        ///     Checks if the input is a jump command and extracts the jump position.
         /// </summary>
         /// <param name="input">The input command.</param>
         /// <param name="key">The key indicating the command type.</param>
@@ -162,10 +164,7 @@ namespace Interpreter
 
             var (status, label) = Irt.GetParameters(input, key, IrtConst.InternContainerCommands);
 
-            if (status != IrtConst.ParameterCommand || string.IsNullOrEmpty(label))
-            {
-                return false;
-            }
+            if (status != IrtConst.ParameterCommand || string.IsNullOrEmpty(label)) return false;
 
             // Example logic to determine the jump position from the label
             position = FindLabelPosition(label, commands);
@@ -174,12 +173,12 @@ namespace Interpreter
         }
 
         /// <summary>
-        /// Finds the position of the label in the list of commands.
+        ///     Finds the position of the label in the list of commands.
         /// </summary>
         /// <param name="label">The label to find.</param>
         /// <param name="commands">The commands.</param>
         /// <returns>
-        /// The position of the label, or -1 if not found.
+        ///     The position of the label, or -1 if not found.
         /// </returns>
         private static int FindLabelPosition(string label, IReadOnlyList<string> commands)
         {
@@ -188,9 +187,7 @@ namespace Interpreter
                 var input = commands[i];
                 var check = Irt.CheckFormat(IrtConst.InternalLabel, label, input);
                 if (check) // Customize this condition to match your label logic
-                {
                     return i;
-                }
             }
 
             return -1; // Label not found
