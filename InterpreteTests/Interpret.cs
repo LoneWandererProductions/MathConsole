@@ -397,6 +397,37 @@ namespace InterpreteTests
         }
 
         /// <summary>
+        /// Jumps the command.
+        /// </summary>
+        [TestMethod]
+        public void JumpCommand()
+        {
+            _prompt = new Prompt();
+            _prompt.SendLogs += SendLogs;
+            _prompt.SendCommands += SendCommands;
+            _prompt.Initiate(DctCommandOne, UserSpaceOne);
+
+            _prompt.ConsoleInput(
+                "Container{ " +
+                "Print(hello World);" +
+                "Label(one);" +
+                "Print(passed label one);" +
+                "goto(two);" +
+                "Print(Should not be printed);" +
+                "Label(two);" +
+                "Print(Finish);" +
+                "};"
+            );
+
+            Assert.AreEqual(true,
+                _log.Contains("Finish", StringComparison.CurrentCultureIgnoreCase),
+                "Not correctly jumped" + _log);
+
+            _prompt.Dispose();
+        }
+
+
+        /// <summary>
         ///     Creates the file.
         /// </summary>
         private static void CreateFile()

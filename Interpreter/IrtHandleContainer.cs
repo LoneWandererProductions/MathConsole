@@ -10,6 +10,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace Interpreter
@@ -134,6 +135,10 @@ namespace Interpreter
                                 ? Math.Clamp(jumpPosition, 0, commands.Count - 1)
                                 : IrtConst.Error;
                             break;
+                        // label
+                        case 3:
+                            Trace.WriteLine(com);
+                            break;
                     }
                 }
 
@@ -185,7 +190,7 @@ namespace Interpreter
             for (var i = 0; i < commands.Count; i++)
             {
                 var input = commands[i];
-                var check = Irt.CheckFormat(IrtConst.InternalLabel, label, input);
+                var check = Irt.CheckFormat(input, IrtConst.InternalLabel,label);
                 if (check) // Customize this condition to match your label logic
                     return i;
             }
