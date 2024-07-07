@@ -125,9 +125,11 @@ namespace Interpreter
                     {
                         // if
                         case 0:
-                            // TODO: Handle if condition
+                            currentPosition = HandleIfElseBlock(commands, currentPosition);
                             break;
-
+                        // else (ignored, handled by if)
+                        case 1:
+                            break;
                         // goto
                         case 2:
                             // If it is a jump command, change the current position
@@ -154,6 +156,63 @@ namespace Interpreter
             }
         }
 
+        private int HandleIfElseBlock(List<string> commands, int currentPosition)
+        {
+            var ifBlockCommands = new List<string>();
+            var elseBlockCommands = new List<string>();
+            var isInElseBlock = false;
+            currentPosition++; // Move past the if command
+
+            // Collect commands within if and else blocks
+            while (currentPosition < commands.Count)
+            {
+                var com = commands[currentPosition];
+
+                if (com.Equals("{", StringComparison.Ordinal))
+                {
+                    currentPosition++;
+                    continue;
+                }
+
+                if (com.Equals("}", StringComparison.Ordinal))
+                {
+                    currentPosition++;
+                    break;
+                }
+
+                if (com.Equals("else", StringComparison.OrdinalIgnoreCase))
+                {
+                    isInElseBlock = true;
+                    currentPosition++;
+                    continue;
+                }
+
+                if (isInElseBlock)
+                {
+                    elseBlockCommands.Add(com);
+                }
+                else
+                {
+                    ifBlockCommands.Add(com);
+                }
+
+                currentPosition++;
+            }
+
+            // Evaluate the if condition
+            var userResponse = false; //GetUserResponse(); // This method should get user input or some condition
+
+            if (userResponse)
+            {
+                //ExecuteCommands(ifBlockCommands);
+            }
+            else if (elseBlockCommands.Count > 0)
+            {
+                //ExecuteCommands(elseBlockCommands);
+            }
+
+            return currentPosition;
+        }
 
         /// <summary>
         ///     Checks if the input is a jump command and extracts the jump position.
