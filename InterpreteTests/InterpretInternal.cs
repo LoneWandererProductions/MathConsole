@@ -390,14 +390,14 @@ namespace InterpreteTests
         {
             var dctCommandOne = new Dictionary<int, InCommand>
             {
-                { 0, new InCommand { Command = "First", ParameterCount = 2, Description = "Help First" } },
+                { 0, new InCommand { Command = "com1", ParameterCount = 2, Description = "Help com1" } },
                 {
                     1,
-                    new InCommand { Command = "Second", ParameterCount = 0, Description = "Second Command Namespace 1" }
+                    new InCommand { Command = "com2", ParameterCount = 0, Description = "com2 Command Namespace 1" }
                 },
                 {
                     2,
-                    new InCommand { Command = "Third", ParameterCount = 0, Description = "Special case no Parameter" }
+                    new InCommand { Command = "com3", ParameterCount = 0, Description = "Special case no Parameter" }
                 }
             };
 
@@ -405,7 +405,7 @@ namespace InterpreteTests
             {
                 {
                     1,
-                    new InCommand { Command = "Second", ParameterCount = 0, Description = "Second Command Namespace 2" }
+                    new InCommand { Command = "com2", ParameterCount = 0, Description = "com2 Command Namespace 2" }
                 },
                 { 4, new InCommand { Command = "Test", ParameterCount = 0, Description = "Here we go" } }
             };
@@ -414,7 +414,7 @@ namespace InterpreteTests
             prompt.SendLogs += SendLogs;
             prompt.SendCommands += SendCommands;
             prompt.Initiate(dctCommandOne, "UserSpace 1");
-            prompt.ConsoleInput("FirSt(1,2)");
+            prompt.ConsoleInput("coM1(1,2)");
 
             Assert.AreEqual(0, _outCommand.Command, "Wrong Id: " + _outCommand.Command);
 
@@ -427,7 +427,7 @@ namespace InterpreteTests
 
             Assert.AreEqual(4, _outCommand.Command, "Wrong Id: " + _outCommand.Command);
 
-            prompt.ConsoleInput("Second().use(UserSpace 1)");
+            prompt.ConsoleInput("com2().use(UserSpace 1)");
             Assert.AreEqual(1, _outCommand.Command, "Wrong Id: " + _outCommand.Command);
             Assert.AreEqual("UserSpace 1", _outCommand.UsedNameSpace, "Wrong Userspace");
 
@@ -439,9 +439,9 @@ namespace InterpreteTests
 
             // Reboot this time with user extension, check if we support overloads
             prompt.Initiate(dctCommandOne, "UserSpace 1", extension);
-            prompt.ConsoleInput("First(1,2).ext()");
+            prompt.ConsoleInput("com1(1,2).ext()");
             Assert.AreEqual(1, _outCommand.ExtensionCommand.ExtensionCommand, "Wrong Id: ");
-            prompt.ConsoleInput("First(1,2).ext(3)");
+            prompt.ConsoleInput("com1(1,2).ext(3)");
             Assert.AreEqual(4, _outCommand.ExtensionCommand.ExtensionCommand, "Wrong Id: ");
         }
 

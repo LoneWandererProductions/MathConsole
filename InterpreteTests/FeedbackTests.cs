@@ -134,15 +134,15 @@ namespace InterpreteTests
             var dctCommandOne = new Dictionary<int, InCommand>
             {
                 {
-                    0, new InCommand { Command = "First", ParameterCount = 2, Description = "Help First" }
+                    0, new InCommand { Command = "com1", ParameterCount = 2, Description = "Help com1" }
                 },
                 {
                     1,
-                    new InCommand { Command = "Second", ParameterCount = 0, Description = "Second Command Namespace 1" }
+                    new InCommand { Command = "com2", ParameterCount = 0, Description = "com2 Command Namespace 1" }
                 },
                 {
                     2,
-                    new InCommand { Command = "Third", ParameterCount = 0, Description = "Special case no Parameter" }
+                    new InCommand { Command = "com3", ParameterCount = 0, Description = "Special case no Parameter" }
                 }
             };
 
@@ -151,11 +151,11 @@ namespace InterpreteTests
             prompt.SendLogs += SendLogs;
             prompt.SendCommands += SendCommands;
             prompt.Initiate(dctCommandOne, "UserSpace 1");
-            prompt.ConsoleInput("FirSt(1,2).Help()");
+            prompt.ConsoleInput("coM1(1,2).Help()");
             prompt.ConsoleInput("");
 
 
-            Assert.IsFalse(_log.Contains("Help First"), "No help provided.");
+            Assert.IsFalse(_log.Contains("Help com1"), "No help provided.");
             // Assert
             Assert.AreEqual("Option not allowed.", _log, "Error was not catched.");
 

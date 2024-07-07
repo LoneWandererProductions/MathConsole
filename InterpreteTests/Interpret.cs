@@ -56,11 +56,11 @@ namespace InterpreteTests
         /// </summary>
         private static readonly Dictionary<int, InCommand> DctCommandOne = new()
         {
-            { 0, new InCommand { Command = "First", ParameterCount = 2, Description = "Help First" } },
-            { 1, new InCommand { Command = "Second", ParameterCount = 3, Description = "Help Second" } },
+            { 0, new InCommand { Command = "com1", ParameterCount = 2, Description = "Help com1" } },
+            { 1, new InCommand { Command = "com2", ParameterCount = 3, Description = "Help com2" } },
             {
                 2,
-                new InCommand { Command = "Third", ParameterCount = 0, Description = "Special case no Parameter" }
+                new InCommand { Command = "com3", ParameterCount = 0, Description = "Special case no Parameter" }
             }
         };
 
@@ -114,15 +114,15 @@ namespace InterpreteTests
             _prompt.SendLogs += SendLogs;
             _prompt.SendCommands += SendCommands;
             _prompt.Initiate(DctCommandOne, UserSpaceOne);
-            _prompt.ConsoleInput("FirSt(1,2)");
+            _prompt.ConsoleInput("coM1(1,2)");
 
             Assert.AreEqual(0, _outCommand.Command, "Wrong Id: " + _outCommand.Command);
 
-            _prompt.ConsoleInput("Third()");
+            _prompt.ConsoleInput("com3()");
 
             Assert.AreEqual(2, _outCommand.Command, "Wrong Id: " + _outCommand.Command);
 
-            _prompt.ConsoleInput("third");
+            _prompt.ConsoleInput("cOm3");
 
             Assert.AreEqual(2, _outCommand.Command, "Wrong Id: " + _outCommand.Command);
 
@@ -136,9 +136,9 @@ namespace InterpreteTests
                 _log.Contains("Basic prompt, Version : 0.3. Author: Peter Geinitz (Wayfarer), not context sensitive"),
                 "Help not displayed" + _log);
 
-            _prompt.ConsoleInput("helP(fIrst)");
+            _prompt.ConsoleInput("helP(CoM1)");
 
-            Assert.AreEqual(true, _log.Contains("First Description"), "Wrong Help: " + _log);
+            Assert.AreEqual(true, _log.Contains("com1 Description"), "Wrong Help: " + _log);
 
             _prompt.Dispose();
         }
@@ -153,12 +153,12 @@ namespace InterpreteTests
             _prompt.SendLogs += SendLogs;
             _prompt.SendCommands += SendCommands;
             _prompt.Initiate(DctCommandOne, UserSpaceOne);
-            _prompt.ConsoleInput("FirSt(1)");
+            _prompt.ConsoleInput("coM1(1)");
 
             Assert.IsTrue(_log.Contains("Error in the Syntax"), "Syntax Error: " + _log);
             Assert.AreEqual(-1, _outCommand.Command, "Wrong Id: " + _outCommand.Command);
 
-            _prompt.ConsoleInput("First(1,2)");
+            _prompt.ConsoleInput("com1(1,2)");
 
             //Overload
 
@@ -170,14 +170,14 @@ namespace InterpreteTests
             Assert.IsTrue(_log.Contains("Input was null or empty"), "Syntax Error: " + _log);
             Assert.AreEqual(-1, _outCommand.Command, "Wrong Id: " + _outCommand.Command);
 
-            _prompt.ConsoleInput("FirSt(1,2");
+            _prompt.ConsoleInput("coM1(1,2");
 
             Assert.IsTrue(_log.Contains("Wrong parenthesis"), "Parenthesis Error: " + _log);
             Assert.AreEqual(-1, _outCommand.Command, "Wrong Id: " + _outCommand.Command);
 
             //possible Break
 
-            _prompt.ConsoleInput("Third");
+            _prompt.ConsoleInput("com3");
 
             Assert.IsTrue(_log.Contains("Wrong parenthesis"), "Parenthesis Error: " + _log);
 
@@ -207,29 +207,29 @@ namespace InterpreteTests
             prompt.SendCommands += SendCommands;
             var commands = new Dictionary<int, InCommand>
             {
-                { 0, new InCommand { Command = "First", ParameterCount = 2, Description = "Help First" } },
-                { 1, new InCommand { Command = "Second", ParameterCount = 3, Description = "Help Second" } },
+                { 0, new InCommand { Command = "com1", ParameterCount = 2, Description = "Help com1" } },
+                { 1, new InCommand { Command = "com2", ParameterCount = 3, Description = "Help com2" } },
                 {
                     2,
-                    new InCommand { Command = "Third", ParameterCount = 0, Description = "Special case no Parameter" }
+                    new InCommand { Command = "com3", ParameterCount = 0, Description = "Special case no Parameter" }
                 },
                 {
                     3,
                     new InCommand
-                        { Command = "Fourth", ParameterCount = -2, Description = "Special case 2+ parameters" }
+                        { Command = "com4", ParameterCount = -2, Description = "Special case 2+ parameters" }
                 }
             };
             prompt.Initiate(commands, "NameSpaceOne");
 
             // Act
-            prompt.ConsoleInput("First(1,2)");
+            prompt.ConsoleInput("com1(1,2)");
 
             // Assert
             Assert.AreEqual(0, _outCommand.Command, "Wrong Id: " + _outCommand.Command);
             Assert.AreEqual(2, _outCommand.Parameter.Count, "Wrong Number: " + _outCommand.Parameter.Count);
 
             // Act
-            prompt.ConsoleInput("Third(1,2)");
+            prompt.ConsoleInput("com3(1,2)");
 
             // Assert
             Assert.AreEqual(-1, _outCommand.Command, "Wrong Id: " + _outCommand.Command);
@@ -238,32 +238,32 @@ namespace InterpreteTests
                 "Wrong or no error set: " + _outCommand.ErrorMessage);
 
             // Act
-            prompt.ConsoleInput("help (third )");
+            prompt.ConsoleInput("help (CoM3 )");
             Assert.IsTrue(_log.Contains("Special case no Parameter"), "Help not correctly displayed.");
 
             // Act
-            prompt.ConsoleInput("Third");
+            prompt.ConsoleInput("com3");
 
             // Assert
             Assert.AreEqual(2, _outCommand.Command, "Wrong Id: " + _outCommand.Command);
             Assert.AreEqual(0, _outCommand.Parameter.Count, "Wrong Number: " + _outCommand.Parameter.Count);
 
             // Act
-            prompt.ConsoleInput("Fourth(2,2)");
+            prompt.ConsoleInput("com4(2,2)");
 
             // Assert
             Assert.AreEqual(3, _outCommand.Command, "Wrong Id: " + _outCommand.Command);
             Assert.AreEqual(2, _outCommand.Parameter.Count, "Wrong Number: " + _outCommand.Parameter.Count);
 
             // Act
-            prompt.ConsoleInput("Fourth(2,2,3)");
+            prompt.ConsoleInput("com4(2,2,3)");
 
             // Assert
             Assert.AreEqual(3, _outCommand.Command, "Wrong Id: " + _outCommand.Command);
             Assert.AreEqual(3, _outCommand.Parameter.Count, "Wrong Number: " + _outCommand.Parameter.Count);
 
             // Act
-            prompt.ConsoleInput("Fourth(2)");
+            prompt.ConsoleInput("com4(2)");
 
             // Assert
             Assert.AreEqual(-1, _outCommand.Command, "Wrong Id: " + _outCommand.Command);
@@ -279,9 +279,9 @@ namespace InterpreteTests
         public void Overload()
         {
             var dct = new Dictionary<int, InCommand>();
-            var command = new InCommand { Command = "First", ParameterCount = 0, Description = "Help First" };
+            var command = new InCommand { Command = "com1", ParameterCount = 0, Description = "Help com1" };
             dct.Add(0, command);
-            command = new InCommand { Command = "First", ParameterCount = 1, Description = "Help Second" };
+            command = new InCommand { Command = "com1", ParameterCount = 1, Description = "Help com2" };
             dct.Add(1, command);
 
             //base
@@ -290,18 +290,18 @@ namespace InterpreteTests
             _prompt.SendLogs += SendLogs;
             _prompt.SendCommands += SendCommands;
             _prompt.Initiate(dct, UserSpaceOne);
-            _prompt.ConsoleInput("FirSt()");
+            _prompt.ConsoleInput("coM1()");
 
             Assert.AreEqual(0, _outCommand.Command, "Wrong Id: " + _outCommand.Command);
 
             //overload
-            _prompt.ConsoleInput("FirSt(1)");
+            _prompt.ConsoleInput("coM1(1)");
 
             Assert.AreEqual(1, _outCommand.Command, "Wrong Id: " + _outCommand.Command);
             Assert.AreEqual(1, _outCommand.Parameter.Count, "Wrong Number: " + _outCommand.Parameter.Count);
 
             //break
-            _prompt.ConsoleInput("FirSt(1,3)");
+            _prompt.ConsoleInput("coM1(1,3)");
 
             Assert.AreEqual(-1, _outCommand.Command, "Wrong Id: " + _outCommand.Command);
             Assert.IsTrue(_log.Contains("Error in the Syntax"), "Syntax Error: " + _log);
@@ -319,7 +319,7 @@ namespace InterpreteTests
             _prompt.SendLogs += SendLogs;
             _prompt.SendCommands += SendCommands;
             _prompt.Initiate(DctCommandOne, UserSpaceOne);
-            _prompt.ConsoleInput("FirSt(1,2)");
+            _prompt.ConsoleInput("coM1(1,2)");
 
             Assert.AreEqual(0, _outCommand.Command, "Wrong Id: " + _outCommand.Command);
 
@@ -357,7 +357,7 @@ namespace InterpreteTests
 
             //advanced tests
 
-            _prompt.ConsoleInput("Container{FirSt(1,2); Third() ; ; --test comment;Help()};;;;");
+            _prompt.ConsoleInput("Container{coM1(1,2); com3() ; ; --test comment;Help()};;;;");
 
             Assert.AreEqual(true,
                 _log.Contains("Basic prompt, Version : 0.3. Author: Peter Geinitz (Wayfarer), not context sensitive"),
@@ -388,7 +388,7 @@ namespace InterpreteTests
                 "Help not displayed" + _log);
 
             Assert.AreEqual(_prompt.Log[1], "0", "Correct Parameter");
-            Assert.AreEqual(_prompt.Log[2], "Third()", "Correct Parameter");
+            Assert.AreEqual(_prompt.Log[2], "com3()", "Correct Parameter");
             Assert.AreEqual(_prompt.Log[3], "2", "Correct Parameter");
 
             if (File.Exists(Batch)) File.Delete(Batch);
@@ -407,20 +407,46 @@ namespace InterpreteTests
             _prompt.SendCommands += SendCommands;
             _prompt.Initiate(DctCommandOne, UserSpaceOne);
 
-            _prompt.ConsoleInput(
-                "Container{ " +
-                "Print(hello World);" +
-                "Label(one);" +
-                "Print(passed label one);" +
-                "goto(two);" +
-                "Print(Should not be printed);" +
-                "Label(two);" +
-                "Print(Finish);" +
-                "};"
-            );
+            var command = "Container{ " +
+                          "Print(hello World);" +
+                          "Label(one);" +
+                          "Print(passed label one);" +
+                          "goto(two);" +
+                          "Print(Should not be printed);" +
+                          "Label(two);" +
+                          "Print(Finish);" +
+                          "};";
+
+            _prompt.ConsoleInput(command);
 
             Assert.AreEqual(true,
                 _log.Contains("Finish", StringComparison.CurrentCultureIgnoreCase),
+                "Not correctly jumped" + _log);
+
+
+            command = "Container{ " +
+                      "Print(hello World);" +
+                      "Label(one);" +
+                      "Print(passed label one);" +
+                      "goto(two);" +
+                      "Print(Should not be printed);" +
+                      "Label(two);" +
+                      "Print(Finish);" +
+                      "goto(three);" +
+                      "};";
+
+            _prompt.ConsoleInput(command);
+
+            Assert.AreEqual(true,
+                _log.Contains("error jump label not found:", StringComparison.CurrentCultureIgnoreCase),
+                "Not correctly jumped" + _log);
+
+            //only the stuff in command should be used
+            command = "Container{Print  (hello World)  } ; Print ( not hello )";
+
+            _prompt.ConsoleInput(command);
+            Assert.AreEqual(true,
+                _log.Contains("hello World", StringComparison.CurrentCultureIgnoreCase),
                 "Not correctly jumped" + _log);
 
             _prompt.Dispose();
@@ -436,8 +462,8 @@ namespace InterpreteTests
 
             // Create a file to write to.
             using var sw = File.CreateText(Batch);
-            sw.WriteLine("FirSt(1,2);");
-            sw.WriteLine("Third();");
+            sw.WriteLine("coM1(1,2);");
+            sw.WriteLine("com3();");
             sw.WriteLine("Help();");
         }
 
