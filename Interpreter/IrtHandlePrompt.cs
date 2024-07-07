@@ -263,7 +263,7 @@ namespace Interpreter
         /// <returns>True if input string is cleaned and valid; otherwise false.</returns>
         private static bool CleanInputString(ref string input)
         {
-            input = Irt.WellFormedParenthesis(input).ToUpper(CultureInfo.InvariantCulture);
+            input = Irt.WellFormedParenthesis(input);
             var openParenthesis = new[] { IrtConst.BaseOpen, IrtConst.AdvancedOpen };
             var closeParenthesis = new[] { IrtConst.BaseClose, IrtConst.AdvancedClose };
 

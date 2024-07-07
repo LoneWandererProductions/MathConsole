@@ -75,7 +75,7 @@ namespace Interpreter
                 : new List<string> { parts };
 
             //check for batch and Command Files
-            if (key == IrtConst.InternalContainerId || key == IrtConst.InternalBatchId)
+            if (key is IrtConst.InternalContainerId or IrtConst.InternalBatchId)
             {
                 HandleInternalCommands(key, parameter);
                 return;
@@ -116,7 +116,8 @@ namespace Interpreter
                     break;
 
                 case 4:
-                    CommandUse(parameter[0]);
+                    //all using are in Uppercase, so handle this here.
+                    CommandUse(parameter[0].ToUpperInvariant());
                     break;
 
                 case 5:

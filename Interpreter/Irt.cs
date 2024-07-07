@@ -215,6 +215,9 @@ namespace Interpreter
         /// <returns>Id of Register used, if nothing was found, return -1.</returns>
         internal static int CheckForKeyWord(string input, Dictionary<int, InCommand> com)
         {
+            //just for the compare, make it to upper do not change the input string
+            input = input.ToUpperInvariant();
+
             if (input.Contains(IrtConst.AdvancedOpen))
             {
                 var index = input.IndexOf(IrtConst.AdvancedOpen);
@@ -238,7 +241,7 @@ namespace Interpreter
 
             foreach (var (key, inCommand) in com)
             {
-                if (string.Equals(input.ToUpper(), inCommand.Command.ToUpper(CultureInfo.InvariantCulture),
+                if (string.Equals(input.ToUpperInvariant(), inCommand.Command.ToUpperInvariant(),
                         StringComparison.Ordinal))
                 {
                     return
@@ -325,7 +328,7 @@ namespace Interpreter
         internal static (int Status, string Parameter) GetParameters(string input, int key,
             IReadOnlyDictionary<int, InCommand> commands)
         {
-            var command = commands[key].Command.ToUpper(CultureInfo.InvariantCulture);
+            var command = commands[key].Command.ToUpperInvariant();
             var parameterPart = RemoveWord(command, input);
 
             return parameterPart.StartsWith(IrtConst.AdvancedOpen)
