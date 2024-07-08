@@ -158,46 +158,8 @@ namespace Interpreter
 
         private int HandleIfElseBlock(List<string> commands, int currentPosition)
         {
-            var ifBlockCommands = new List<string>();
-            var elseBlockCommands = new List<string>();
-            var isInElseBlock = false;
-            currentPosition++; // Move past the if command
 
-            // Collect commands within if and else blocks
-            while (currentPosition < commands.Count)
-            {
-                var com = commands[currentPosition];
-
-                if (com.Equals("{", StringComparison.Ordinal))
-                {
-                    currentPosition++;
-                    continue;
-                }
-
-                if (com.Equals("}", StringComparison.Ordinal))
-                {
-                    currentPosition++;
-                    break;
-                }
-
-                if (com.Equals("else", StringComparison.OrdinalIgnoreCase))
-                {
-                    isInElseBlock = true;
-                    currentPosition++;
-                    continue;
-                }
-
-                if (isInElseBlock)
-                {
-                    elseBlockCommands.Add(com);
-                }
-                else
-                {
-                    ifBlockCommands.Add(com);
-                }
-
-                currentPosition++;
-            }
+            var block = Irt.HandleIfElseBlock(commands, currentPosition);
 
             // Evaluate the if condition
             var userResponse = false; //GetUserResponse(); // This method should get user input or some condition
@@ -206,10 +168,10 @@ namespace Interpreter
             {
                 //ExecuteCommands(ifBlockCommands);
             }
-            else if (elseBlockCommands.Count > 0)
-            {
-                //ExecuteCommands(elseBlockCommands);
-            }
+            //else if (block.ElseBlockCommands.Count > 0)
+            //{
+            //    //ExecuteCommands(elseBlockCommands);
+            //}
 
             return currentPosition;
         }

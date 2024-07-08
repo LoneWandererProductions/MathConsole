@@ -29,10 +29,23 @@ namespace InterpreteTests
         /// </summary>
         private static string _log;
 
-        /// <summary>
-        ///     Tests if SingleCheck correctly identifies balanced parentheses.
-        /// </summary>
-        [TestMethod]
+		/// <summary>
+		/// Gets the sample commands.
+		/// </summary>
+		/// <returns>Basic Command set</returns>
+		private static IReadOnlyDictionary<int, InCommand> GetSampleCommands()
+		{
+			return new Dictionary<int, InCommand>
+			{
+				{ 1, new InCommand { Command = "CMD1" } },
+				{ 2, new InCommand { Command = "CMD2" } }
+			};
+		}
+
+		/// <summary>
+		///     Tests if SingleCheck correctly identifies balanced parentheses.
+		/// </summary>
+		[TestMethod]
         public void SingleCheckShouldReturnTrueForBalancedParentheses()
         {
             const string input = "(a + b) * c";
@@ -57,7 +70,7 @@ namespace InterpreteTests
         [TestMethod]
         public void RemoveParenthesisShouldRemoveOuterParenthesesWhenWellFormed()
         {
-            var input = "(abc)";
+			const string input = "(abc)";
             var result = Irt.RemoveParenthesis(input, '(', ')');
             Assert.AreEqual("abc", result);
         }
@@ -68,7 +81,7 @@ namespace InterpreteTests
         [TestMethod]
         public void RemoveParenthesisShouldReturnInput()
         {
-            var input = "abc";
+			const string input = "abc";
             var result = Irt.RemoveParenthesis(input, '(', ')');
             Assert.AreEqual("abc", result);
         }
@@ -79,7 +92,7 @@ namespace InterpreteTests
         [TestMethod]
         public void RemoveParenthesisShouldReturnErrorMessageWhenInputHasMismatchedParentheses()
         {
-            var input = "(abc";
+			const string input = "(abc";
             var result = Irt.RemoveParenthesis(input, '(', ')');
             Assert.AreEqual(IrtConst.ParenthesisError, result);
         }
@@ -222,7 +235,7 @@ namespace InterpreteTests
         [TestMethod]
         public void RemoveParenthesisShouldRemoveOuterCurlyBracesWhenWellFormed()
         {
-            var input = "{abc}";
+			const string input = "{abc}";
             var result = Irt.RemoveParenthesis(input, '{', '}');
             Assert.AreEqual("abc", result);
         }
@@ -321,7 +334,7 @@ namespace InterpreteTests
         {
             // Arrange
             var input = "   test().    Commmand() ";
-            var expected = "test().    Commmand()";
+			const string expected = "test().    Commmand()";
             var ext = new IrtExtension();
 
             // Act
@@ -445,32 +458,103 @@ namespace InterpreteTests
             Assert.AreEqual(4, _outCommand.ExtensionCommand.ExtensionCommand, "Wrong Id: ");
         }
 
-        private static IReadOnlyDictionary<int, InCommand> GetSampleCommands()
-        {
-            return new Dictionary<int, InCommand>
-            {
-                { 1, new InCommand { Command = "CMD1" } },
-                { 2, new InCommand { Command = "CMD2" } }
-            };
-        }
+		//[TestMethod]
+		//public void HandleIfElseBlock_OnlyIfBlock()
+		//{
+		//	// Arrange
+		//	var commands = new List<string> { "if(todo)", "{", "command1;", "command2;", "}" };
+		//	const int startPosition = 1; // Start position after "if(todo)"
 
-        /// <summary>
-        ///     Gets the parameters with advanced open returns batch command.
-        /// </summary>
-        [TestMethod]
+		//	// Act
+		//	var result = Irt.HandleIfElseBlock(commands, startPosition);
+
+		//	// Assert
+		//	Assert.AreEqual("{ command1; command2; }", result.IfBlockCommands);
+		//	Assert.AreEqual("", result.ElseBlockCommands);
+		//	Assert.IsFalse(result.IsInElseBlock);
+		//}
+
+		//[TestMethod]
+		//public void HandleIfElseBlock_IfElseBlock()
+		//{
+		//	// Arrange
+		//	var commands = new List<string> { "if(todo)", "{", "command1;", "}", "else", "{", "command2;", "command3;", "}" };
+		//	const int startPosition = 1; // Start position after "if(todo)"
+
+		//	// Act
+		//	var result = Irt.HandleIfElseBlock(commands, startPosition);
+
+		//	// Assert
+		//	Assert.AreEqual("{ command1; }", result.IfBlockCommands);
+		//	Assert.AreEqual("{ command2; command3; }", result.ElseBlockCommands);
+		//	Assert.IsTrue(result.IsInElseBlock);
+		//}
+
+		//[TestMethod]
+		//public void HandleIfElseBlock_NestedIfBlocks()
+		//{
+		//	// Arrange
+		//	var commands = new List<string> { "if(todo)", "{", "if(innerTodo)", "{", "command1;", "}", "command2;", "}", "else", "{", "command3;", "}" };
+		//	const int startPosition = 1; // Start position after "if(todo)"
+
+		//	// Act
+		//	var result = Irt.HandleIfElseBlock(commands, startPosition);
+
+		//	// Assert
+		//	Assert.AreEqual("{ if(innerTodo) { command1; } command2; }", result.IfBlockCommands);
+		//	Assert.AreEqual("{ command3; }", result.ElseBlockCommands);
+		//	Assert.IsTrue(result.IsInElseBlock);
+		//}
+
+		//[TestMethod]
+		//public void HandleIfElseBlock_EmptyBlocks()
+		//{
+		//	// Arrange
+		//	var commands = new List<string> { "if(todo)", "{", "}", "else", "{", "}" };
+		//	const int startPosition = 1; // Start position after "if(todo)"
+
+		//	// Act
+		//	var result = Irt.HandleIfElseBlock(commands, startPosition);
+
+		//	// Assert
+		//	Assert.AreEqual("{  }", result.IfBlockCommands);
+		//	//AreEqual(string.Empty, result.ElseBlockCommands);
+		//	//Assert.IsTrue(result.IsInElseBlock);
+		//}
+
+		//[TestMethod]
+		//public void HandleIfElseBlock_NoElseBlock()
+		//{
+		//	// Arrange
+		//	var commands = new List<string> { "if(todo)", "{", "command1;", "}" };
+		//	const int startPosition = 1; // Start position after "if(todo)"
+
+		//	// Act
+		//	var result = Irt.HandleIfElseBlock(commands, startPosition);
+
+		//	// Assert
+		//	Assert.AreEqual("{ command1; }", result.IfBlockCommands);
+		//	Assert.AreEqual("", result.ElseBlockCommands);
+		//	Assert.IsFalse(result.IsInElseBlock);
+		//}
+
+		/// <summary>
+		///     Gets the parameters with advanced open returns batch command.
+		/// </summary>
+		[TestMethod]
         public void GetParametersWithAdvancedOpenReturnsBatchCommand()
         {
-            // Arrange
-            var input = "CMD1{param}";
-            var key = 1;
+			// Arrange
+			const string input = "CMD1{param}";
+			const int key = 1;
             var commands = GetSampleCommands();
 
             // Act
-            var result = Irt.GetParameters(input, key, commands);
+            var (Status, Parameter) = Irt.GetParameters(input, key, commands);
 
             // Assert
-            Assert.AreEqual(IrtConst.BatchCommand, result.Status);
-            Assert.AreEqual("{param}", result.Parameter);
+            Assert.AreEqual(IrtConst.BatchCommand, Status);
+            Assert.AreEqual("{param}", Parameter);
         }
 
         /// <summary>
@@ -479,17 +563,17 @@ namespace InterpreteTests
         [TestMethod]
         public void GetParametersWithNormalParametersReturnsParameterCommand()
         {
-            // Arrange
-            var input = "CMD1(param)";
-            var key = 1;
+			// Arrange
+			const string input = "CMD1(param)";
+			const int key = 1;
             var commands = GetSampleCommands();
 
             // Act
-            var result = Irt.GetParameters(input, key, commands);
+            var (Status, Parameter) = Irt.GetParameters(input, key, commands);
 
             // Assert
-            Assert.AreEqual(IrtConst.ParameterCommand, result.Status);
-            Assert.AreEqual("param", result.Parameter);
+            Assert.AreEqual(IrtConst.ParameterCommand, Status);
+            Assert.AreEqual("param", Parameter);
         }
 
         /// <summary>
@@ -498,17 +582,17 @@ namespace InterpreteTests
         [TestMethod]
         public void GetParametersWithWhitespaceReturnsParameterCommand()
         {
-            // Arrange
-            var input = "   CMD1   (   param   )   ";
-            var key = 1;
+			// Arrange
+			const string input = "   CMD1   (   param   )   ";
+			const int key = 1;
             var commands = GetSampleCommands();
 
             // Act
-            var result = Irt.GetParameters(input, key, commands);
+            var (Status, Parameter) = Irt.GetParameters(input, key, commands);
 
             // Assert
-            Assert.AreEqual(IrtConst.ParameterCommand, result.Status);
-            Assert.AreEqual("param", result.Parameter);
+            Assert.AreEqual(IrtConst.ParameterCommand, Status);
+            Assert.AreEqual("param", Parameter);
         }
 
         /// <summary>
@@ -517,10 +601,10 @@ namespace InterpreteTests
         [TestMethod]
         public void CheckFormatValidFormatReturnsTrue()
         {
-            // Arrange
-            var input = "command(label)";
-            var command = "command";
-            var label = "label";
+			// Arrange
+			const string input = "command(label)";
+			const string command = "command";
+			const string label = "label";
 
             // Act
             var result = Irt.CheckFormat(input, command, label);
@@ -535,10 +619,10 @@ namespace InterpreteTests
         [TestMethod]
         public void CheckFormatInvalidFormatReturnsFalse()
         {
-            // Arrange
-            var input = "invalid(label)";
-            var command = "command";
-            var label = "label";
+			// Arrange
+			const string input = "invalid(label)";
+			const string command = "command";
+			const string label = "label";
 
             // Act
             var result = Irt.CheckFormat(input, command, label);
@@ -553,10 +637,10 @@ namespace InterpreteTests
         [TestMethod]
         public void CheckFormatEmptyInputReturnsFalse()
         {
-            // Arrange
-            var input = "";
-            var command = "command";
-            var label = "label";
+			// Arrange
+			const string input = "";
+			const string command = "command";
+			const string label = "label";
 
             // Act
             var result = Irt.CheckFormat(input, command, label);
@@ -571,9 +655,9 @@ namespace InterpreteTests
         [TestMethod]
         public void CheckFormatNullInputReturnsFalse()
         {
-            // Arrange
-            var command = "command";
-            var label = "label";
+			// Arrange
+			const string command = "command";
+			const string label = "label";
 
             // Act
             var result = Irt.CheckFormat(null, command, label);
@@ -588,10 +672,10 @@ namespace InterpreteTests
         [TestMethod]
         public void CheckFormatDifferentLabelReturnsFalse()
         {
-            // Arrange
-            var input = "command(otherlabel)";
-            var command = "command";
-            var label = "label";
+			// Arrange
+			const string input = "command(otherlabel)";
+			const string command = "command";
+			const string label = "label";
 
             // Act
             var result = Irt.CheckFormat(input, command, label);
