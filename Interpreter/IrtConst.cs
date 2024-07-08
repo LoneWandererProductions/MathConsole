@@ -516,7 +516,6 @@ namespace Interpreter
             }
         };
 
-
         /// <summary>
         ///     The intern container commands
         /// </summary>

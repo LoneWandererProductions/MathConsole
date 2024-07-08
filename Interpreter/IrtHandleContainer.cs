@@ -158,7 +158,6 @@ namespace Interpreter
 
         private int HandleIfElseBlock(List<string> commands, int currentPosition)
         {
-
             var block = Irt.HandleIfElseBlock(commands, currentPosition);
 
             // Evaluate the if condition
