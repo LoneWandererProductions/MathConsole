@@ -48,7 +48,7 @@ namespace Interpreter
         ///     Initializes a new instance of the <see cref="IrtHandleContainer" /> class.
         /// </summary>
         /// <param name="irtHandleInternal">The irt handle internal.</param>
-        /// <param name="prompt"></param>
+        /// <param name="prompt">Call back to the main entry</param>
         internal IrtHandleContainer(IrtHandleInternal irtHandleInternal, Prompt prompt)
         {
             _irtHandleInternal = irtHandleInternal;
