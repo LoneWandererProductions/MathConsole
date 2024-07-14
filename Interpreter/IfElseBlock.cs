@@ -8,18 +8,17 @@
 
 // ReSharper disable ArrangeBraces_foreach
 
-using System.Collections.Generic;
-
 namespace Interpreter
 {
-    internal class IfElseBlock
+    public class IfElseBlock
     {
-		internal string IfBlockCommands = string.Empty;
+        public string Condition { get; set; }
+        public string IfClause { get; set; }
+        public string ElseClause { get; set; }
 
-		internal string ElseBlockCommands = string.Empty;
-
-		internal bool IsInElseBlock;
-
-		internal int CurrentPosition;
-	}
+        public override string ToString()
+        {
+            return $"If({Condition}) {{ {IfClause} }} Else {{ {ElseClause} }}";
+        }
+    }
 }

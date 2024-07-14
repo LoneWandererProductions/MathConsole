@@ -142,16 +142,16 @@ namespace Interpreter
             return parentheses.Count == 0;
         }
 
-		/// <summary>
-		///     Removes the outermost parentheses from the input string if well-formed.
-		/// </summary>
-		/// <param name="input">Last bit of string</param>
-		/// <param name="openClause">The open clause.</param>
-		/// <param name="closeClause">The close clause.</param>
-		/// <returns>
-		///     Cleaned String or Error Message
-		/// </returns>
-		internal static string RemoveParenthesis(string input, char openClause, char closeClause)
+        /// <summary>
+        ///     Removes the outermost parentheses from the input string if well-formed.
+        /// </summary>
+        /// <param name="input">Last bit of string</param>
+        /// <param name="openClause">The open clause.</param>
+        /// <param name="closeClause">The close clause.</param>
+        /// <returns>
+        ///     Cleaned String or Error Message
+        /// </returns>
+        internal static string RemoveParenthesis(string input, char openClause, char closeClause)
         {
             //no Parenthesis? okay we still try to handle it, might be a command with zero parameters
             if (!input.Contains(IrtConst.BaseOpen) && !input.Contains(closeClause))
@@ -373,86 +373,24 @@ namespace Interpreter
             return content == upperLabel;
         }
 
-		internal static IfElseBlock HandleIfElseBlock(List<string> commands, int currentPosition)
-		{
-			var block = new IfElseBlock
-			{
-				CurrentPosition = currentPosition
-			};
+        internal static IfElseBlock HandleIfElseBlock(List<string> commands, int currentPosition)
+        {
+            var block = new IfElseBlock
+            {
+            };
 
-			int braceCount = 0;
-			bool foundElse = false;
-
-			while (block.CurrentPosition < commands.Count)
-			{
-				var com = commands[block.CurrentPosition].Trim(); // Trim spaces around commands
-
-				if (com.Equals("{", StringComparison.Ordinal))
-				{
-					braceCount++;
-					block.CurrentPosition++;
-					continue;
-				}
-
-				if (com.Equals("}", StringComparison.Ordinal))
-				{
-					braceCount--;
-					block.CurrentPosition++;
-
-					if (braceCount == 0 && foundElse)
-					{
-						break;
-					}
-
-					if (braceCount == 0 && !foundElse)
-					{
-						block.CurrentPosition++;
-						if (block.CurrentPosition < commands.Count && commands[block.CurrentPosition].Equals("else", StringComparison.OrdinalIgnoreCase))
-						{
-							foundElse = true;
-							block.IsInElseBlock = true;
-							braceCount = 0; // Reset brace count for the else block
-							block.CurrentPosition++;
-						}
-						continue;
-					}
-				}
-
-				if (block.IsInElseBlock)
-				{
-					block.ElseBlockCommands += com + "; ";
-				}
-				else
-				{
-					block.IfBlockCommands += com + "; ";
-				}
-
-				block.CurrentPosition++;
-			}
-
-			// Remove trailing '; ' from commands
-			block.IfBlockCommands = block.IfBlockCommands.TrimEnd(' ', ';');
-			block.ElseBlockCommands = block.ElseBlockCommands.TrimEnd(' ', ';');
-
-			// Format commands into complete statements
-			block.IfBlockCommands = $"{{ {block.IfBlockCommands} }}";
-			if (!string.IsNullOrEmpty(block.ElseBlockCommands))
-			{
-				block.ElseBlockCommands = $"{{ {block.ElseBlockCommands} }}";
-			}
-
-			return block;
-		}
+            return block;
+        }
 
 
-		/// <summary>
-		///     Checks if the string starts and ends with the specified characters.
-		/// </summary>
-		/// <param name="input">Input string to check.</param>
-		/// <param name="start">Expected starting character.</param>
-		/// <param name="end">Expected ending character.</param>
-		/// <returns>True if the string starts with 'start' and ends with 'end', false otherwise.</returns>
-		private static bool StartsAndEndsWith(string input, char start, char end)
+        /// <summary>
+        ///     Checks if the string starts and ends with the specified characters.
+        /// </summary>
+        /// <param name="input">Input string to check.</param>
+        /// <param name="start">Expected starting character.</param>
+        /// <param name="end">Expected ending character.</param>
+        /// <returns>True if the string starts with 'start' and ends with 'end', false otherwise.</returns>
+        private static bool StartsAndEndsWith(string input, char start, char end)
         {
             return input.Length > 1 && input[0] == start && input[^1] == end;
         }
