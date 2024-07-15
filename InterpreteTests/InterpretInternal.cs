@@ -291,7 +291,7 @@ namespace InterpreteTests
         ///     Splits the parameter empty parameters should remove empty parameters.
         /// </summary>
         [TestMethod]
-        public void SplitParameterEmptyParameters_ShouldRemoveEmptyParameters()
+        public void SplitParameterEmptyParametersShouldRemoveEmptyParameters()
         {
             var result = Irt.SplitParameter("parameter1,,parameter3", ',');
             CollectionAssert.AreEqual(new List<string> { "parameter1", "parameter3" }, result);
@@ -605,22 +605,36 @@ namespace InterpreteTests
             Assert.IsFalse(result);
         }
 
-        /// <summary>
-        /// Parses the find end if else block.
-        /// </summary>
         [TestMethod]
-        public void ParseFindEndIfElseBlock()
+        public void ParseFindClosingBraceIndex()
         {
             // Arrange
-            var inputParts = new List<string> { "if(condition){com1", "com2", "com3}", "else {com4}" };
+            var inputParts = new List<string> { "if(condition){com1", "com2", "com3}"};
 
             // Act
-            var result = IfElseParser.FindIfElseBlock(inputParts);
+            var result = IfElseParser.FindIfElseBlockEnd(inputParts);
 
             // Assert
-            //Assert.AreEqual(3, result, "Not the right Position.");
-        }
+            Assert.AreEqual(2, result, "Not the right Position for inputParts1.");
 
+            // Arrange
+            inputParts = new List<string> { "if(condition){com1", "com2", "com3}", "else {com4", "} com1" };
+
+            // Act
+            result = IfElseParser.FindIfElseBlockEnd(inputParts);
+
+            // Assert
+            Assert.AreEqual(2, result, "Not the right Position for inputParts1.");
+
+            // Arrange for the second test case
+            inputParts = new List<string> { "if(condition){com1", "com2", "com3}", "else {com4", "if(condition){com1", "}} com1;" };
+
+            // Act
+            result = IfElseParser.FindIfElseBlockEnd(inputParts);
+
+            // Assert
+            Assert.AreEqual(2, result, "Not the right Position for inputParts2.");
+        }
 
         /// <summary>
         /// Parses the most simple if else statement returns correct if else block.
@@ -630,6 +644,26 @@ namespace InterpreteTests
         {
             // Arrange
             var inputParts = new List<string> { "if(condition){com1", "}else {com2","}" };
+
+            // Act
+            var result = IfElseParser.Parse(inputParts);
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual("condition", result.Condition);
+            Assert.AreEqual("com1", result.IfClause);
+            Assert.AreEqual("com2", result.ElseClause);
+        }
+
+
+        /// <summary>
+        /// Parses the most simple if else statement returns correct if else block.
+        /// </summary>
+        [TestMethod]
+        public void ParseMostIfElseCheckCornerCases()
+        {
+            // Arrange
+            var inputParts = new List<string> { "if(condition){com1", "}else {com2", "} com3", "com4" };
 
             // Act
             var result = IfElseParser.Parse(inputParts);

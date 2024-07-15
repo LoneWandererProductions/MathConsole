@@ -12,22 +12,62 @@ namespace Interpreter
         /// </summary>
         /// <param name="inputParts">The input parts.</param>
         /// <returns>The End Parameter of the End</returns>
-        internal static int FindIfElseBlock(IEnumerable<string> inputParts)
+        public static int FindIfElseBlockEnd(List<string> inputParts)
         {
-            int index = 0;
-            foreach (var part in inputParts)
-            {
-                if (part.TrimStart().StartsWith("else"))
-                {
-                    return index;
-                }
-                index++;
-            }
-            //TODO improve
+            var openBraces = 0;
+            var ifElseDepth = 0;
+            var isInsideIfBlock = false;
 
-            return IrtConst.Error; // Return -1 if no "else" block is found
+            for (var i = 0; i < inputParts.Count; i++)
+            {
+                var part = inputParts[i];
+
+                for (var j = 0; j < part.Length; j++)
+                {
+                    var c = part[j];
+
+                    if (c == '{')
+                    {
+                        openBraces++;
+                        if (isInsideIfBlock)
+                        {
+                            ifElseDepth++;
+                        }
+                    }
+                    else if (c == '}')
+                    {
+                        openBraces--;
+                        if (isInsideIfBlock)
+                        {
+                            ifElseDepth--;
+                        }
+
+                        if (ifElseDepth == 0 && openBraces == 0)
+                        {
+                            return i;
+                        }
+                    }
+
+                    if (part.Substring(j).StartsWith("if("))
+                    {
+                        isInsideIfBlock = true;
+                    }
+
+                    if (part.Substring(j).StartsWith("else"))
+                    {
+                        if (ifElseDepth == 0 && openBraces == 0)
+                        {
+                            return i;
+                        }
+                    }
+                }
+            }
+
+            // If no matching closing brace is found
+            return -1;
         }
 
+        //TODO do not forget the values after the last }
         internal static IfElseBlock Parse(IEnumerable<string> inputParts)
         {
             var stack = new Stack<(string Condition, StringBuilder IfClause, StringBuilder ElseClause, bool InElse)>();
@@ -49,68 +89,73 @@ namespace Interpreter
                 }
                 else
                 {
-                    switch (token.ToUpperInvariant())
+                    if (token.ToUpperInvariant() != IrtConst.InternalElse)
                     {
-                        case IrtConst.InternalElse:
-                            inElse = true;
-                            break;
-                        case "}" when !inElse:
-                            // Skip the closing brace if not in else branch
-                            break;
-                        case "}" when inElse:
+                        switch (token.ToUpperInvariant())
                         {
-                            if (stack.Count == 0)
+                            case "}" when !inElse:
+                                // Skip the closing brace if not in else branch
+                                break;
+                            case "}" when inElse:
                             {
-                                throw new InvalidOperationException("Invalid input string: unmatched closing brace");
+                                if (stack.Count == 0)
+                                {
+                                    throw new InvalidOperationException("Invalid input string: unmatched closing brace");
+                                }
+
+                                var (parentCondition, parentIfPart, parentElsePart, parentInElse) = stack.Pop();
+
+                                var innerIfElseBlock = new IfElseBlock
+                                {
+                                    Condition = currentCondition,
+                                    IfClause = currentIfClause.ToString().Trim(),
+                                    ElseClause = currentElseClause.ToString().Trim()
+                                };
+
+                                var nestedIfElse =
+                                    $"if({innerIfElseBlock.Condition}) {{ {innerIfElseBlock.IfClause} }} else {{ {innerIfElseBlock.ElseClause} }}";
+
+                                if (parentCondition == null)
+                                {
+                                    return innerIfElseBlock;
+                                }
+
+                                if (parentInElse)
+                                {
+                                    parentElsePart.Append(nestedIfElse);
+                                }
+                                else
+                                {
+                                    parentIfPart.Append(nestedIfElse);
+                                }
+
+                                currentCondition = parentCondition;
+                                currentIfClause = parentIfPart;
+                                currentElseClause = parentElsePart;
+                                inElse = parentInElse;
+                                break;
                             }
-
-                            var (parentCondition, parentIfPart, parentElsePart, parentInElse) = stack.Pop();
-
-                            var innerIfElseBlock = new IfElseBlock
+                            case "{":
+                                // Skip the opening brace
+                                break;
+                            default:
                             {
-                                Condition = currentCondition,
-                                IfClause = currentIfClause.ToString().Trim(),
-                                ElseClause = currentElseClause.ToString().Trim()
-                            };
+                                if (inElse)
+                                {
+                                    currentElseClause.Append($"{token.Trim()} ");
+                                }
+                                else
+                                {
+                                    currentIfClause.Append($"{token.Trim()} ");
+                                }
 
-                            var nestedIfElse = $"if({innerIfElseBlock.Condition}) {{ {innerIfElseBlock.IfClause} }} else {{ {innerIfElseBlock.ElseClause} }}";
-
-                            if (parentCondition == null)
-                            {
-                                return innerIfElseBlock;
+                                break;
                             }
-
-                            if (parentInElse)
-                            {
-                                parentElsePart.Append(nestedIfElse);
-                            }
-                            else
-                            {
-                                parentIfPart.Append(nestedIfElse);
-                            }
-
-                            currentCondition = parentCondition;
-                            currentIfClause = parentIfPart;
-                            currentElseClause = parentElsePart;
-                            inElse = parentInElse;
-                            break;
                         }
-                        case "{":
-                            // Skip the opening brace
-                            break;
-                        default:
-                        {
-                            if (inElse)
-                            {
-                                currentElseClause.Append($"{token.Trim()} ");
-                            }
-                            else
-                            {
-                                currentIfClause.Append($"{token.Trim()} ");
-                            }
-
-                            break;
-                        }
+                    }
+                    else
+                    {
+                        inElse = true;
                     }
                 }
             }
