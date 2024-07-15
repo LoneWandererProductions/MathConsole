@@ -158,7 +158,7 @@ namespace Interpreter
 
         private int HandleIfElseBlock(List<string> commands, int currentPosition)
         {
-            var block = Irt.HandleIfElseBlock(commands, currentPosition);
+            //var block = Irt.HandleIfElseBlock(commands, currentPosition);
 
             // Evaluate the if condition
             var userResponse = false; //GetUserResponse(); // This method should get user input or some condition
@@ -181,7 +181,7 @@ namespace Interpreter
         /// <param name="input">The input command.</param>
         /// <param name="key">The key indicating the command type.</param>
         /// <param name="position">The extracted jump position.</param>
-        /// <param name="commands"></param>
+        /// <param name="commands">List of Commands</param>
         /// <returns><c>true</c> if it is a jump command; otherwise, <c>false</c>.</returns>
         private static bool IsJumpCommand(string input, int key, out int position, IReadOnlyList<string> commands)
         {

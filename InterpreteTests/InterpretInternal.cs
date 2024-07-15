@@ -605,6 +605,26 @@ namespace InterpreteTests
             Assert.IsFalse(result);
         }
 
+        /// <summary>
+        /// Parses the find end if else block.
+        /// </summary>
+        [TestMethod]
+        public void ParseFindEndIfElseBlock()
+        {
+            // Arrange
+            var inputParts = new List<string> { "if(condition){com1", "com2", "com3}", "else {com4}" };
+
+            // Act
+            var result = IfElseParser.FindIfElseBlock(inputParts);
+
+            // Assert
+            //Assert.AreEqual(3, result, "Not the right Position.");
+        }
+
+
+        /// <summary>
+        /// Parses the most simple if else statement returns correct if else block.
+        /// </summary>
         [TestMethod]
         public void ParseMostSimpleIfElseStatementReturnsCorrectIfElseBlock()
         {
@@ -621,6 +641,9 @@ namespace InterpreteTests
             Assert.AreEqual("com2", result.ElseClause);
         }
 
+        /// <summary>
+        /// Parses the simple if else statement returns correct if else block.
+        /// </summary>
         [TestMethod]
         public void ParseSimpleIfElseStatementReturnsCorrectIfElseBlock()
         {
@@ -637,6 +660,9 @@ namespace InterpreteTests
             Assert.AreEqual("com4", result.ElseClause);
         }
 
+        /// <summary>
+        /// Parses the nested if else statement returns correct if else block.
+        /// </summary>
         [TestMethod]
         public void ParseNestedIfElseStatementReturnsCorrectIfElseBlock()
         {
@@ -653,9 +679,12 @@ namespace InterpreteTests
             Assert.AreEqual("com4", result.ElseClause);
         }
 
+        /// <summary>
+        /// Parses the invalid input throws exception.
+        /// </summary>
         [TestMethod]
         [ExpectedException(typeof(InvalidOperationException))]
-        public void Parse_InvalidInput_ThrowsException()
+        public void ParseInvalidInputThrowsException()
         {
             // Arrange
             var inputParts = new List<string> { "if(condition){com1", "com2", "com3", "else {com4" };

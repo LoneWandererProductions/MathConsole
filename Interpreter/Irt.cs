@@ -373,16 +373,6 @@ namespace Interpreter
             return content == upperLabel;
         }
 
-        internal static IfElseBlock HandleIfElseBlock(List<string> commands, int currentPosition)
-        {
-            var block = new IfElseBlock
-            {
-            };
-
-            return block;
-        }
-
-
         /// <summary>
         ///     Checks if the string starts and ends with the specified characters.
         /// </summary>

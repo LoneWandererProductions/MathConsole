@@ -114,12 +114,12 @@ namespace Interpreter
         /// <summary>
         ///     The internal command if statement (const). Value: "IF".
         /// </summary>
-        private const string InternalIf = "IF";
+        internal const string InternalIf = "IF";
 
         /// <summary>
         ///     The internal command else, followed after if (const). Value: "ELSE".
         /// </summary>
-        private const string InternalElse = "ELSE";
+        internal const string InternalElse = "ELSE";
 
         /// <summary>
         ///     The internal command Goto (const). Value: "GOTO".
@@ -270,6 +270,7 @@ namespace Interpreter
         ///     The advanced open Clause, Standard is'{'
         /// </summary>
         internal const char AdvancedOpen = '{';
+
 
         /// <summary>
         ///     The close Clause, Standard is')'

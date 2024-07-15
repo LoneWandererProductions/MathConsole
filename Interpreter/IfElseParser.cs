@@ -7,6 +7,27 @@ namespace Interpreter
 {
     internal static class IfElseParser
     {
+        /// <summary>
+        /// Finds if else block.
+        /// </summary>
+        /// <param name="inputParts">The input parts.</param>
+        /// <returns>The End Parameter of the End</returns>
+        internal static int FindIfElseBlock(IEnumerable<string> inputParts)
+        {
+            int index = 0;
+            foreach (var part in inputParts)
+            {
+                if (part.TrimStart().StartsWith("else"))
+                {
+                    return index;
+                }
+                index++;
+            }
+            //TODO improve
+
+            return IrtConst.Error; // Return -1 if no "else" block is found
+        }
+
         internal static IfElseBlock Parse(IEnumerable<string> inputParts)
         {
             var stack = new Stack<(string Condition, StringBuilder IfClause, StringBuilder ElseClause, bool InElse)>();
@@ -28,9 +49,9 @@ namespace Interpreter
                 }
                 else
                 {
-                    switch (token)
+                    switch (token.ToUpperInvariant())
                     {
-                        case "else":
+                        case IrtConst.InternalElse:
                             inElse = true;
                             break;
                         case "}" when !inElse:
@@ -44,6 +65,7 @@ namespace Interpreter
                             }
 
                             var (parentCondition, parentIfPart, parentElsePart, parentInElse) = stack.Pop();
+
                             var innerIfElseBlock = new IfElseBlock
                             {
                                 Condition = currentCondition,
