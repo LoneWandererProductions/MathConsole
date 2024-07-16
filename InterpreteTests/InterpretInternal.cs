@@ -605,35 +605,62 @@ namespace InterpreteTests
             Assert.IsFalse(result);
         }
 
+        /// <summary>
+        /// Tests the first if without else.
+        /// </summary>
         [TestMethod]
-        public void ParseFindClosingBraceIndex()
+        public void TestFirstIfWithoutElse()
         {
-            // Arrange
-            var inputParts = new List<string> { "if(condition){com1", "com2", "com3}"};
+            var input = "if(condition) {com1; com2;com3;} com1; com1; com1;";
+            var expected = 31; // Position of the last '}'
+            var actual = IfElseParser.FindLastClosingBracket(input);
+            Assert.AreEqual(expected, actual);
 
-            // Act
-            var result = IfElseParser.FindIfElseBlockEnd(inputParts);
+            Trace.WriteLine(input[expected]);
+        }
 
-            // Assert
-            Assert.AreEqual(2, result, "Not the right Position for inputParts1.");
+        /// <summary>
+        /// Tests the first if with else.
+        /// </summary>
+        [TestMethod]
+        public void TestFirstIfWithElse()
+        {
+            var input = "if(condition) {com1; com2;com3;} else {com1; com1; com1;} com1; com1; com1;";
+            var expected = 56; // Position of the last '}'
+            var actual = IfElseParser.FindLastClosingBracket(input);
+            Assert.AreEqual(expected, actual);
 
-            // Arrange
-            inputParts = new List<string> { "if(condition){com1", "com2", "com3}", "else {com4", "} com1" };
+            Trace.WriteLine(input[expected]);
+        }
 
-            // Act
-            result = IfElseParser.FindIfElseBlockEnd(inputParts);
+        /// <summary>
+        /// Tests the nested if else.
+        /// </summary>
+        [TestMethod]
+        public void TestNestedIfElse()
+        {
+            var input = "if(condition) {com1; com2;com3;} else {if(condition) {com1; com2;com3;} else {com1; com1; com1;} com1; com1; } com1;";
+            var expected = 109; // Position of the last '}'
+            var actual = IfElseParser.FindLastClosingBracket(input);
+            Assert.AreEqual(expected, actual);
 
-            // Assert
-            Assert.AreEqual(2, result, "Not the right Position for inputParts1.");
+            Trace.WriteLine(input[expected]);
+        }
 
-            // Arrange for the second test case
-            inputParts = new List<string> { "if(condition){com1", "com2", "com3}", "else {com4", "if(condition){com1", "}} com1;" };
+        [TestMethod]
+        public void TestIfElseIfElse()
+        {
+            var input = "if(condition) {com1; com2;com3;} else {com1; com1; com1;} com1; com1; com1; if(condition) {com1; com2;com3;} else {com1; com1; com1;}";
+            var expected = 57; // Position of the last '}'
+            var actual = IfElseParser.FindLastClosingBracket(input);
 
-            // Act
-            result = IfElseParser.FindIfElseBlockEnd(inputParts);
+            var result =IfElseParser.ExtractFirstIfElse(input);
 
-            // Assert
-            Assert.AreEqual(2, result, "Not the right Position for inputParts2.");
+            Trace.WriteLine(result);
+
+            Assert.AreEqual(expected, result.Length);
+
+            Trace.WriteLine(input[expected]);
         }
 
         /// <summary>
