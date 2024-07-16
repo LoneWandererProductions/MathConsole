@@ -631,6 +631,14 @@ namespace InterpreteTests
             Assert.AreEqual(expected, actual);
 
             Trace.WriteLine(input[expected]);
+
+            var result = IfElseParser.ExtractFirstIfElse(input);
+
+            Trace.WriteLine(result);
+
+            Assert.AreEqual(expected + 1, result.Length);
+
+            Trace.WriteLine(input[expected]);
         }
 
         /// <summary>
@@ -643,6 +651,12 @@ namespace InterpreteTests
             var expected = 109; // Position of the last '}'
             var actual = IfElseParser.FindLastClosingBracket(input);
             Assert.AreEqual(expected, actual);
+
+            var result = IfElseParser.ExtractFirstIfElse(input);
+
+            Trace.WriteLine(result);
+
+            Assert.AreEqual(expected+1, result.Length);
 
             Trace.WriteLine(input[expected]);
         }
