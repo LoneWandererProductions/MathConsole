@@ -606,20 +606,6 @@ namespace InterpreteTests
         }
 
         /// <summary>
-        /// Tests the first if without else.
-        /// </summary>
-        [TestMethod]
-        public void TestFirstIfWithoutElse()
-        {
-            var input = "if(condition) {com1; com2;com3;} com1; com1; com1;";
-            var expected = 31; // Position of the last '}'
-            var actual = IfElseParser.FindLastClosingBracket(input);
-            Assert.AreEqual(expected, actual);
-
-            Trace.WriteLine(input[expected]);
-        }
-
-        /// <summary>
         /// Tests the first if with else.
         /// </summary>
         [TestMethod]
@@ -627,18 +613,8 @@ namespace InterpreteTests
         {
             var input = "if(condition) {com1; com2;com3;} else {com1; com1; com1;} com1; com1; com1;";
             var expected = 56; // Position of the last '}'
-            var actual = IfElseParser.FindLastClosingBracket(input);
-            Assert.AreEqual(expected, actual);
-
-            Trace.WriteLine(input[expected]);
-
             var result = IfElseParser.ExtractFirstIfElse(input);
-
-            Trace.WriteLine(result);
-
             Assert.AreEqual(expected + 1, result.Length);
-
-            Trace.WriteLine(input[expected]);
         }
 
         /// <summary>
@@ -649,32 +625,20 @@ namespace InterpreteTests
         {
             var input = "if(condition) {com1; com2;com3;} else {if(condition) {com1; com2;com3;} else {com1; com1; com1;} com1; com1; } com1;";
             var expected = 109; // Position of the last '}'
-            var actual = IfElseParser.FindLastClosingBracket(input);
-            Assert.AreEqual(expected, actual);
-
             var result = IfElseParser.ExtractFirstIfElse(input);
-
-            Trace.WriteLine(result);
-
-            Assert.AreEqual(expected+1, result.Length);
-
-            Trace.WriteLine(input[expected]);
+            Assert.AreEqual(expected + 1, result.Length);
         }
 
+        /// <summary>
+        /// Tests if else if else.
+        /// </summary>
         [TestMethod]
         public void TestIfElseIfElse()
         {
             var input = "if(condition) {com1; com2;com3;} else {com1; com1; com1;} com1; com1; com1; if(condition) {com1; com2;com3;} else {com1; com1; com1;}";
             var expected = 57; // Position of the last '}'
-            var actual = IfElseParser.FindLastClosingBracket(input);
-
-            var result =IfElseParser.ExtractFirstIfElse(input);
-
-            Trace.WriteLine(result);
-
+            var result = IfElseParser.ExtractFirstIfElse(input);
             Assert.AreEqual(expected, result.Length);
-
-            Trace.WriteLine(input[expected]);
         }
 
         /// <summary>
@@ -683,33 +647,22 @@ namespace InterpreteTests
         [TestMethod]
         public void ParseMostSimpleIfElseStatementReturnsCorrectIfElseBlock()
         {
-            // Arrange
-            var inputParts = new List<string> { "if(condition){com1", "}else {com2","}" };
-
-            // Act
+            var inputParts = new List<string> { "if(condition){com1", "}else {com2", "}" };
             var result = IfElseParser.Parse(inputParts);
-
-            // Assert
             Assert.IsNotNull(result);
             Assert.AreEqual("condition", result.Condition);
             Assert.AreEqual("com1", result.IfClause);
             Assert.AreEqual("com2", result.ElseClause);
         }
 
-
         /// <summary>
-        /// Parses the most simple if else statement returns correct if else block.
+        /// Parses the most if else check corner cases.
         /// </summary>
         [TestMethod]
         public void ParseMostIfElseCheckCornerCases()
         {
-            // Arrange
             var inputParts = new List<string> { "if(condition){com1", "}else {com2", "} com3", "com4" };
-
-            // Act
             var result = IfElseParser.Parse(inputParts);
-
-            // Assert
             Assert.IsNotNull(result);
             Assert.AreEqual("condition", result.Condition);
             Assert.AreEqual("com1", result.IfClause);
@@ -722,13 +675,8 @@ namespace InterpreteTests
         [TestMethod]
         public void ParseSimpleIfElseStatementReturnsCorrectIfElseBlock()
         {
-            // Arrange
             var inputParts = new List<string> { "if(condition){com1", "com2", "com3}", "else {com4}" };
-
-            // Act
             var result = IfElseParser.Parse(inputParts);
-
-            // Assert
             Assert.IsNotNull(result);
             Assert.AreEqual("condition", result.Condition);
             Assert.AreEqual("com1 com2 com3", result.IfClause);
@@ -741,17 +689,107 @@ namespace InterpreteTests
         [TestMethod]
         public void ParseNestedIfElseStatementReturnsCorrectIfElseBlock()
         {
-            // Arrange
             var inputParts = new List<string> { "if(cond1){com1", "if(cond2){com2", "} else {com3}", "} else {com4}" };
-
-            // Act
             var result = IfElseParser.Parse(inputParts);
-
-            // Assert
             Assert.IsNotNull(result);
             Assert.AreEqual("cond1", result.Condition);
             Assert.AreEqual("com1 if(cond2) { com2 } else { com3 }", result.IfClause);
             Assert.AreEqual("com4", result.ElseClause);
+        }
+
+        /// <summary>
+        /// Extracts the first if else simple nested if else returns correct block.
+        /// </summary>
+        [TestMethod]
+        public void ExtractFirstIfElseSimpleNestedIfElseReturnsCorrectBlock()
+        {
+            var input = "if(condition) { if(innerCondition) { com1; } else { com2; } } else { com3; }";
+            var expected = "if(condition) { if(innerCondition) { com1; } else { com2; } } else { com3; }";
+            var result = IfElseParser.ExtractFirstIfElse(input);
+            Assert.AreEqual(expected, result);
+        }
+
+        /// <summary>
+        /// Extracts the first if else if without else returns if block.
+        /// </summary>
+        [TestMethod]
+        public void ExtractFirstIfElseIfWithoutElseReturnsIfBlock()
+        {
+            var input = "if(condition) { com1; } com2; com3;";
+            var expected = "if(condition) { com1; }";
+            var result = IfElseParser.ExtractFirstIfElse(input);
+            Assert.AreEqual(expected, result);
+        }
+
+        /// <summary>
+        /// Extracts the first if else multiple if else blocks returns first block.
+        /// </summary>
+        [TestMethod]
+        public void ExtractFirstIfElseMultipleIfElseBlocksReturnsFirstBlock()
+        {
+            var input = "if(condition1) { com1; } else { com2; } if(condition2) { com3; } else { com4; }";
+            var expected = "if(condition1) { com1; } else { com2; }";
+            var result = IfElseParser.ExtractFirstIfElse(input);
+            Assert.AreEqual(expected, result);
+        }
+
+        /// <summary>
+        /// Extracts the first if else no if returns null.
+        /// </summary>
+        [TestMethod]
+        public void ExtractFirstIfElseNoIfReturnsNull()
+        {
+            var input = "com1; com2; com3;";
+            var result = IfElseParser.ExtractFirstIfElse(input);
+            Assert.IsNull(result);
+        }
+
+        /// <summary>
+        /// Extracts the first if else multiple levels of nesting returns first block.
+        /// </summary>
+        [TestMethod]
+        public void ExtractFirstIfElseMultipleLevelsOfNestingReturnsFirstBlock()
+        {
+            var input = "if(condition) { if(innerCondition1) { com1; } else { if(innerCondition2) { com2; } else { com3; } } } else { com4; }";
+            var expected = "if(condition) { if(innerCondition1) { com1; } else { if(innerCondition2) { com2; } else { com3; } } } else { com4; }";
+            var result = IfElseParser.ExtractFirstIfElse(input);
+            Assert.AreEqual(expected, result);
+        }
+
+        /// <summary>
+        /// Extracts the first if else if else with comments returns first block.
+        /// </summary>
+        [TestMethod]
+        public void ExtractFirstIfElseIfElseWithCommentsReturnsFirstBlock()
+        {
+            var input = "if(condition) { /* comment */ com1; } else { // comment \n com2; } com3;";
+            var expected = "if(condition) { /* comment */ com1; } else { // comment \n com2; }";
+            var result = IfElseParser.ExtractFirstIfElse(input);
+            Assert.AreEqual(expected, result);
+        }
+
+        /// <summary>
+        /// Extracts the first if else else at end of string handles correctly.
+        /// </summary>
+        [TestMethod]
+        public void ExtractFirstIfElseElseAtEndOfStringHandlesCorrectly()
+        {
+            var input = "if(condition) { com1; } else";
+            var expected = "if(condition) { com1; } else";
+            var result = IfElseParser.ExtractFirstIfElse(input);
+            Assert.AreEqual(expected, result);
+        }
+
+        /// <summary>
+        /// Extracts the first if else else without braces handles correctly.
+        /// </summary>
+        [TestMethod]
+        public void ExtractFirstIfElseElseWithoutBracesHandlesCorrectly()
+        {
+            var input = "if(condition) { com1; } else com2;";
+            var expected = "if(condition) { com1; } else com2;";
+            var result = IfElseParser.ExtractFirstIfElse(input);
+            Assert.AreEqual(expected, result);
         }
 
         /// <summary>
@@ -761,12 +799,34 @@ namespace InterpreteTests
         [ExpectedException(typeof(InvalidOperationException))]
         public void ParseInvalidInputThrowsException()
         {
-            // Arrange
             var inputParts = new List<string> { "if(condition){com1", "com2", "com3", "else {com4" };
-
-            // Act
             IfElseParser.Parse(inputParts);
         }
+
+        /// <summary>
+        /// Extracts the first if else mixed case returns correct block.
+        /// </summary>
+        [TestMethod]
+        public void ExtractFirstIfElseMixedCaseReturnsCorrectBlock()
+        {
+            var input = "If(condition) { com1; } eLsE { com2; }";
+            var expected = "If(condition) { com1; } eLsE { com2; }";
+            var result = IfElseParser.ExtractFirstIfElse(input);
+            Assert.AreEqual(expected, result);
+        }
+
+        /// <summary>
+        /// Extracts the first if else upper case returns correct block.
+        /// </summary>
+        [TestMethod]
+        public void ExtractFirstIfElseUpperCaseReturnsCorrectBlock()
+        {
+            var input = "IF(condition) { com1; } ELSE { com2; }";
+            var expected = "IF(condition) { com1; } ELSE { com2; }";
+            var result = IfElseParser.ExtractFirstIfElse(input);
+            Assert.AreEqual(expected, result);
+        }
+
 
         /// <summary>
         ///     Logs the messages.

@@ -1,4 +1,12 @@
-﻿using System;
+﻿/*
+* COPYRIGHT:   See COPYING in the top level directory
+* PROJECT:     Interpreter
+* FILE:        Interpreter/IfElseParser.cs
+* PURPOSE:     The if else parser and a piece of work, not really happy about it.
+* PROGRAMER:   Peter Geinitz (Wayfarer)
+*/
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,57 +15,75 @@ namespace Interpreter
 {
     internal static class IfElseParser
     {
-        public static string ExtractFirstIfElse(string input)
+        /// <summary>
+        /// Extracts the first if else.
+        /// </summary>
+        /// <param name="input">The input.</param>
+        /// <returns>Part of the string that contains the first if/else clause, even if stuff is nested</returns>
+        internal static string ExtractFirstIfElse(string input)
         {
-            int start = input.IndexOf("if(");
+            var start = input.IndexOf("if(", StringComparison.OrdinalIgnoreCase);
             if (start == -1) return null; // No 'if' found
 
-            int end = start;
-            int braceCount = 0;
-            bool elseFound = false;
+            var end = start;
+            var braceCount = 0;
+            var elseFound = false;
+            var containsElse = input.IndexOf("else", StringComparison.OrdinalIgnoreCase) != -1;
 
-            for (int i = start; i < input.Length; i++)
+            for (var i = start; i < input.Length; i++)
             {
-                if (input[i] == '{')
+                var cursor = input[i];
+
+                if (cursor == '{')
                 {
                     braceCount++;
                 }
-                else if (input[i] == '}')
+                else if (cursor == '}')
                 {
                     braceCount--;
-                    if (braceCount == 0)
-                    {
-                        if (elseFound)
-                        {
-                            end = i;
-                            break;
-                        }
-                    }
+                    if (braceCount != 0) continue;
+                    if (containsElse) continue;
+
+                    end = i;
+                    break;
                 }
-                else if (input.Substring(i, 4) == "else" && braceCount == 0)
+                else if (i + 4 <= input.Length && input.Substring(i, 4).Equals("else", StringComparison.OrdinalIgnoreCase) && braceCount == 0)
                 {
                     elseFound = true;
-                    end = i; // Update end to the start of else
+                    var index = input.IndexOf("else", i, StringComparison.OrdinalIgnoreCase);
+                    end = index + 4; // Update end to the end of else
+                    break;
                 }
             }
 
             // Look for the closing brace for the else block
             if (elseFound)
             {
-                for (int i = end; i < input.Length; i++)
+                if (end == input.Length) return input.Substring(start, input.Length);
+
+                for (var i = end; i < input.Length; i++)
                 {
-                    if (input[i] == '{')
+                    var cursor = input[i];
+
+                    if (cursor == '{')
                     {
                         braceCount++;
                     }
-                    else if (input[i] == '}')
+                    else if (cursor == '}')
                     {
                         braceCount--;
-                        if (braceCount == 0)
-                        {
-                            end = i;
-                            break;
-                        }
+
+                        if (braceCount != 0) continue;
+
+                        end = i;
+                        break;
+                    }
+                    else if (cursor == ';')
+                    {
+                        if (braceCount != 0) continue;
+
+                        end = i;
+                        break;
                     }
                 }
             }
@@ -66,61 +92,6 @@ namespace Interpreter
             return input.Substring(start, end - start + 1).Trim();
         }
 
-        /// <summary>
-        /// Finds if else block.
-        /// Fails if there is another input string in the input string.
-        /// </summary>
-        /// <param name="input">The input parts.</param>
-        /// <returns>The End Parameter of the End</returns>
-        public static int FindLastClosingBracket(string input)
-        {
-            var stack = new Stack<int>();
-            var lastClosingBracketPos = -1;
-            var outerIfCount = 0;
-
-            for (var i = 0; i < input.Length; i++)
-            {
-                var c = input[i];
-
-                switch (c)
-                {
-                    case '{':
-                    {
-                        if (outerIfCount == 0)
-                        {
-                            // We're entering an outer if block
-                        }
-
-                        stack.Push(i);
-                        break;
-                    }
-                    case '}':
-                    {
-                        if (stack.Count > 0)
-                        {
-                            lastClosingBracketPos = i;
-                            stack.Pop();
-
-                            // Check if we closed an outer if
-                            if (stack.Count == 0)
-                            {
-                                outerIfCount++; // Count complete outer if blocks
-                            }
-                        }
-
-                        break;
-                    }
-                }
-
-                // Reset outer count if we find another if without braces
-                if (i < input.Length - 2 && input.Substring(i, 2) == "if")
-                {
-                    outerIfCount = 0; // Reset if another outer if is found
-                }
-            }
-
-            return lastClosingBracketPos;
-        }
 
         //TODO do not forget the values after the last }
         internal static IfElseBlock Parse(IEnumerable<string> inputParts)
