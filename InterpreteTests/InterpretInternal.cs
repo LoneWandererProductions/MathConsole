@@ -615,7 +615,7 @@ namespace InterpreteTests
             var expected = 56; // Position of the last '}'
             var (block, elsePosition) = IrtIfElseParser.ExtractFirstIfElse(input);
             Assert.AreEqual(expected + 1, block.Length);
-            Assert.AreEqual(0, elsePosition);
+            Assert.AreEqual(33, elsePosition);
         }
 
         /// <summary>
@@ -628,7 +628,7 @@ namespace InterpreteTests
             var expected = 109; // Position of the last '}'
             var (block, elsePosition) = IrtIfElseParser.ExtractFirstIfElse(input);
             Assert.AreEqual(expected + 1, block.Length);
-            Assert.AreEqual(0, elsePosition);
+            Assert.AreEqual(33, elsePosition);
         }
 
         /// <summary>
@@ -641,7 +641,7 @@ namespace InterpreteTests
             var expected = 57; // Position of the last '}'
             var (block, elsePosition) = IrtIfElseParser.ExtractFirstIfElse(input);
             Assert.AreEqual(expected, block.Length);
-            Assert.AreEqual(0, elsePosition);
+            Assert.AreEqual(33, elsePosition);
         }
 
         /// <summary>
