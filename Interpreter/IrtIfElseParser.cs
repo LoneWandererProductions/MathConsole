@@ -1,7 +1,7 @@
 ﻿/*
 * COPYRIGHT:   See COPYING in the top level directory
 * PROJECT:     Interpreter
-* FILE:        Interpreter/IfElseParser.cs
+* FILE:        Interpreter/IrtIfElseParser.cs
 * PURPOSE:     The if else parser and a piece of work, not really happy about it.
 * PROGRAMER:   Peter Geinitz (Wayfarer)
 */
@@ -13,7 +13,7 @@ using System.Text;
 
 namespace Interpreter
 {
-    internal static class IfElseParser
+    internal static class IrtIfElseParser
     {
         /// <summary>
         /// Extracts the first if else.
@@ -94,7 +94,7 @@ namespace Interpreter
 
 
         //TODO do not forget the values after the last }
-        internal static IfElseBlock Parse(IEnumerable<string> inputParts)
+        internal static IrtIfElseBlock Parse(IEnumerable<string> inputParts)
         {
             var stack = new Stack<(string Condition, StringBuilder IfClause, StringBuilder ElseClause, bool InElse)>();
             var currentIfClause = new StringBuilder();
@@ -131,7 +131,7 @@ namespace Interpreter
 
                                 var (parentCondition, parentIfPart, parentElsePart, parentInElse) = stack.Pop();
 
-                                var innerIfElseBlock = new IfElseBlock
+                                var innerIfElseBlock = new IrtIfElseBlock
                                 {
                                     Condition = currentCondition,
                                     IfClause = currentIfClause.ToString().Trim(),
