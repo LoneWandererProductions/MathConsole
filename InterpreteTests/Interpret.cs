@@ -80,7 +80,7 @@ namespace InterpreteTests
         /// <summary>
         ///     The irt prompt
         /// </summary>
-        private IrtHandlePrompt _irtPrompt;
+        private IrtParser _irtPrompt;
 
         /// <summary>
         ///     The namespace
@@ -93,7 +93,7 @@ namespace InterpreteTests
         [TestInitialize]
         public void SetUp()
         {
-            _irtPrompt = new IrtHandlePrompt(new Prompt());
+            _irtPrompt = new IrtParser(new Prompt());
             _commands = new Dictionary<int, InCommand>
             {
                 { 1, new InCommand { Command = "COMMAND1", ParameterCount = 0, Description = "Description1" } },

@@ -1,7 +1,7 @@
 ﻿/*
  * COPYRIGHT:   See COPYING in the top level directory
  * PROJECT:     Interpreter
- * FILE:        Interpreter/IrtHandlePrompt.cs
+ * FILE:        Interpreter/IrtParser.cs
  * PURPOSE:     Handle the Input for prompt and connect to the other modules
  * PROGRAMMER:  Peter Geinitz (Wayfarer)
  */
@@ -11,7 +11,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 
 namespace Interpreter
 {
@@ -19,7 +18,7 @@ namespace Interpreter
     /// <summary>
     ///     Basic command Line Interpreter, bare bones for now
     /// </summary>
-    internal sealed class IrtHandlePrompt : IDisposable
+    internal sealed class IrtParser : IDisposable
     {
         /// <summary>
         ///     Command Register
@@ -67,17 +66,17 @@ namespace Interpreter
         private IrtHandleInternal _irtHandleInternal;
 
         /// <summary>
-        ///     Prevents a default instance of the <see cref="IrtHandlePrompt" /> class from being created.
+        ///     Prevents a default instance of the <see cref="IrtParser" /> class from being created.
         /// </summary>
-        private IrtHandlePrompt()
+        private IrtParser()
         {
         }
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="IrtHandlePrompt" /> class.
+        ///     Initializes a new instance of the <see cref="IrtParser" /> class.
         /// </summary>
         /// <param name="prompt">The prompt.</param>
-        public IrtHandlePrompt(Prompt prompt)
+        public IrtParser(Prompt prompt)
         {
             _prompt = prompt;
         }
@@ -360,7 +359,7 @@ namespace Interpreter
         /// <summary>
         ///     Destructor to ensure the resources are released.
         /// </summary>
-        ~IrtHandlePrompt()
+        ~IrtParser()
         {
             Dispose(false);
         }

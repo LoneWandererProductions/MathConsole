@@ -15,6 +15,11 @@ namespace Interpreter
 {
     internal static class IrtIfElseParser
     {
+        internal static List<string> BuildCommand(string input)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// Extracts the first if else.
         /// </summary>

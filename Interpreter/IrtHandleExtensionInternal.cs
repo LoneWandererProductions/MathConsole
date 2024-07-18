@@ -13,6 +13,7 @@ using System.Collections.Generic;
 
 namespace Interpreter
 {
+    /// <inheritdoc />
     /// <summary>
     ///     Helper class for handling internal extensions.
     /// </summary>
@@ -36,7 +37,7 @@ namespace Interpreter
         /// <summary>
         ///     Instance of IrtHandlePrompt for internal use.
         /// </summary>
-        private IrtHandlePrompt _irtHandlePrompt;
+        private IrtParser _irtHandlePrompt;
 
         /// <summary>
         ///     Instance of Prompt to handle command input/output.
@@ -57,7 +58,7 @@ namespace Interpreter
         /// <param name="commands">Dictionary of commands.</param>
         /// <param name="prompt">Instance of Prompt.</param>
         /// <param name="irtInternal">Instance of IrtHandleInternal.</param>
-        public IrtHandleExtensionInternal(IrtHandlePrompt irtPrompt, Dictionary<int, InCommand> commands, Prompt prompt,
+        public IrtHandleExtensionInternal(IrtParser irtPrompt, Dictionary<int, InCommand> commands, Prompt prompt,
             IrtHandleInternal irtInternal)
         {
             _irtHandlePrompt = irtPrompt;

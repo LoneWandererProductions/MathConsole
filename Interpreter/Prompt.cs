@@ -31,7 +31,7 @@ namespace Interpreter
         /// <summary>
         ///     Used to interpret Commands
         /// </summary>
-        private static IrtHandlePrompt _interpret;
+        private static IrtParser _interpret;
 
         /// <summary>
         ///     The count
@@ -124,7 +124,7 @@ namespace Interpreter
             //Upper is needed because of the way we compare commands in the Interpreter
             CollectedSpaces.AddDistinct(userSpace.ToUpper(), use);
 
-            _interpret = new IrtHandlePrompt(this);
+            _interpret = new IrtParser(this);
             _interpret.Initiate(use);
             _interpret.SendInternalLog += SendLog;
         }
@@ -195,7 +195,7 @@ namespace Interpreter
         {
             space = space.ToUpper(CultureInfo.InvariantCulture);
             var use = CollectedSpaces[space];
-            IrtHandlePrompt.SwitchUserSpace(use);
+            IrtParser.SwitchUserSpace(use);
             //switch UserSpace here as well
             _feedbackHandler.Use = use;
         }

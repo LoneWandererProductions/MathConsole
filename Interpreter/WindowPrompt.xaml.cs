@@ -40,7 +40,7 @@ namespace Interpreter
         /// <summary>
         ///     The interpret (readonly).
         /// </summary>
-        private readonly IrtHandlePrompt _interpret;
+        private readonly IrtParser _interpret;
 
         /// <summary>
         ///     The in.
@@ -61,7 +61,7 @@ namespace Interpreter
         ///     Fire it up
         /// </summary>
         /// <param name="interpret">Our Interpreter</param>
-        internal WindowPrompt(IrtHandlePrompt interpret)
+        internal WindowPrompt(IrtParser interpret)
         {
             _interpret = interpret;
             _interpret.SendInternalLog += SendLogs;
