@@ -26,7 +26,7 @@ namespace InterpreteTests
                         "Print(Finish);" +
                         "}";
 
-            var inputcleaned = "Container{ " +
+            var inputcleaned = "{ " +
                         "Print(hello World);" +
                         "if(condition) { if(innerCondition) { com1; } else { com2; } } else { com3; }" +
                         "Label(one);" +

@@ -17,7 +17,11 @@ namespace Interpreter
     {
         internal static List<string> BuildCommand(string input)
         {
-            throw new NotImplementedException();
+            input = Irt.RemoveLastOccurrence(input, IrtConst.AdvancedClose);
+            input = Irt.RemoveFirstOccurrence(input, IrtConst.AdvancedOpen);
+            input = input.Trim();
+            var commands = Irt.SplitParameter(input, IrtConst.NewCommand).ToList();
+            return commands;
         }
 
         /// <summary>
@@ -25,14 +29,25 @@ namespace Interpreter
         /// </summary>
         /// <param name="input">The input.</param>
         /// <returns>Part of the string that contains the first if/else clause, even if stuff is nested</returns>
-        internal static string ExtractFirstIfElse(string input)
+        /// <summary>
+        /// Extracts the first if-else block and the position of the else keyword.
+        /// </summary>
+        /// <param name="input">The input.</param>
+        /// <returns>A tuple containing the if-else block and the position of the else keyword if found.</returns>
+        /// <summary>
+        /// Extracts the first if-else block and the position of the else keyword.
+        /// </summary>
+        /// <param name="input">The input.</param>
+        /// <returns>A tuple containing the if-else block and the position of the else keyword if found.</returns>
+        internal static (string block, int elsePosition) ExtractFirstIfElse(string input)
         {
             var start = input.IndexOf("if(", StringComparison.OrdinalIgnoreCase);
-            if (start == -1) return null; // No 'if' found
+            if (start == -1) return (null, -1); // No 'if' found
 
             var end = start;
             var braceCount = 0;
             var elseFound = false;
+            var elsePosition = -1;
             var containsElse = input.IndexOf("else", StringComparison.OrdinalIgnoreCase) != -1;
 
             for (var i = start; i < input.Length; i++)
@@ -55,6 +70,7 @@ namespace Interpreter
                 else if (i + 4 <= input.Length && input.Substring(i, 4).Equals("else", StringComparison.OrdinalIgnoreCase) && braceCount == 0)
                 {
                     elseFound = true;
+                    elsePosition = i;
                     var index = input.IndexOf("else", i, StringComparison.OrdinalIgnoreCase);
                     end = index + 4; // Update end to the end of else
                     break;
@@ -64,7 +80,7 @@ namespace Interpreter
             // Look for the closing brace for the else block
             if (elseFound)
             {
-                if (end == input.Length) return input.Substring(start, input.Length);
+                if (end == input.Length) return (input.Substring(start, input.Length), elsePosition);
 
                 for (var i = end; i < input.Length; i++)
                 {
@@ -93,10 +109,9 @@ namespace Interpreter
                 }
             }
 
-            // Return the extracted block
-            return input.Substring(start, end - start + 1).Trim();
+            // Return the extracted block and the else position
+            return (input.Substring(start, end - start + 1).Trim(), elsePosition);
         }
-
 
         //TODO do not forget the values after the last }
         internal static IrtIfElseBlock Parse(IEnumerable<string> inputParts)
