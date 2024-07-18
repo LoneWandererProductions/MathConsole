@@ -27,15 +27,15 @@ namespace InterpreteTests
                         "}";
 
             var inputcleaned = "{ " +
-                        "Print(hello World);" +
-                        "if(condition) { if(innerCondition) { com1; } else { com2; } } else { com3; }" +
-                        "Label(one);" +
-                        "Print(passed label one);" +
-                        "goto(two);" +
-                        "Print(Should not be printed);" +
-                        "Label(two);" +
-                        "Print(Finish);" +
-                        "}";
+                               "Print(hello World);" +
+                               "if(condition) { if(innerCondition) { com1; } else { com2; } } else { com3; }" +
+                               "Label(one);" +
+                               "Print(passed label one);" +
+                               "goto(two);" +
+                               "Print(Should not be printed);" +
+                               "Label(two);" +
+                               "Print(Finish);" +
+                               "}";
 
             IrtIfElseParser.BuildCommand(input);
         }
