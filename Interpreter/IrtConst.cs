@@ -114,7 +114,7 @@ namespace Interpreter
         /// <summary>
         ///     The internal command if statement (const). Value: "IF".
         /// </summary>
-        internal const string InternalIf = "IF";
+        private const string InternalIf = "IF";
 
         /// <summary>
         ///     The internal command else, followed after if (const). Value: "ELSE".

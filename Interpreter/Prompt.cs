@@ -167,7 +167,7 @@ namespace Interpreter
         {
             if (!CommandRegister.AwaitInput) _interpret?.HandleInput(input);
             else _feedbackHandler.HandleUserInput(input);
-		}
+        }
 
         /// <inheritdoc />
         /// <summary>

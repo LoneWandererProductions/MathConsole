@@ -17,7 +17,7 @@ namespace Interpreter
     internal static class IrtIfElseParser
     {
         /// <summary>
-        /// Builds the command.
+        ///     Builds the command.
         /// </summary>
         /// <param name="input">The input.</param>
         /// <returns></returns>
@@ -30,7 +30,7 @@ namespace Interpreter
 
             var command = new CategorizedDictionary<int, string>();
 
-            for (int i = 0; i < commands.Count; i++)
+            for (var i = 0; i < commands.Count; i++)
             {
                 var com = commands[i].Trim();
                 var key = Irt.CheckForKeyWord(com, IrtConst.InternContainerCommands);
@@ -55,7 +55,7 @@ namespace Interpreter
         }
 
         /// <summary>
-        /// Extracts the first if else.
+        ///     Extracts the first if else.
         /// </summary>
         /// <param name="input">The input.</param>
         /// <returns>Part of the string that contains the first if/else clause, even if stuff is nested</returns>
@@ -87,7 +87,8 @@ namespace Interpreter
                     end = i;
                     break;
                 }
-                else if (i + 4 <= input.Length && input.Substring(i, 4).Equals("else", StringComparison.OrdinalIgnoreCase) && braceCount == 0)
+                else if (i + 4 <= input.Length &&
+                         input.Substring(i, 4).Equals("else", StringComparison.OrdinalIgnoreCase) && braceCount == 0)
                 {
                     elseFound = true;
                     elsePosition = i;
@@ -143,7 +144,6 @@ namespace Interpreter
             string currentCondition = null;
 
             foreach (var token in inputParts.SelectMany(Tokenize))
-            {
                 if (token.StartsWith("if(", StringComparison.Ordinal))
                 {
                     var condition = token.Substring(3, token.Length - 4);
@@ -156,7 +156,6 @@ namespace Interpreter
                 else
                 {
                     if (token.ToUpperInvariant() != IrtConst.InternalElse)
-                    {
                         switch (token.ToUpperInvariant())
                         {
                             case "}" when !inElse:
@@ -165,9 +164,8 @@ namespace Interpreter
                             case "}" when inElse:
                             {
                                 if (stack.Count == 0)
-                                {
-                                    throw new InvalidOperationException("Invalid input string: unmatched closing brace");
-                                }
+                                    throw new InvalidOperationException(
+                                        "Invalid input string: unmatched closing brace");
 
                                 var (parentCondition, parentIfPart, parentElsePart, parentInElse) = stack.Pop();
 
@@ -181,19 +179,12 @@ namespace Interpreter
                                 var nestedIfElse =
                                     $"if({innerIfElseBlock.Condition}) {{ {innerIfElseBlock.IfClause} }} else {{ {innerIfElseBlock.ElseClause} }}";
 
-                                if (parentCondition == null)
-                                {
-                                    return innerIfElseBlock;
-                                }
+                                if (parentCondition == null) return innerIfElseBlock;
 
                                 if (parentInElse)
-                                {
                                     parentElsePart.Append(nestedIfElse);
-                                }
                                 else
-                                {
                                     parentIfPart.Append(nestedIfElse);
-                                }
 
                                 currentCondition = parentCondition;
                                 currentIfClause = parentIfPart;
@@ -207,24 +198,16 @@ namespace Interpreter
                             default:
                             {
                                 if (inElse)
-                                {
                                     currentElseClause.Append($"{token.Trim()} ");
-                                }
                                 else
-                                {
                                     currentIfClause.Append($"{token.Trim()} ");
-                                }
 
                                 break;
                             }
                         }
-                    }
                     else
-                    {
                         inElse = true;
-                    }
                 }
-            }
 
             throw new InvalidOperationException("Invalid input string");
         }
@@ -237,7 +220,6 @@ namespace Interpreter
             string cache;
 
             for (var i = 0; i < input.Length; i++)
-            {
                 switch (input[i])
                 {
                     case IrtConst.AdvancedOpen:
@@ -246,10 +228,7 @@ namespace Interpreter
                         if (sb.Length > 0)
                         {
                             cache = sb.ToString();
-                            if (!string.IsNullOrWhiteSpace(cache))
-                            {
-                                tokens.Add(cache);
-                            }
+                            if (!string.IsNullOrWhiteSpace(cache)) tokens.Add(cache);
 
                             sb.Clear();
                         }
@@ -263,19 +242,15 @@ namespace Interpreter
                             if (sb.Length > 0)
                             {
                                 cache = sb.ToString();
-                                if (!string.IsNullOrWhiteSpace(cache))
-                                {
-                                    tokens.Add(cache);
-                                }
+                                if (!string.IsNullOrWhiteSpace(cache)) tokens.Add(cache);
 
                                 sb.Clear();
                             }
 
                             var endIdx = input.IndexOf(')', i);
                             if (endIdx == -1)
-                            {
-                                throw new InvalidOperationException("Invalid input string: missing closing parenthesis for 'if'");
-                            }
+                                throw new InvalidOperationException(
+                                    "Invalid input string: missing closing parenthesis for 'if'");
 
                             tokens.Add(input.Substring(i, endIdx - i + 1));
                             i = endIdx;
@@ -285,10 +260,7 @@ namespace Interpreter
                             if (sb.Length > 0)
                             {
                                 cache = sb.ToString();
-                                if (!string.IsNullOrWhiteSpace(cache))
-                                {
-                                    tokens.Add(cache);
-                                }
+                                if (!string.IsNullOrWhiteSpace(cache)) tokens.Add(cache);
 
                                 sb.Clear();
                             }
@@ -303,14 +275,10 @@ namespace Interpreter
 
                         break;
                 }
-            }
 
             // Final check to add any remaining token
             cache = sb.ToString();
-            if (!string.IsNullOrWhiteSpace(cache))
-            {
-                tokens.Add(cache);
-            }
+            if (!string.IsNullOrWhiteSpace(cache)) tokens.Add(cache);
 
             return tokens;
         }

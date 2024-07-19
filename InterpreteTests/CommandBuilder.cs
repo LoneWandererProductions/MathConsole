@@ -7,7 +7,7 @@ namespace InterpreteTests
     public class CommandBuilder
     {
         /// <summary>
-        /// Parses the invalid input throws exception.
+        ///     Parses the invalid input throws exception.
         /// </summary>
         [TestMethod]
         public void ParseComplexCommand()

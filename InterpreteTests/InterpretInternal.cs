@@ -31,7 +31,7 @@ namespace InterpreteTests
         private static string _log;
 
         /// <summary>
-        /// Gets the sample commands.
+        ///     Gets the sample commands.
         /// </summary>
         /// <returns>Basic Command set</returns>
         private static IReadOnlyDictionary<int, InCommand> GetSampleCommands()
@@ -606,7 +606,7 @@ namespace InterpreteTests
         }
 
         /// <summary>
-        /// Tests the first if with else.
+        ///     Tests the first if with else.
         /// </summary>
         [TestMethod]
         public void TestFirstIfWithElse()
@@ -619,12 +619,13 @@ namespace InterpreteTests
         }
 
         /// <summary>
-        /// Tests the nested if else.
+        ///     Tests the nested if else.
         /// </summary>
         [TestMethod]
         public void TestNestedIfElse()
         {
-            var input = "if(condition) {com1; com2;com3;} else {if(condition) {com1; com2;com3;} else {com1; com1; com1;} com1; com1; } com1;";
+            var input =
+                "if(condition) {com1; com2;com3;} else {if(condition) {com1; com2;com3;} else {com1; com1; com1;} com1; com1; } com1;";
             var expected = 109; // Position of the last '}'
             var (block, elsePosition) = IrtIfElseParser.ExtractFirstIfElse(input);
             Assert.AreEqual(expected + 1, block.Length);
@@ -632,12 +633,13 @@ namespace InterpreteTests
         }
 
         /// <summary>
-        /// Tests if else if else.
+        ///     Tests if else if else.
         /// </summary>
         [TestMethod]
         public void TestIfElseIfElse()
         {
-            var input = "if(condition) {com1; com2;com3;} else {com1; com1; com1;} com1; com1; com1; if(condition) {com1; com2;com3;} else {com1; com1; com1;}";
+            var input =
+                "if(condition) {com1; com2;com3;} else {com1; com1; com1;} com1; com1; com1; if(condition) {com1; com2;com3;} else {com1; com1; com1;}";
             var expected = 57; // Position of the last '}'
             var (block, elsePosition) = IrtIfElseParser.ExtractFirstIfElse(input);
             Assert.AreEqual(expected, block.Length);
@@ -645,7 +647,7 @@ namespace InterpreteTests
         }
 
         /// <summary>
-        /// Parses the most simple if else statement returns correct if else block.
+        ///     Parses the most simple if else statement returns correct if else block.
         /// </summary>
         [TestMethod]
         public void ParseMostSimpleIfElseStatementReturnsCorrectIfElseBlock()
@@ -659,7 +661,7 @@ namespace InterpreteTests
         }
 
         /// <summary>
-        /// Parses the most if else check corner cases.
+        ///     Parses the most if else check corner cases.
         /// </summary>
         [TestMethod]
         public void ParseMostIfElseCheckCornerCases()
@@ -673,7 +675,7 @@ namespace InterpreteTests
         }
 
         /// <summary>
-        /// Parses the simple if else statement returns correct if else block.
+        ///     Parses the simple if else statement returns correct if else block.
         /// </summary>
         [TestMethod]
         public void ParseSimpleIfElseStatementReturnsCorrectIfElseBlock()
@@ -687,7 +689,7 @@ namespace InterpreteTests
         }
 
         /// <summary>
-        /// Parses the nested if else statement returns correct if else block.
+        ///     Parses the nested if else statement returns correct if else block.
         /// </summary>
         [TestMethod]
         public void ParseNestedIfElseStatementReturnsCorrectIfElseBlock()
@@ -701,7 +703,7 @@ namespace InterpreteTests
         }
 
         /// <summary>
-        /// Extracts the first if else simple nested if else returns correct block.
+        ///     Extracts the first if else simple nested if else returns correct block.
         /// </summary>
         [TestMethod]
         public void ExtractFirstIfElseSimpleNestedIfElseReturnsCorrectBlock()
@@ -714,7 +716,7 @@ namespace InterpreteTests
         }
 
         /// <summary>
-        /// Extracts the first if else if without else returns if block.
+        ///     Extracts the first if else if without else returns if block.
         /// </summary>
         [TestMethod]
         public void ExtractFirstIfElseIfWithoutElseReturnsIfBlock()
@@ -727,7 +729,7 @@ namespace InterpreteTests
         }
 
         /// <summary>
-        /// Extracts the first if else multiple if else blocks returns first block.
+        ///     Extracts the first if else multiple if else blocks returns first block.
         /// </summary>
         [TestMethod]
         public void ExtractFirstIfElseMultipleIfElseBlocksReturnsFirstBlock()
@@ -740,7 +742,7 @@ namespace InterpreteTests
         }
 
         /// <summary>
-        /// Extracts the first if else no if returns null.
+        ///     Extracts the first if else no if returns null.
         /// </summary>
         [TestMethod]
         public void ExtractFirstIfElseNoIfReturnsNull()
@@ -751,20 +753,22 @@ namespace InterpreteTests
         }
 
         /// <summary>
-        /// Extracts the first if else multiple levels of nesting returns first block.
+        ///     Extracts the first if else multiple levels of nesting returns first block.
         /// </summary>
         [TestMethod]
         public void ExtractFirstIfElseMultipleLevelsOfNestingReturnsFirstBlock()
         {
-            var input = "if(condition) { if(innerCondition1) { com1; } else { if(innerCondition2) { com2; } else { com3; } } } else { com4; }";
-            var expected = "if(condition) { if(innerCondition1) { com1; } else { if(innerCondition2) { com2; } else { com3; } } } else { com4; }";
+            var input =
+                "if(condition) { if(innerCondition1) { com1; } else { if(innerCondition2) { com2; } else { com3; } } } else { com4; }";
+            var expected =
+                "if(condition) { if(innerCondition1) { com1; } else { if(innerCondition2) { com2; } else { com3; } } } else { com4; }";
             var (block, elsePosition) = IrtIfElseParser.ExtractFirstIfElse(input);
             Assert.AreEqual(expected, block);
             Assert.AreEqual(102, elsePosition);
         }
 
         /// <summary>
-        /// Extracts the first if else if else with comments returns first block.
+        ///     Extracts the first if else if else with comments returns first block.
         /// </summary>
         [TestMethod]
         public void ExtractFirstIfElseIfElseWithCommentsReturnsFirstBlock()
@@ -777,7 +781,7 @@ namespace InterpreteTests
         }
 
         /// <summary>
-        /// Extracts the first if else else at end of string handles correctly.
+        ///     Extracts the first if else else at end of string handles correctly.
         /// </summary>
         [TestMethod]
         public void ExtractFirstIfElseElseAtEndOfStringHandlesCorrectly()
@@ -790,7 +794,7 @@ namespace InterpreteTests
         }
 
         /// <summary>
-        /// Extracts the first if else else without braces handles correctly.
+        ///     Extracts the first if else else without braces handles correctly.
         /// </summary>
         [TestMethod]
         public void ExtractFirstIfElseElseWithoutBracesHandlesCorrectly()
@@ -803,7 +807,7 @@ namespace InterpreteTests
         }
 
         /// <summary>
-        /// Parses the invalid input throws exception.
+        ///     Parses the invalid input throws exception.
         /// </summary>
         [TestMethod]
         [ExpectedException(typeof(InvalidOperationException))]
@@ -814,7 +818,7 @@ namespace InterpreteTests
         }
 
         /// <summary>
-        /// Extracts the first if else mixed case returns correct block.
+        ///     Extracts the first if else mixed case returns correct block.
         /// </summary>
         [TestMethod]
         public void ExtractFirstIfElseMixedCaseReturnsCorrectBlock()
@@ -827,7 +831,7 @@ namespace InterpreteTests
         }
 
         /// <summary>
-        /// Extracts the first if else upper case returns correct block.
+        ///     Extracts the first if else upper case returns correct block.
         /// </summary>
         [TestMethod]
         public void ExtractFirstIfElseUpperCaseReturnsCorrectBlock()

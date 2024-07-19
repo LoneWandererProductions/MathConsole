@@ -14,19 +14,19 @@ using System.Linq;
 namespace ExtendedSystemObjects
 {
     /// <summary>
-    /// Dictionary with an category
+    ///     Dictionary with an category
     /// </summary>
     /// <typeparam name="K">Key Value</typeparam>
     /// <typeparam name="V">Value with Category</typeparam>
     public sealed class CategorizedDictionary<K, V>
     {
         /// <summary>
-        /// The internal data of our custom Dictionary
+        ///     The internal data of our custom Dictionary
         /// </summary>
-        private readonly Dictionary<K, (string Category, V Value)> _data = new Dictionary<K, (string Category, V Value)>();
+        private readonly Dictionary<K, (string Category, V Value)> _data = new();
 
         /// <summary>
-        /// Adds a value to the dictionary under the specified category.
+        ///     Adds a value to the dictionary under the specified category.
         /// </summary>
         /// <param name="category">The category under which to add the key-value pair. Can be null.</param>
         /// <param name="key">The key of the value to add.</param>
@@ -37,7 +37,7 @@ namespace ExtendedSystemObjects
         }
 
         /// <summary>
-        /// Adds the specified key.
+        ///     Adds the specified key.
         /// </summary>
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
@@ -47,27 +47,27 @@ namespace ExtendedSystemObjects
         }
 
         /// <summary>
-        /// Gets a value from the dictionary based on the key.
+        ///     Gets a value from the dictionary based on the key.
         /// </summary>
         /// <param name="key">The key of the value to get.</param>
         /// <returns>The value if found, otherwise the default value for the type.</returns>
         public V Get(K key)
         {
-            return _data.TryGetValue(key, out var entry) ? entry.Value : default(V);
+            return _data.TryGetValue(key, out var entry) ? entry.Value : default;
         }
 
         /// <summary>
-        /// Gets the category and value from the dictionary based on the key.
+        ///     Gets the category and value from the dictionary based on the key.
         /// </summary>
         /// <param name="key">The key of the value to get.</param>
         /// <returns>A tuple containing the category and value if found, otherwise null.</returns>
         public (string Category, V Value)? GetCategoryAndValue(K key)
         {
-            return _data.TryGetValue(key, out var entry) ? entry : ((string, V)?)null;
+            return _data.TryGetValue(key, out var entry) ? entry : null;
         }
 
         /// <summary>
-        /// Gets all key-value pairs under the specified category.
+        ///     Gets all key-value pairs under the specified category.
         /// </summary>
         /// <param name="category">The category to retrieve values from. Can be null.</param>
         /// <returns>A dictionary of key-value pairs in the specified category.</returns>
@@ -79,7 +79,7 @@ namespace ExtendedSystemObjects
         }
 
         /// <summary>
-        /// Gets all categories.
+        ///     Gets all categories.
         /// </summary>
         /// <returns>An enumerable of all categories.</returns>
         public IEnumerable<string> GetCategories()
