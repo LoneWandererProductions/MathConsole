@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Interpreter;
+﻿using Interpreter;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace InterpreteTests
@@ -12,7 +10,7 @@ namespace InterpreteTests
         /// Parses the invalid input throws exception.
         /// </summary>
         [TestMethod]
-        public void ParseInvalidInputThrowsException()
+        public void ParseComplexCommand()
         {
             //base, the command will be removed in the IrtParser
             var input = "Container{ " +
@@ -37,7 +35,7 @@ namespace InterpreteTests
                                "Print(Finish);" +
                                "}";
 
-            IrtIfElseParser.BuildCommand(input);
+            var result = IrtIfElseParser.BuildCommand(inputcleaned);
         }
     }
 }

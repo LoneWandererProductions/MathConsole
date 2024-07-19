@@ -10,18 +10,48 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using ExtendedSystemObjects;
 
 namespace Interpreter
 {
     internal static class IrtIfElseParser
     {
-        internal static List<string> BuildCommand(string input)
+        /// <summary>
+        /// Builds the command.
+        /// </summary>
+        /// <param name="input">The input.</param>
+        /// <returns></returns>
+        internal static CategorizedDictionary<int, string> BuildCommand(string input)
         {
             input = Irt.RemoveLastOccurrence(input, IrtConst.AdvancedClose);
             input = Irt.RemoveFirstOccurrence(input, IrtConst.AdvancedOpen);
             input = input.Trim();
             var commands = Irt.SplitParameter(input, IrtConst.NewCommand).ToList();
-            return commands;
+
+            var command = new CategorizedDictionary<int, string>();
+
+            for (int i = 0; i < commands.Count; i++)
+            {
+                var com = commands[i].Trim();
+                var key = Irt.CheckForKeyWord(com, IrtConst.InternContainerCommands);
+
+                switch (key)
+                {
+                    case 0:
+                    case 1:
+                    case 3:
+                    case 4:
+                        command.Add(IrtConst.InternContainerCommands[key].Command, i, com);
+                        break;
+                    default:
+                        command.Add(i, com);
+                        break;
+                }
+
+                command.Add(i, com);
+            }
+
+            return command;
         }
 
         /// <summary>
@@ -29,16 +59,6 @@ namespace Interpreter
         /// </summary>
         /// <param name="input">The input.</param>
         /// <returns>Part of the string that contains the first if/else clause, even if stuff is nested</returns>
-        /// <summary>
-        /// Extracts the first if-else block and the position of the else keyword.
-        /// </summary>
-        /// <param name="input">The input.</param>
-        /// <returns>A tuple containing the if-else block and the position of the else keyword if found.</returns>
-        /// <summary>
-        /// Extracts the first if-else block and the position of the else keyword.
-        /// </summary>
-        /// <param name="input">The input.</param>
-        /// <returns>A tuple containing the if-else block and the position of the else keyword if found.</returns>
         internal static (string block, int elsePosition) ExtractFirstIfElse(string input)
         {
             var start = input.IndexOf("if(", StringComparison.OrdinalIgnoreCase);

@@ -595,6 +595,7 @@ namespace Interpreter
                 $"{InternCommands[InternalContainerId].Command} : {InternCommands[InternalContainerId].Description}",
                 $"{InternCommands[InternalBatchId].Command} : {InternCommands[InternalBatchId].Description}",
                 $"{InternCommands[10].Command} : {InternCommands[10].Description}",
+                "As a word of warning, do not try to overwrite internal Commands, they will be always executed first. Duplicate commands in different Namespaces are allowed otherwise.",
                 "Furthermore, there are Extension Commands that alter the behaviour of all Commands. They are added with a '.' to an existing command.",
                 "The Internal Extensions are:",
                 $"{InternalExtensionCommands[0].Command} : {InternalExtensionCommands[0].Description}",

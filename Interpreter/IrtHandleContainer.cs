@@ -210,7 +210,7 @@ namespace Interpreter
             for (var i = 0; i < commands.Count; i++)
             {
                 var input = commands[i];
-                var check = Irt.CheckFormat(input, IrtConst.InternalLabel,label);
+                var check = Irt.CheckFormat(input, IrtConst.InternalLabel, label);
                 if (check) // Customize this condition to match your label logic
                     return i;
             }

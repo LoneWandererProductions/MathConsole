@@ -18,7 +18,7 @@ namespace ExtendedSystemObjects
     /// </summary>
     /// <typeparam name="K">Key Value</typeparam>
     /// <typeparam name="V">Value with Category</typeparam>
-    public class CategorizedDictionary<K, V>
+    public sealed class CategorizedDictionary<K, V>
     {
         /// <summary>
         /// The internal data of our custom Dictionary
@@ -34,6 +34,16 @@ namespace ExtendedSystemObjects
         public void Add(string category, K key, V value)
         {
             _data[key] = (category, value);
+        }
+
+        /// <summary>
+        /// Adds the specified key.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        public void Add(K key, V value)
+        {
+            Add(string.Empty, key, value);
         }
 
         /// <summary>
