@@ -93,24 +93,21 @@ namespace ExtendedSystemObjects
         }
 
         /// <summary>
-        /// Updates the category of an existing entry.
+        ///     Updates the category of an existing entry.
         /// </summary>
         /// <param name="key">The key of the entry to update.</param>
         /// <param name="newCategory">The new category to assign to the entry.</param>
         /// <returns>True if the entry was updated, false if the key does not exist.</returns>
         public bool SetCategory(TK key, string newCategory)
         {
-            if (!_data.TryGetValue(key, out var entry))
-            {
-                return false;
-            }
+            if (!_data.TryGetValue(key, out var entry)) return false;
 
             _data[key] = (newCategory, entry.Value);
             return true;
         }
 
         /// <summary>
-        /// Tries to get the category for a given key.
+        ///     Tries to get the category for a given key.
         /// </summary>
         /// <param name="key">The key to search for.</param>
         /// <param name="category">The category associated with the key.</param>
@@ -128,7 +125,7 @@ namespace ExtendedSystemObjects
         }
 
         /// <summary>
-        /// Tries to get the value for a given key.
+        ///     Tries to get the value for a given key.
         /// </summary>
         /// <param name="key">The key to search for.</param>
         /// <param name="value">The value associated with the key.</param>

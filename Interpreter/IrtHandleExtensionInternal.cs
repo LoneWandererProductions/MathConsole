@@ -102,7 +102,7 @@ namespace Interpreter
                         var command = IrtConst.InternCommands[key];
 
                         using (var irtInternal = new IrtHandleInternal(IrtConst.InternCommands,
-                            IrtConst.InternalNameSpace, _prompt))
+                                   IrtConst.InternalNameSpace, _prompt))
                         {
                             irtInternal.ProcessInput(IrtConst.InternalHelpWithParameter, command.Command);
                         }

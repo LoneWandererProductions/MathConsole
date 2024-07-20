@@ -9,7 +9,7 @@ namespace InterpreteTests
     public class CommandBuilder
     {
         /// <summary>
-        /// Parses the invalid input throws exception.
+        ///     Parses the invalid input throws exception.
         /// </summary>
         [TestMethod]
         public void ParseComplexCommand()
@@ -57,9 +57,9 @@ namespace InterpreteTests
             foreach (var expected in expectedResults)
             {
                 var (key, category, value) = expected;
-                Assert.IsTrue(result.TryGetCategory(key, out string actualCategory));
+                Assert.IsTrue(result.TryGetCategory(key, out var actualCategory));
                 Assert.AreEqual(category, actualCategory, $"Category mismatch for key {key}");
-                Assert.IsTrue(result.TryGetValue(key, out string actualValue));
+                Assert.IsTrue(result.TryGetValue(key, out var actualValue));
                 Assert.AreEqual(value, actualValue, $"Value mismatch for key {key}");
             }
 

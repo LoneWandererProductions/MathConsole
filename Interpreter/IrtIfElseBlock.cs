@@ -2,7 +2,7 @@
  * COPYRIGHT:   See COPYING in the top level directory
  * PROJECT:     Interpreter
  * FILE:        Interpreter/IrtIfElseBlock.cs
- * PURPOSE:     Contains the If else logik
+ * PURPOSE:     Contains the If else logic
  * PROGRAMER:   Peter Geinitz (Wayfarer)
  */
 
@@ -12,9 +12,9 @@ namespace Interpreter
 {
     public sealed class IrtIfElseBlock
     {
-        public string Condition { get; set; }
-        public string IfClause { get; set; }
-        public string ElseClause { get; set; }
+        public string Condition { get; init; }
+        public string IfClause { get; init; }
+        public string ElseClause { get; init; }
 
         public override string ToString()
         {
