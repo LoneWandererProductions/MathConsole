@@ -42,7 +42,10 @@ namespace ExtendedSystemObjects
         /// <returns>Next Element</returns>
         public static int GetNextElement(int position, List<int> lst)
         {
-            if (position == lst.Max()) return lst.Min();
+            if (position == lst.Max())
+            {
+                return lst.Min();
+            }
 
             var index = lst.IndexOf(position);
 
@@ -57,7 +60,10 @@ namespace ExtendedSystemObjects
         /// <returns>Previous Element</returns>
         public static int GetPreviousElement(int position, List<int> lst)
         {
-            if (position == lst.Min()) return lst.Max();
+            if (position == lst.Min())
+            {
+                return lst.Max();
+            }
 
             var index = lst.IndexOf(position);
 
@@ -75,8 +81,10 @@ namespace ExtendedSystemObjects
         public static List<int> GetAvailableIndexes(List<int> lst, int count)
         {
             if (count < 0)
+            {
                 throw new ArgumentOutOfRangeException(nameof(count),
                     ExtendedSystemObjectsResources.ErrorValueNotAllowed);
+            }
 
             var keys = new List<int>();
             for (var i = 0; i < count; i++)
@@ -110,13 +118,19 @@ namespace ExtendedSystemObjects
                 if (Math.Abs(sortedList[i - 1] + 1) == cache)
                 {
                     //should be only the first case
-                    if (!currentSequence.Contains(i - 1)) currentSequence.Add(i - 1);
+                    if (!currentSequence.Contains(i - 1))
+                    {
+                        currentSequence.Add(i - 1);
+                    }
 
                     currentSequence.Add(i);
                 }
                 else
                 {
-                    if (currentSequence.Count == 0) continue;
+                    if (currentSequence.Count == 0)
+                    {
+                        continue;
+                    }
 
                     sequenceGroups.Add(currentSequence);
                     currentSequence = new List<int>();
@@ -151,13 +165,19 @@ namespace ExtendedSystemObjects
                 if (Math.Abs(numbers[i - 1] + 1) == cache)
                 {
                     //should be only the first case
-                    if (!currentSequence.Contains(i - 1)) currentSequence.Add(i - 1);
+                    if (!currentSequence.Contains(i - 1))
+                    {
+                        currentSequence.Add(i - 1);
+                    }
 
                     currentSequence.Add(i);
                 }
                 else
                 {
-                    if (currentSequence.Count == 0) continue;
+                    if (currentSequence.Count == 0)
+                    {
+                        continue;
+                    }
 
                     sequenceGroups.Add(currentSequence);
                     currentSequence = new List<int>();
@@ -196,19 +216,31 @@ namespace ExtendedSystemObjects
 
                 do
                 {
-                    if (currentSequence.Contains(cache)) break;
+                    if (currentSequence.Contains(cache))
+                    {
+                        break;
+                    }
 
                     count += stepWidth;
 
-                    if (observer.Contains(count)) continue;
+                    if (observer.Contains(count))
+                    {
+                        continue;
+                    }
 
-                    if (!numbers.Contains(count)) break;
+                    if (!numbers.Contains(count))
+                    {
+                        break;
+                    }
 
                     currentSequence.Add(count);
                     observer.Add(count);
                 } while (count < max);
 
-                if (currentSequence.Count == 0) continue;
+                if (currentSequence.Count == 0)
+                {
+                    continue;
+                }
 
                 currentSequence.AddFirst(cache);
                 sequenceGroups.Add(currentSequence);

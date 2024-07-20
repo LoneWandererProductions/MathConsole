@@ -397,7 +397,7 @@ namespace InterpreteTests
         }
 
         /// <summary>
-        ///     Jumps the command.
+        /// Jumps the command.
         /// </summary>
         [TestMethod]
         public void JumpCommand()

@@ -7,7 +7,10 @@
  */
 
 // ReSharper disable UnusedMethodReturnValue.Global
+// ReSharper disable MemberCanBeInternal
+// ReSharper disable UnusedMember.Global
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -16,14 +19,14 @@ namespace ExtendedSystemObjects
     /// <summary>
     ///     Dictionary with an category
     /// </summary>
-    /// <typeparam name="K">Key Value</typeparam>
-    /// <typeparam name="V">Value with Category</typeparam>
-    public sealed class CategorizedDictionary<K, V>
+    /// <typeparam name="TK">Key Value</typeparam>
+    /// <typeparam name="TV">Value with Category</typeparam>
+    public sealed class CategorizedDictionary<TK, TV>
     {
         /// <summary>
         ///     The internal data of our custom Dictionary
         /// </summary>
-        private readonly Dictionary<K, (string Category, V Value)> _data = new();
+        private readonly Dictionary<TK, (string Category, TV Value)> _data = new();
 
         /// <summary>
         ///     Adds a value to the dictionary under the specified category.
@@ -31,7 +34,7 @@ namespace ExtendedSystemObjects
         /// <param name="category">The category under which to add the key-value pair. Can be null.</param>
         /// <param name="key">The key of the value to add.</param>
         /// <param name="value">The value to add.</param>
-        public void Add(string category, K key, V value)
+        public void Add(string category, TK key, TV value)
         {
             _data[key] = (category, value);
         }
@@ -41,7 +44,7 @@ namespace ExtendedSystemObjects
         /// </summary>
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
-        public void Add(K key, V value)
+        public void Add(TK key, TV value)
         {
             Add(string.Empty, key, value);
         }
@@ -51,7 +54,7 @@ namespace ExtendedSystemObjects
         /// </summary>
         /// <param name="key">The key of the value to get.</param>
         /// <returns>The value if found, otherwise the default value for the type.</returns>
-        public V Get(K key)
+        public TV Get(TK key)
         {
             return _data.TryGetValue(key, out var entry) ? entry.Value : default;
         }
@@ -61,7 +64,7 @@ namespace ExtendedSystemObjects
         /// </summary>
         /// <param name="key">The key of the value to get.</param>
         /// <returns>A tuple containing the category and value if found, otherwise null.</returns>
-        public (string Category, V Value)? GetCategoryAndValue(K key)
+        public (string Category, TV Value)? GetCategoryAndValue(TK key)
         {
             return _data.TryGetValue(key, out var entry) ? entry : null;
         }
@@ -71,7 +74,7 @@ namespace ExtendedSystemObjects
         /// </summary>
         /// <param name="category">The category to retrieve values from. Can be null.</param>
         /// <returns>A dictionary of key-value pairs in the specified category.</returns>
-        public Dictionary<K, V> GetCategory(string category)
+        public Dictionary<TK, TV> GetCategory(string category)
         {
             return _data
                 .Where(entry => entry.Value.Category == category)
@@ -87,6 +90,71 @@ namespace ExtendedSystemObjects
             return _data.Values
                 .Select(entry => entry.Category)
                 .Distinct();
+        }
+
+        /// <summary>
+        /// Updates the category of an existing entry.
+        /// </summary>
+        /// <param name="key">The key of the entry to update.</param>
+        /// <param name="newCategory">The new category to assign to the entry.</param>
+        /// <returns>True if the entry was updated, false if the key does not exist.</returns>
+        public bool SetCategory(TK key, string newCategory)
+        {
+            if (!_data.TryGetValue(key, out var entry))
+            {
+                return false;
+            }
+
+            _data[key] = (newCategory, entry.Value);
+            return true;
+        }
+
+        /// <summary>
+        /// Tries to get the category for a given key.
+        /// </summary>
+        /// <param name="key">The key to search for.</param>
+        /// <param name="category">The category associated with the key.</param>
+        /// <returns>True if the key exists, otherwise false.</returns>
+        public bool TryGetCategory(TK key, out string category)
+        {
+            if (_data.TryGetValue(key, out var entry))
+            {
+                category = entry.Category;
+                return true;
+            }
+
+            category = null;
+            return false;
+        }
+
+        /// <summary>
+        /// Tries to get the value for a given key.
+        /// </summary>
+        /// <param name="key">The key to search for.</param>
+        /// <param name="value">The value associated with the key.</param>
+        /// <returns>True if the key exists, otherwise false.</returns>
+        public bool TryGetValue(TK key, out TV value)
+        {
+            if (_data.TryGetValue(key, out var entry))
+            {
+                value = entry.Value;
+                return true;
+            }
+
+            value = default;
+            return false;
+        }
+
+        /// <summary>
+        ///     Returns a string representation of the dictionary's contents.
+        /// </summary>
+        /// <returns>A string representing the dictionary's contents.</returns>
+        public override string ToString()
+        {
+            var entries = _data.Select(entry =>
+                $"Key: {entry.Key}, Category: {entry.Value.Category}, Value: {entry.Value.Value}");
+
+            return string.Join(Environment.NewLine, entries);
         }
     }
 }
