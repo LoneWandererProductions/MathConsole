@@ -17,7 +17,7 @@ namespace Interpreter
     internal static class IrtIfElseParser
     {
         /// <summary>
-        ///     Builds the command.
+        /// Builds the command.
         /// </summary>
         /// <param name="input">The input.</param>
         /// <returns>Command Register</returns>
@@ -37,13 +37,18 @@ namespace Interpreter
                 {
                     keepParsing = false;
                     if (!string.IsNullOrWhiteSpace(input))
+                    {
                         formattedBlocks.Add(input.Trim()); // Add remaining part as the last element
+                    }
                 }
                 else
                 {
                     // Add the part before the first 'if' to the list
                     var beforeIf = input.Substring(0, ifIndex).Trim();
-                    if (!string.IsNullOrWhiteSpace(beforeIf)) formattedBlocks.Add(beforeIf);
+                    if (!string.IsNullOrWhiteSpace(beforeIf))
+                    {
+                        formattedBlocks.Add(beforeIf);
+                    }
 
                     input = input.Substring(ifIndex); // Update input to start from 'if'
 
@@ -56,9 +61,7 @@ namespace Interpreter
                     else
                     {
                         var ifBlock = input.Substring(0, elsePosition).Trim(); // Part up to 'else'
-                        var elseBlock =
-                            input.Substring(elsePosition, ifElseBlock.Length - elsePosition)
-                                .Trim(); // Part after 'else'
+                        var elseBlock = input.Substring(elsePosition, ifElseBlock.Length - elsePosition).Trim(); // Part after 'else'
                         formattedBlocks.Add(ifBlock);
                         formattedBlocks.Add(elseBlock);
                     }
@@ -78,13 +81,11 @@ namespace Interpreter
                 {
                     case 0: // IF
                     case 1: // ELSE
-                        commandRegister.Add(IrtConst.InternContainerCommands[keywordIndex].Command, commandIndex,
-                            block);
+                        commandRegister.Add(IrtConst.InternContainerCommands[keywordIndex].Command, commandIndex, block);
                         break;
 
                     default:
-                        foreach (var trimmedSubCommand in Irt.SplitParameter(block, IrtConst.NewCommand)
-                                     .Select(subCommand => subCommand.Trim()))
+                        foreach (var trimmedSubCommand in Irt.SplitParameter(block, IrtConst.NewCommand).Select(subCommand => subCommand.Trim()))
                         {
                             keywordIndex = StartsWith(trimmedSubCommand, IrtConst.InternContainerCommands);
                             commandIndex++;
@@ -93,12 +94,13 @@ namespace Interpreter
                             {
                                 case 2: // GOTO
                                 case 3: // LABEL
-                                    commandRegister.Add(IrtConst.InternContainerCommands[keywordIndex].Command,
-                                        commandIndex, trimmedSubCommand);
+                                    commandRegister.Add(IrtConst.InternContainerCommands[keywordIndex].Command, commandIndex, trimmedSubCommand);
                                     break;
                                 default:
                                     if (!string.IsNullOrEmpty(trimmedSubCommand))
-                                        commandRegister.Add("COMMAND", commandIndex, trimmedSubCommand);
+                                    {
+                                        commandRegister.Add("COMMAND", commandIndex,trimmedSubCommand);
+                                    }
 
                                     break;
                             }
@@ -115,7 +117,7 @@ namespace Interpreter
 
 
         /// <summary>
-        ///     Extracts the first if else.
+        /// Extracts the first if else.
         /// </summary>
         /// <param name="input">The input.</param>
         /// <returns>Part of the string that contains the first if/else clause, even if stuff is nested</returns>
@@ -147,8 +149,7 @@ namespace Interpreter
                     end = i;
                     break;
                 }
-                else if (i + 4 <= input.Length &&
-                         input.Substring(i, 4).Equals("else", StringComparison.OrdinalIgnoreCase) && braceCount == 0)
+                else if (i + 4 <= input.Length && input.Substring(i, 4).Equals("else", StringComparison.OrdinalIgnoreCase) && braceCount == 0)
                 {
                     elseFound = true;
                     elsePosition = i;
@@ -194,7 +195,7 @@ namespace Interpreter
             return (input.Substring(start, end - start + 1).Trim(), elsePosition);
         }
 
-        //TODO do not forget the values after the last }
+        //TODO do not forget the values after the last }, will be removed now useless for me!
         internal static IrtIfElseBlock Parse(IEnumerable<string> inputParts)
         {
             var stack = new Stack<(string Condition, StringBuilder IfClause, StringBuilder ElseClause, bool InElse)>();
@@ -204,6 +205,7 @@ namespace Interpreter
             string currentCondition = null;
 
             foreach (var token in inputParts.SelectMany(Tokenize))
+            {
                 if (token.StartsWith("if(", StringComparison.Ordinal))
                 {
                     var condition = token.Substring(3, token.Length - 4);
@@ -216,6 +218,7 @@ namespace Interpreter
                 else
                 {
                     if (token.ToUpperInvariant() != IrtConst.InternalElse)
+                    {
                         switch (token.ToUpperInvariant())
                         {
                             case "}" when !inElse:
@@ -224,8 +227,9 @@ namespace Interpreter
                             case "}" when inElse:
                             {
                                 if (stack.Count == 0)
-                                    throw new InvalidOperationException(
-                                        "Invalid input string: unmatched closing brace");
+                                {
+                                    throw new InvalidOperationException("Invalid input string: unmatched closing brace");
+                                }
 
                                 var (parentCondition, parentIfPart, parentElsePart, parentInElse) = stack.Pop();
 
@@ -239,12 +243,19 @@ namespace Interpreter
                                 var nestedIfElse =
                                     $"if({innerIfElseBlock.Condition}) {{ {innerIfElseBlock.IfClause} }} else {{ {innerIfElseBlock.ElseClause} }}";
 
-                                if (parentCondition == null) return innerIfElseBlock;
+                                if (parentCondition == null)
+                                {
+                                    return innerIfElseBlock;
+                                }
 
                                 if (parentInElse)
+                                {
                                     parentElsePart.Append(nestedIfElse);
+                                }
                                 else
+                                {
                                     parentIfPart.Append(nestedIfElse);
+                                }
 
                                 currentCondition = parentCondition;
                                 currentIfClause = parentIfPart;
@@ -258,16 +269,24 @@ namespace Interpreter
                             default:
                             {
                                 if (inElse)
+                                {
                                     currentElseClause.Append($"{token.Trim()} ");
+                                }
                                 else
+                                {
                                     currentIfClause.Append($"{token.Trim()} ");
+                                }
 
                                 break;
                             }
                         }
+                    }
                     else
+                    {
                         inElse = true;
+                    }
                 }
+            }
 
             throw new InvalidOperationException("Invalid input string");
         }
@@ -280,6 +299,7 @@ namespace Interpreter
             string cache;
 
             for (var i = 0; i < input.Length; i++)
+            {
                 switch (input[i])
                 {
                     case IrtConst.AdvancedOpen:
@@ -288,7 +308,10 @@ namespace Interpreter
                         if (sb.Length > 0)
                         {
                             cache = sb.ToString();
-                            if (!string.IsNullOrWhiteSpace(cache)) tokens.Add(cache);
+                            if (!string.IsNullOrWhiteSpace(cache))
+                            {
+                                tokens.Add(cache);
+                            }
 
                             sb.Clear();
                         }
@@ -302,15 +325,19 @@ namespace Interpreter
                             if (sb.Length > 0)
                             {
                                 cache = sb.ToString();
-                                if (!string.IsNullOrWhiteSpace(cache)) tokens.Add(cache);
+                                if (!string.IsNullOrWhiteSpace(cache))
+                                {
+                                    tokens.Add(cache);
+                                }
 
                                 sb.Clear();
                             }
 
                             var endIdx = input.IndexOf(')', i);
                             if (endIdx == -1)
-                                throw new InvalidOperationException(
-                                    "Invalid input string: missing closing parenthesis for 'if'");
+                            {
+                                throw new InvalidOperationException("Invalid input string: missing closing parenthesis for 'if'");
+                            }
 
                             tokens.Add(input.Substring(i, endIdx - i + 1));
                             i = endIdx;
@@ -320,7 +347,10 @@ namespace Interpreter
                             if (sb.Length > 0)
                             {
                                 cache = sb.ToString();
-                                if (!string.IsNullOrWhiteSpace(cache)) tokens.Add(cache);
+                                if (!string.IsNullOrWhiteSpace(cache))
+                                {
+                                    tokens.Add(cache);
+                                }
 
                                 sb.Clear();
                             }
@@ -335,16 +365,20 @@ namespace Interpreter
 
                         break;
                 }
+            }
 
             // Final check to add any remaining token
             cache = sb.ToString();
-            if (!string.IsNullOrWhiteSpace(cache)) tokens.Add(cache);
+            if (!string.IsNullOrWhiteSpace(cache))
+            {
+                tokens.Add(cache);
+            }
 
             return tokens;
         }
 
         /// <summary>
-        ///     Starts the with.
+        /// Starts the with.
         /// </summary>
         /// <param name="input">The input.</param>
         /// <param name="com">The COM.</param>
@@ -358,33 +392,63 @@ namespace Interpreter
             {
                 var index = input.IndexOf(IrtConst.BaseOpen);
 
-                if (index >= 0) input = input.Substring(0, index).Trim();
+                if (index >= 0)
+                {
+                    input = input.Substring(0, index).Trim();
+                }
             }
 
             if (input.Contains(IrtConst.AdvancedOpen))
             {
                 var index = input.IndexOf(IrtConst.AdvancedOpen);
 
-                if (index >= 0) input = input.Substring(0, index).Trim();
+                if (index >= 0)
+                {
+                    input = input.Substring(0, index).Trim();
+                }
             }
 
             foreach (var (key, inCommand) in com)
+            {
                 if (string.Equals(input.ToUpperInvariant(), inCommand.Command.ToUpperInvariant(),
-                        StringComparison.Ordinal))
+                    StringComparison.Ordinal))
+                {
                     return
                         key;
+                }
+            }
 
             return IrtConst.Error;
         }
 
         /// <summary>
-        ///     Finds the first if index.
+        /// Finds the first if index.
         /// </summary>
         /// <param name="input">The input.</param>
         /// <returns>index of first if</returns>
         private static int FindFirstIfIndex(string input)
         {
-            return input.IndexOf("if", StringComparison.OrdinalIgnoreCase);
+            var position = input.IndexOf("if", StringComparison.OrdinalIgnoreCase);
+
+            while (position != -1)
+            {
+                // Check if there is a '(' after "if" ignoring any whitespace
+                var openParenIndex = position + 2; // "if" is two characters long
+                while (openParenIndex < input.Length && char.IsWhiteSpace(input[openParenIndex]))
+                {
+                    openParenIndex++;
+                }
+
+                if (openParenIndex < input.Length && input[openParenIndex] == IrtConst.BaseOpen)
+                {
+                    return position;
+                }
+
+                // Find the next "if" in the string
+                position = input.IndexOf("if", position + 1, StringComparison.OrdinalIgnoreCase);
+            }
+
+            return IrtConst.Error; // Not found or no valid "if" followed by '('
         }
     }
 }

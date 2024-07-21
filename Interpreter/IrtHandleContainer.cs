@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Interpreter
 {
@@ -20,7 +21,7 @@ namespace Interpreter
     ///     Handle our Container
     /// </summary>
     /// <seealso cref="IDisposable" />
-    internal sealed class IrtHandleContainer : IDisposable
+    public sealed class IrtHandleContainer : IDisposable
     {
         /// <summary>
         ///     The disposed
@@ -125,7 +126,7 @@ namespace Interpreter
                     {
                         // if
                         case 0:
-                            currentPosition = HandleIfElseBlock(commands, currentPosition);
+                            //currentPosition = HandleIfElseBlock(commands, currentPosition);
                             break;
                         // else (ignored, handled by if)
                         case 1:
@@ -156,14 +157,15 @@ namespace Interpreter
             }
         }
 
-        private int HandleIfElseBlock(List<string> commands, int currentPosition)
+        private async Task<int> HandleIfElseBlock(List<string> commands, int currentPosition)
         {
-            //var block = Irt.HandleIfElseBlock(commands, currentPosition);
+            // Request feedback
+            _prompt.ProvideFeedback(this);
+
+            var feedback = await _prompt.ProvideFeedbackAsync();
 
             // Evaluate the if condition
-            var userResponse = false; //GetUserResponse(); // This method should get user input or some condition
-
-            if (userResponse)
+            if (feedback)
             {
                 //ExecuteCommands(ifBlockCommands);
             }

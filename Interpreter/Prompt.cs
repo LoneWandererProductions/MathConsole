@@ -13,6 +13,9 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Threading.Tasks;
+using System.Transactions;
+using System.Windows.Media;
 using ExtendedSystemObjects;
 
 namespace Interpreter
@@ -47,6 +50,18 @@ namespace Interpreter
         ///     User Input Windows
         /// </summary>
         private WindowPrompt _prompt;
+
+        /// <summary>
+        /// The lock input
+        /// </summary>
+        private bool _lockInput;
+
+        private TaskCompletionSource<bool> _feedbackCompletionSource;
+
+        /// <summary>
+        /// The reference to the Container Handle
+        /// </summary>
+        private IrtHandleContainer _irtHandleContainer;
 
         /// <summary>
         ///     Gets or sets the command register.
@@ -115,6 +130,7 @@ namespace Interpreter
         public void Initiate(Dictionary<int, InCommand> com, string userSpace,
             Dictionary<int, InCommand> extension = null, Dictionary<int, UserFeedback> userFeedback = null)
         {
+            _lockInput = false;
             ResetState();
             CommandRegister = new IrtFeedback();
             CommandRegister = new IrtFeedback();
@@ -167,6 +183,10 @@ namespace Interpreter
         {
             if (!CommandRegister.AwaitInput) _interpret?.HandleInput(input);
             else _feedbackHandler.HandleUserInput(input);
+
+            return;
+
+            _feedbackCompletionSource.SetResult(true);
         }
 
         /// <inheritdoc />
@@ -252,6 +272,7 @@ namespace Interpreter
             if (disposing)
             {
                 _interpret = null;
+                _irtHandleContainer = null;
                 CollectedSpaces = null;
                 Log = null;
                 _prompt?.Close();
@@ -305,6 +326,18 @@ namespace Interpreter
         {
             // Finalizer calls Dispose(false)
             Dispose(false);
+        }
+
+        public void ProvideFeedback(IrtHandleContainer irtHandleContainer)
+        {
+            _irtHandleContainer = irtHandleContainer;
+            _lockInput = true;
+        }
+
+        public async Task<bool> ProvideFeedbackAsync()
+        {
+            // Wait until feedback is provided externally
+            return await _feedbackCompletionSource.Task;
         }
     }
 }
