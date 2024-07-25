@@ -14,8 +14,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Transactions;
-using System.Windows.Media;
 using ExtendedSystemObjects;
 
 namespace Interpreter
@@ -29,7 +27,7 @@ namespace Interpreter
     /// <seealso cref="IDisposable" />
     /// <inheritdoc cref="IDisposable" />
     /// <inheritdoc cref="IPrompt" />
-    public sealed class Prompt : IPrompt, IDisposable
+    public  class Prompt : IPrompt, IDisposable
     {
         /// <summary>
         ///     Used to interpret Commands
@@ -328,16 +326,41 @@ namespace Interpreter
             Dispose(false);
         }
 
-        public void ProvideFeedback(IrtHandleContainer irtHandleContainer)
+
+        //TODO skeleton
+
+        public class InputEventArgs : EventArgs
         {
-            _irtHandleContainer = irtHandleContainer;
-            _lockInput = true;
+            public string Input { get; set; }
+            public string RequestId { get; set; }
         }
 
-        public async Task<bool> ProvideFeedbackAsync()
+        // Event to handle feedback, using EventHandler for proper event pattern
+        public event EventHandler<InputEventArgs> HandleFeedback;
+
+        internal void RequestFeedback(string requestId, IrtFeedback promptCommandRegister)
         {
-            // Wait until feedback is provided externally
-            return await _feedbackCompletionSource.Task;
+            if (requestId == null) return;
+
+            // Example: Set the requestId or use it to manage state
+            // _currentRequestId = requestId;
+            // _currentCommandRegister = promptCommandRegister;
+
+            Console.WriteLine("Prompt: Awaiting specific feedback...");
+            // Here you could wait for user input or prompt them in the UI
+        }
+
+        public void SendFeedback()
+        {
+            // Simulate receiving user input
+
+            // Trigger the event
+            OnHandleFeedback(new InputEventArgs { Input = "receivedInput", RequestId = "receivedRequestId" });
+        }
+
+        protected virtual void OnHandleFeedback(InputEventArgs e)
+        {
+            HandleFeedback?.Invoke(this, e); // Null-conditional operator to safely invoke event
         }
     }
 }

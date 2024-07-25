@@ -160,12 +160,9 @@ namespace Interpreter
         private async Task<int> HandleIfElseBlock(List<string> commands, int currentPosition)
         {
             // Request feedback
-            _prompt.ProvideFeedback(this);
-
-            var feedback = await _prompt.ProvideFeedbackAsync();
 
             // Evaluate the if condition
-            if (feedback)
+            //if (feedback)
             {
                 //ExecuteCommands(ifBlockCommands);
             }

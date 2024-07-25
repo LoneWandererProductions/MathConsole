@@ -44,6 +44,8 @@ namespace Interpreter
         /// </summary>
         private Prompt _prompt;
 
+        private readonly string _myRequestId;
+
         /// <summary>
         ///     Prevents a default instance of the <see cref="IrtHandleExtensionInternal" /> class from being created.
         /// </summary>
@@ -64,6 +66,8 @@ namespace Interpreter
             _irtHandlePrompt = irtPrompt;
             _commands = commands;
             _prompt = prompt;
+            _prompt.HandleFeedback += HandleFeedback;
+            _myRequestId = Guid.NewGuid().ToString();
             _irtHandleInternal = irtInternal;
             _disposed = false;
         }
@@ -102,7 +106,7 @@ namespace Interpreter
                         var command = IrtConst.InternCommands[key];
 
                         using (var irtInternal = new IrtHandleInternal(IrtConst.InternCommands,
-                                   IrtConst.InternalNameSpace, _prompt))
+                            IrtConst.InternalNameSpace, _prompt))
                         {
                             irtInternal.ProcessInput(IrtConst.InternalHelpWithParameter, command.Command);
                         }
@@ -116,6 +120,9 @@ namespace Interpreter
                             CommandHandler = _irtHandleInternal,
                             Key = key
                         };
+
+                        // Register for feedback add the stuff we need from class
+                        _prompt.RequestFeedback(_myRequestId, _prompt.CommandRegister);
                     }
                     else
                     {
@@ -129,6 +136,10 @@ namespace Interpreter
                             AwaitInput = true,
                             AwaitedOutput = com
                         };
+
+                        // Register for feedback add the stuff we need from class
+
+                        _prompt.RequestFeedback(_myRequestId, _prompt.CommandRegister);
                     }
 
                     break;
@@ -137,6 +148,12 @@ namespace Interpreter
                     _prompt.SendLogs(nameof(ProcessExtensionInternal), IrtConst.ErrorInternalExtensionNotFound);
                     break;
             }
+        }
+
+        private void HandleFeedback(object sender, Prompt.InputEventArgs e)
+        {
+            // Optionally, reset the callback to avoid unintended input processing
+            _prompt.RequestFeedback(null, null);
         }
 
         /// <summary>
@@ -153,6 +170,8 @@ namespace Interpreter
 
             if (disposing)
             {
+                // Unsubscribe from the event to avoid memory leaks
+                _prompt.HandleFeedback -= HandleFeedback;
                 // Dispose managed resources
                 _commands = null;
 
