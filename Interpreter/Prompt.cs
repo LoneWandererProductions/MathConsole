@@ -27,7 +27,7 @@ namespace Interpreter
     /// <seealso cref="IDisposable" />
     /// <inheritdoc cref="IDisposable" />
     /// <inheritdoc cref="IPrompt" />
-    public  class Prompt : IPrompt, IDisposable
+    public class Prompt : IPrompt, IDisposable
     {
         /// <summary>
         ///     Used to interpret Commands
