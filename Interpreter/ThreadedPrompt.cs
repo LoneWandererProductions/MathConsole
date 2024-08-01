@@ -7,7 +7,6 @@ namespace Interpreter
     //TODO implement for multihreading
     public class ThreadedPrompt
     {
-
         private readonly ConcurrentDictionary<Guid, TaskCompletionSource<string>> _pendingInputs;
 
         public ThreadedPrompt()
