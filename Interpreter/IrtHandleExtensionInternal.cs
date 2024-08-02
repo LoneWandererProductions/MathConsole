@@ -121,8 +121,10 @@ namespace Interpreter
                             Key = key
                         };
 
+                        //TODO replace
+                        var feedback = new IrtFeedbackNew();
                         // Register for feedback add the stuff we need from class
-                        _prompt.RequestFeedback(_myRequestId, _prompt.CommandRegister);
+                        _prompt.RequestFeedback(_myRequestId, feedback);
                     }
                     else
                     {
@@ -138,8 +140,9 @@ namespace Interpreter
                         };
 
                         // Register for feedback add the stuff we need from class
-
-                        _prompt.RequestFeedback(_myRequestId, _prompt.CommandRegister);
+                        //TODO replace
+                        var feedback = new IrtFeedbackNew();
+                        _prompt.RequestFeedback(_myRequestId, feedback);
                     }
 
                     break;

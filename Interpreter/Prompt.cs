@@ -54,7 +54,7 @@ namespace Interpreter
         /// </summary>
         private bool _lockInput;
 
-        private TaskCompletionSource<bool> _feedbackCompletionSource;
+        private readonly TaskCompletionSource<bool> _feedbackCompletionSource;
 
         /// <summary>
         /// The reference to the Container Handle
@@ -326,7 +326,6 @@ namespace Interpreter
             Dispose(false);
         }
 
-
         //TODO skeleton
 
         public class InputEventArgs : EventArgs
@@ -338,7 +337,7 @@ namespace Interpreter
         // Event to handle feedback, using EventHandler for proper event pattern
         public event EventHandler<InputEventArgs> HandleFeedback;
 
-        internal void RequestFeedback(string requestId, IrtFeedback promptCommandRegister)
+        internal void RequestFeedback(string requestId, IrtFeedbackNew promptCommandRegister)
         {
             if (requestId == null) return;
 

@@ -1,0 +1,41 @@
+﻿/*
+ * COPYRIGHT:   See COPYING in the top level directory
+ * PROJECT:     Interpreter
+ * FILE:        Interpreter/IrtFeedback.cs
+ * PURPOSE:     Handle some stuff from the User Feedback
+ * PROGRAMER:   Peter Geinitz (Wayfarer)
+ */
+
+namespace Interpreter
+{
+    /// <summary>
+    ///     Control Object that checks if User Feedback is needed
+    /// </summary>
+    internal sealed class IrtFeedbackNew
+    {
+        /// <summary>
+        ///     Gets or sets a value indicating whether [initial message was shown].
+        /// </summary>
+        /// <value>
+        ///     <c>true</c> if [initial message shown]; otherwise, <c>false</c>.
+        /// </value>
+        internal bool InitialMessageShown { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the awaited input Id,
+        ///     Can be user Dictionary or the Internal Feedback Id. This just offers the options we are allowed to select.
+        /// </summary>
+        /// <value>
+        ///     The awaited input Id.
+        /// </value>
+        internal int AwaitedInput { get; init; }
+
+        /// <summary>
+        ///     Gets or sets the key.
+        /// </summary>
+        /// <value>
+        ///     The key.
+        /// </value>
+        internal int Key { get; init; }
+    }
+}
