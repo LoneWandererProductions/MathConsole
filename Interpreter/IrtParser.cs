@@ -21,6 +21,11 @@ namespace Interpreter
     internal sealed class IrtParser : IDisposable
     {
         /// <summary>
+        /// My request identifier
+        /// </summary>
+        private readonly string _myRequestId;
+
+        /// <summary>
         ///     Command Register
         /// </summary>
         private static Dictionary<int, InCommand> _com;
@@ -66,6 +71,11 @@ namespace Interpreter
         private IrtHandleInternal _irtHandleInternal;
 
         /// <summary>
+        /// The user feedback
+        /// </summary>
+        private readonly Dictionary<int, UserFeedback> _userFeedback;
+
+        /// <summary>
         ///     Prevents a default instance of the <see cref="IrtParser" /> class from being created.
         /// </summary>
         private IrtParser()
@@ -73,13 +83,18 @@ namespace Interpreter
         }
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="IrtParser" /> class.
+        /// Initializes a new instance of the <see cref="IrtParser" /> class.
         /// </summary>
         /// <param name="prompt">The prompt.</param>
-        public IrtParser(Prompt prompt)
+        /// <param name="userFeedback">The optional user feedback.</param>
+        public IrtParser(Prompt prompt, Dictionary<int, UserFeedback> userFeedback = null)
         {
             _prompt = prompt;
+            _myRequestId = Guid.NewGuid().ToString();
+            _userFeedback = userFeedback;
+            _prompt.HandleFeedback += HandleFeedback;
         }
+
 
         /// <inheritdoc />
         /// <summary>
@@ -312,7 +327,54 @@ namespace Interpreter
         /// <param name="command">The command.</param>
         private void SetResult(OutCommand command)
         {
-            _prompt.SendCommand(this, command);
+            if (_com[command.Command].FeedbackId == 0)
+            {
+                _prompt.SendCommand(this, command);
+            }
+            else
+            {
+                if (_userFeedback == null)
+                {
+                    SetErrorWithLog(IrtConst.ErrorNoFeedbackOptions);
+                    return;
+                }
+
+                var id = _com[command.Command].FeedbackId;
+
+                var feedback = _userFeedback[id];
+                var feedbackReceiver = new IrtFeedback
+                {
+                    RequestId = _myRequestId,
+                    Feedback = feedback,
+                    AwaitedOutput = command
+                };
+
+                _prompt.RequestFeedback(feedbackReceiver);
+            }
+        }
+
+        /// <summary>
+        /// Handles the feedback.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The <see cref="IrtFeedbackInputEventArgs"/> instance containing the event data.</param>
+        private void HandleFeedback(object? sender, IrtFeedbackInputEventArgs e)
+        {
+            if (e.RequestId != _myRequestId) return;
+
+            switch (e.Answer)
+            {
+                case AvailableFeedback.Yes:
+                    _prompt.SendLog(this, IrtConst.FeedbackOperationExecutedYes);
+                    _prompt.SendCommand(this, e.AwaitedOutput);
+                    break;
+                case AvailableFeedback.No:
+                    _prompt.SendLog(this, IrtConst.FeedbackOperationExecutedNo);
+                    break;
+                case AvailableFeedback.Cancel:
+                    _prompt.SendLog(this, IrtConst.FeedbackCancelOperation);
+                    break;
+            }
         }
 
         /// <summary>

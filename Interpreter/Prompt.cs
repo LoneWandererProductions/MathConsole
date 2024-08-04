@@ -60,6 +60,11 @@ namespace Interpreter
         private WindowPrompt _prompt;
 
         /// <summary>
+        /// The user feedback
+        /// </summary>
+        private Dictionary<int, UserFeedback> _userFeedback;
+
+        /// <summary>
         ///     The collected Namespaces
         /// </summary>
         public Dictionary<string, UserSpace> CollectedSpaces { get; private set; }
@@ -126,7 +131,10 @@ namespace Interpreter
             //Upper is needed because of the way we compare commands in the Interpreter
             CollectedSpaces.AddDistinct(userSpace.ToUpper(), use);
 
-            _interpret = new IrtParser(this);
+            //feedback stuff
+            _userFeedback = userFeedback;
+
+            _interpret = new IrtParser(this, _userFeedback);
             _interpret.Initiate(use);
             _interpret.SendInternalLog += SendLog;
         }
@@ -296,6 +304,10 @@ namespace Interpreter
         // Event to handle feedback, using EventHandler for proper event pattern
         internal event EventHandler<IrtFeedbackInputEventArgs> HandleFeedback;
 
+        /// <summary>
+        /// Requests the feedback.
+        /// </summary>
+        /// <param name="feedbackRequest">The feedback request.</param>
         internal void RequestFeedback(IrtFeedback feedbackRequest)
         {
             if (string.IsNullOrEmpty(feedbackRequest.RequestId)) return;

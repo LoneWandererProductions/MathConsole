@@ -167,6 +167,11 @@ namespace Interpreter
         internal const string ErrorFeedbackOptions = "Input was not valid.";
 
         /// <summary>
+        /// The error no feedback options (const). Value: "No Feedback Options were provided."
+        /// </summary>
+        internal const string ErrorNoFeedbackOptions = "No Feedback Options were provided.";
+
+        /// <summary>
         ///     The error feedback Option not allowed (const). Value: "Option not allowed.".
         /// </summary>
         internal const string ErrorFeedbackOptionNotAllowed = "Option not allowed.";
@@ -180,6 +185,21 @@ namespace Interpreter
         ///     The feedback Message (const). Value: "You selected: ".
         /// </summary>
         internal const string FeedbackMessage = "You selected: ";
+
+        /// <summary>
+        ///     The feedback for cancel Command (const). Value:"Operation was cancelled. You can proceed."
+        /// </summary>
+        internal const string FeedbackCancelOperation = "Operation was cancelled. You can proceed.";
+
+        /// <summary>
+        ///     The feedback for yes Command (const). Value: "Operation was executed with yes."
+        /// </summary>
+        internal const string FeedbackOperationExecutedYes = "Operation was executed with yes.";
+
+        /// <summary>
+        ///     The feedback for yes Command (const). Value: "Operation was executed with no."
+        /// </summary>
+        internal const string FeedbackOperationExecutedNo = "Operation was executed with no.";
 
         /// <summary>
         ///     The parenthesis error (const). Value: "Wrong parenthesis".

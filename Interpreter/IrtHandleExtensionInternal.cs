@@ -19,6 +19,9 @@ namespace Interpreter
     /// </summary>
     internal sealed class IrtHandleExtensionInternal : IDisposable
     {
+        /// <summary>
+        /// My request identifier
+        /// </summary>
         private readonly string _myRequestId;
 
         /// <summary>
@@ -130,7 +133,7 @@ namespace Interpreter
             var command = IrtConst.InternCommands[key];
 
             using (var irtInternal =
-                   new IrtHandleInternal(IrtConst.InternCommands, IrtConst.InternalNameSpace, _prompt))
+                new IrtHandleInternal(IrtConst.InternCommands, IrtConst.InternalNameSpace, _prompt))
             {
                 irtInternal.ProcessInput(IrtConst.InternalHelpWithParameter, command.Command);
             }
@@ -158,6 +161,7 @@ namespace Interpreter
             _irtHandleInternal.ProcessInput(IrtConst.InternalHelpWithParameter, command.Command);
 
             var feedback = IrtConst.InternalFeedback[-1];
+
             var feedbackReceiver = new IrtFeedback
             {
                 RequestId = _myRequestId,
@@ -165,6 +169,7 @@ namespace Interpreter
                 BranchId = 12,
                 AwaitedOutput = com
             };
+
             _prompt.RequestFeedback(feedbackReceiver);
         }
 
@@ -180,12 +185,36 @@ namespace Interpreter
             switch (e.BranchId)
             {
                 case 11:
-                    _irtHandleInternal.ProcessInput(e.Key, e.Command);
-                    //TODO check answers
+                    switch (e.Answer)
+                    {
+                        case AvailableFeedback.Yes:
+                            _prompt.SendLog(this, IrtConst.FeedbackOperationExecutedYes);
+                            _irtHandleInternal.ProcessInput(e.Key, e.Command);
+                            break;
+                        case AvailableFeedback.No:
+                            _prompt.SendLog(this, IrtConst.FeedbackOperationExecutedNo);
+                            break;
+                        case AvailableFeedback.Cancel:
+                            _prompt.SendLog(this, IrtConst.FeedbackCancelOperation);
+                            break;
+                    }
+
                     break;
                 case 12:
-                    _prompt.SendCommands(this, e.AwaitedOutput);
-                    //TODO check answers
+                    switch (e.Answer)
+                    {
+                        case AvailableFeedback.Yes:
+                            _prompt.SendLog(this, IrtConst.FeedbackOperationExecutedYes);
+                            _prompt.SendCommands(this, e.AwaitedOutput);
+                            break;
+                        case AvailableFeedback.No:
+                            _prompt.SendLog(this, IrtConst.FeedbackOperationExecutedNo);
+                            break;
+                        case AvailableFeedback.Cancel:
+                            _prompt.SendLog(this, IrtConst.FeedbackCancelOperation);
+                            break;
+                    }
+
                     break;
             }
         }
