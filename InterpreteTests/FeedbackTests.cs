@@ -40,91 +40,6 @@ namespace InterpreteTests
         private readonly Dictionary<int, UserFeedback> _userFeedback = new();
 
         /// <summary>
-        ///     Handles the user input valid input show initial message and send commands.
-        /// </summary>
-        [TestMethod]
-        public void HandleUserInputValidInputShowInitialMessageAndSendCommands()
-        {
-            // Arrange
-            _prompt.SendLogs += SendLogs;
-            _prompt.SendCommands += SendCommands;
-            var options = new Dictionary<AvailableFeedback, string> { { AvailableFeedback.Yes, "" } };
-
-            _userFeedback[1] = new UserFeedback
-            {
-                Options = options
-            };
-
-            _prompt.CommandRegister = new IrtFeedback
-            {
-                AwaitedInput = 1,
-                AwaitInput = true
-            };
-
-            var handleFeedback = new IrtHandleFeedback(_prompt, _userFeedback, new UserSpace());
-
-            // Act
-            handleFeedback.HandleUserInput(" yES");
-
-            // Assert
-            Assert.IsTrue(_prompt.CommandRegister.InitialMessageShown);
-            // Add more assertions based on expected behavior after handling input
-        }
-
-        /// <summary>
-        ///     Handles the user input invalid awaited input no commands sent.
-        /// </summary>
-        [TestMethod]
-        public void HandleUserInputInvalidAwaitedInputNoCommandsSent()
-        {
-            // Arrange
-            _prompt.SendLogs += SendLogs;
-            _prompt.SendCommands += SendCommands;
-
-            _prompt.CommandRegister = new IrtFeedback
-            {
-                AwaitedInput = 999, // Assuming this key doesn't exist in _userFeedback or IrtConst.InternalFeedback
-                AwaitInput = true
-            };
-
-            var handleFeedback = new IrtHandleFeedback(_prompt, _userFeedback, new UserSpace());
-
-            // Act
-            handleFeedback.HandleUserInput(" yES");
-
-            // Assert
-            Assert.IsFalse(_prompt.CommandRegister.AwaitInput);
-            // Add more assertions based on expected behavior after handling input
-        }
-
-        /// <summary>
-        ///     Handles the user input null feedback logs error.
-        /// </summary>
-        [TestMethod]
-        public void HandleUserInputNullFeedbackLogsError()
-        {
-            // Arrange
-            _prompt.SendLogs += SendLogs;
-            _prompt.SendCommands += SendCommands;
-            _prompt.CommandRegister = new IrtFeedback
-            {
-                AwaitedInput = 1, // Assuming this key doesn't exist in _userFeedback or IrtConst.InternalFeedback
-                AwaitInput = true
-            };
-            var use = new UserSpace { Commands = new Dictionary<int, InCommand>() };
-
-            var handleFeedback = new IrtHandleFeedback(_prompt, _userFeedback, use);
-
-            // Act
-            handleFeedback.HandleUserInput(" yES");
-
-            // Assert
-            // Verify that an error command is sent or appropriate logging occurs
-            // Example: Assert.AreEqual(expectedErrorMessage, _prompt.LastErrorMessage);
-            Assert.AreEqual("No valid Options available.", _log, "No error Message send");
-        }
-
-        /// <summary>
         ///     Feedback and extension test.
         /// </summary>
         [TestMethod]
@@ -157,11 +72,11 @@ namespace InterpreteTests
 
             Assert.IsFalse(_log.Contains("Help com1"), "No help provided.");
             // Assert
-            Assert.AreEqual("Option not allowed.", _log, "Error was not catched.");
+            Assert.AreEqual("Input was not valid.", _log, "Error was not catched.");
 
             prompt.ConsoleInput("mehh");
 
-            Assert.AreEqual("Option not allowed.", _log, "Error was not catched.");
+            Assert.AreEqual("Input was not valid.", _log, "Error was not catched.");
 
             prompt.ConsoleInput(" yeS   ");
 
@@ -170,7 +85,7 @@ namespace InterpreteTests
             Assert.IsNotNull(_outCommand, "Out Command was not empty.");
 
             prompt.ConsoleInput("List().Help()");
-            Assert.IsTrue(_log.Contains("LIST Description: List: "), "Wrong help provided.");
+            Assert.IsTrue(_log.Contains("You now have the following Options:"), "Wrong Options provided.");
 
             prompt.ConsoleInput("YeS   ");
 

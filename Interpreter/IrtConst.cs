@@ -162,9 +162,9 @@ namespace Interpreter
         internal const string ErrorInvalidInput = "Input was null or empty.";
 
         /// <summary>
-        ///     The error feedback (const). Value: "No valid Options available.".
+        ///     The error feedback for wrong input (const). Value: ""Input was not valid.".
         /// </summary>
-        internal const string ErrorFeedbackOptions = "No valid Options available.";
+        internal const string ErrorFeedbackOptions = "Input was not valid.";
 
         /// <summary>
         ///     The error feedback Option not allowed (const). Value: "Option not allowed.".
@@ -301,6 +301,11 @@ namespace Interpreter
         ///     The error. (const). Value: "-1".
         /// </summary>
         internal const int Error = -1;
+
+        /// <summary>
+        ///     The error used for input, that is not available for this command. (const). Value: "-2".
+        /// </summary>
+        internal const int ErrorOptionNotAvailable = -2;
 
         /// <summary>
         ///     The no split occurred. (const). Value: "2".

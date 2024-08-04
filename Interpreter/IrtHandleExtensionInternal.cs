@@ -19,6 +19,8 @@ namespace Interpreter
     /// </summary>
     internal sealed class IrtHandleExtensionInternal : IDisposable
     {
+        private readonly string _myRequestId;
+
         /// <summary>
         ///     Dictionary of available commands.
         /// </summary>
@@ -35,7 +37,7 @@ namespace Interpreter
         private IrtHandleInternal _irtHandleInternal;
 
         /// <summary>
-        ///     Instance of IrtHandlePrompt for internal use.
+        ///     Instance of IrtParser for internal use.
         /// </summary>
         private IrtParser _irtHandlePrompt;
 
@@ -43,8 +45,6 @@ namespace Interpreter
         ///     Instance of Prompt to handle command input/output.
         /// </summary>
         private Prompt _prompt;
-
-        private readonly string _myRequestId;
 
         /// <summary>
         ///     Prevents a default instance of the <see cref="IrtHandleExtensionInternal" /> class from being created.
@@ -56,7 +56,7 @@ namespace Interpreter
         /// <summary>
         ///     Initializes a new instance of the <see cref="IrtHandleExtensionInternal" /> class with specified parameters.
         /// </summary>
-        /// <param name="irtPrompt">Instance of IrtHandlePrompt.</param>
+        /// <param name="irtPrompt">Instance of IrtParser.</param>
         /// <param name="commands">Dictionary of commands.</param>
         /// <param name="prompt">Instance of Prompt.</param>
         /// <param name="irtInternal">Instance of IrtHandleInternal.</param>
@@ -72,8 +72,9 @@ namespace Interpreter
             _disposed = false;
         }
 
+        /// <inheritdoc />
         /// <summary>
-        ///     Releases all resources used by the <see cref="IrtHandleExtensionInternal" /> class.
+        ///     Releases all resources used by the <see cref="T:Interpreter.IrtHandleExtensionInternal" /> class.
         /// </summary>
         public void Dispose()
         {
@@ -97,66 +98,96 @@ namespace Interpreter
                     _prompt.SwitchNameSpaces(extension.ExtensionParameter[0]);
                     _prompt.ConsoleInput(extension.BaseCommand);
                     break;
-
                 case 1:
-                    // Display help and ask for user feedback
-                    var key = Irt.CheckForKeyWord(extension.BaseCommand, IrtConst.InternCommands);
-                    if (key != IrtConst.Error)
-                    {
-                        var command = IrtConst.InternCommands[key];
-
-                        using (var irtInternal = new IrtHandleInternal(IrtConst.InternCommands,
-                            IrtConst.InternalNameSpace, _prompt))
-                        {
-                            irtInternal.ProcessInput(IrtConst.InternalHelpWithParameter, command.Command);
-                        }
-
-                        _prompt.CommandRegister = new IrtFeedback
-                        {
-                            AwaitedInput = -1,
-                            AwaitInput = true,
-                            IsInternalCommand = true,
-                            InternalInput = extension.BaseCommand,
-                            CommandHandler = _irtHandleInternal,
-                            Key = key
-                        };
-
-                        //TODO replace
-                        var feedback = new IrtFeedbackNew();
-                        // Register for feedback add the stuff we need from class
-                        _prompt.RequestFeedback(_myRequestId, feedback);
-                    }
-                    else
-                    {
-                        var com = _irtHandlePrompt.ProcessInput(extension.BaseCommand);
-                        var command = _commands[com.Command];
-                        _irtHandleInternal.ProcessInput(IrtConst.InternalHelpWithParameter, command.Command);
-
-                        _prompt.CommandRegister = new IrtFeedback
-                        {
-                            AwaitedInput = -1,
-                            AwaitInput = true,
-                            AwaitedOutput = com
-                        };
-
-                        // Register for feedback add the stuff we need from class
-                        //TODO replace
-                        var feedback = new IrtFeedbackNew();
-                        _prompt.RequestFeedback(_myRequestId, feedback);
-                    }
-
+                    ProcessHelpCommand(extension);
                     break;
-
                 default:
                     _prompt.SendLogs(nameof(ProcessExtensionInternal), IrtConst.ErrorInternalExtensionNotFound);
                     break;
             }
         }
 
-        private void HandleFeedback(object sender, Prompt.InputEventArgs e)
+        /// <summary>
+        ///     Processes help command and requests feedback.
+        /// </summary>
+        /// <param name="extension">The extension command to process.</param>
+        private void ProcessHelpCommand(ExtensionCommands extension)
         {
-            // Optionally, reset the callback to avoid unintended input processing
-            _prompt.RequestFeedback(null, null);
+            var key = Irt.CheckForKeyWord(extension.BaseCommand, IrtConst.InternCommands);
+            if (key != IrtConst.Error)
+                HandleInternalCommand(extension, key);
+            else
+                HandleExternalCommand(extension);
+        }
+
+        /// <summary>
+        ///     Handles internal commands.
+        /// </summary>
+        /// <param name="extension">The extension command.</param>
+        /// <param name="key">The command key.</param>
+        private void HandleInternalCommand(ExtensionCommands extension, int key)
+        {
+            var command = IrtConst.InternCommands[key];
+
+            using (var irtInternal =
+                new IrtHandleInternal(IrtConst.InternCommands, IrtConst.InternalNameSpace, _prompt))
+            {
+                irtInternal.ProcessInput(IrtConst.InternalHelpWithParameter, command.Command);
+            }
+
+            var feedback = IrtConst.InternalFeedback[-1];
+            var feedbackReceiver = new IrtFeedback
+            {
+                RequestId = _myRequestId,
+                Feedback = feedback,
+                BranchId = 11,
+                Key = key,
+                Command = extension.BaseCommand
+            };
+            _prompt.RequestFeedback(feedbackReceiver);
+        }
+
+        /// <summary>
+        ///     Handles external commands.
+        /// </summary>
+        /// <param name="extension">The extension command.</param>
+        private void HandleExternalCommand(ExtensionCommands extension)
+        {
+            var com = _irtHandlePrompt.ProcessInput(extension.BaseCommand);
+            var command = _commands[com.Command];
+            _irtHandleInternal.ProcessInput(IrtConst.InternalHelpWithParameter, command.Command);
+
+            var feedback = IrtConst.InternalFeedback[-1];
+            var feedbackReceiver = new IrtFeedback
+            {
+                RequestId = _myRequestId,
+                Feedback = feedback,
+                BranchId = 12,
+                AwaitedOutput = com
+            };
+            _prompt.RequestFeedback(feedbackReceiver);
+        }
+
+        /// <summary>
+        ///     Handles the feedback for ProcessExtensionInternal.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The <see cref="IrtFeedbackInputEventArgs" /> instance containing the event data.</param>
+        private void HandleFeedback(object sender, IrtFeedbackInputEventArgs e)
+        {
+            if (e.RequestId != _myRequestId) return;
+
+            switch (e.BranchId)
+            {
+                case 11:
+                    _irtHandleInternal.ProcessInput(e.Key, e.Command);
+                    //TODO check answers
+                    break;
+                case 12:
+                    _prompt.SendCommands(this, e.AwaitedOutput);
+                    //TODO check answers
+                    break;
+            }
         }
 
         /// <summary>
@@ -173,17 +204,12 @@ namespace Interpreter
 
             if (disposing)
             {
-                // Unsubscribe from the event to avoid memory leaks
                 _prompt.HandleFeedback -= HandleFeedback;
-                // Dispose managed resources
                 _commands = null;
-
                 _irtHandlePrompt = null;
                 _prompt = null;
                 _irtHandleInternal = null;
             }
-
-            // Dispose unmanaged resources here if needed
 
             _disposed = true;
         }

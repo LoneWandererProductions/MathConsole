@@ -13,7 +13,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Threading.Tasks;
 using ExtendedSystemObjects;
 
 namespace Interpreter
@@ -27,7 +26,7 @@ namespace Interpreter
     /// <seealso cref="IDisposable" />
     /// <inheritdoc cref="IDisposable" />
     /// <inheritdoc cref="IPrompt" />
-    public class Prompt : IPrompt, IDisposable
+    public sealed class Prompt : IPrompt, IDisposable
     {
         /// <summary>
         ///     Used to interpret Commands
@@ -39,35 +38,26 @@ namespace Interpreter
         /// </summary>
         private static int _count = -1;
 
+
         /// <summary>
-        ///     The feedback handler
+        /// The feedback register
         /// </summary>
-        private IrtHandleFeedback _feedbackHandler;
+        private IrtFeedback _feedbackRegister;
+
+        /// <summary>
+        ///     The reference to the Container Handle
+        /// </summary>
+        private IrtHandleContainer _irtHandleContainer;
+
+        /// <summary>
+        ///     The lock input
+        /// </summary>
+        private bool _lockInput;
 
         /// <summary>
         ///     User Input Windows
         /// </summary>
         private WindowPrompt _prompt;
-
-        /// <summary>
-        /// The lock input
-        /// </summary>
-        private bool _lockInput;
-
-        private readonly TaskCompletionSource<bool> _feedbackCompletionSource;
-
-        /// <summary>
-        /// The reference to the Container Handle
-        /// </summary>
-        private IrtHandleContainer _irtHandleContainer;
-
-        /// <summary>
-        ///     Gets or sets the command register.
-        /// </summary>
-        /// <value>
-        ///     The command register.
-        /// </value>
-        internal IrtFeedback CommandRegister { get; set; }
 
         /// <summary>
         ///     The collected Namespaces
@@ -130,10 +120,8 @@ namespace Interpreter
         {
             _lockInput = false;
             ResetState();
-            CommandRegister = new IrtFeedback();
-            CommandRegister = new IrtFeedback();
-            var use = new UserSpace { UserSpaceName = userSpace, Commands = com, ExtensionCommands = extension };
-            _feedbackHandler = new IrtHandleFeedback(this, userFeedback, use);
+            //Userspace handler
+            var use = new UserSpace {UserSpaceName = userSpace, Commands = com, ExtensionCommands = extension};
 
             //Upper is needed because of the way we compare commands in the Interpreter
             CollectedSpaces.AddDistinct(userSpace.ToUpper(), use);
@@ -168,7 +156,7 @@ namespace Interpreter
         /// </summary>
         public void StartWindow()
         {
-            _prompt = new WindowPrompt(_interpret) { ShowInTaskbar = true };
+            _prompt = new WindowPrompt(_interpret) {ShowInTaskbar = true};
             _prompt.Show();
         }
 
@@ -179,12 +167,8 @@ namespace Interpreter
         /// <param name="input">Input string</param>
         public void ConsoleInput(string input)
         {
-            if (!CommandRegister.AwaitInput) _interpret?.HandleInput(input);
-            else _feedbackHandler.HandleUserInput(input);
-
-            return;
-
-            _feedbackCompletionSource.SetResult(true);
+            if (!_lockInput) _interpret?.HandleInput(input);
+            else CheckFeedback(input);
         }
 
         /// <inheritdoc />
@@ -214,23 +198,6 @@ namespace Interpreter
             space = space.ToUpper(CultureInfo.InvariantCulture);
             var use = CollectedSpaces[space];
             IrtParser.SwitchUserSpace(use);
-            //switch UserSpace here as well
-            _feedbackHandler.Use = use;
-        }
-
-        /// <summary>
-        ///     Set up the feedback loop.
-        /// </summary>
-        /// <param name="feedbackId">The feedback identifier.</param>
-        /// <param name="com">The COM.</param>
-        internal void SetFeedbackLoop(int feedbackId, OutCommand com)
-        {
-            CommandRegister = new IrtFeedback
-            {
-                AwaitedOutput = com,
-                AwaitInput = true,
-                AwaitedInput = feedbackId
-            };
         }
 
         /// <summary>
@@ -309,7 +276,7 @@ namespace Interpreter
         /// <returns>New UserSpace</returns>
         private UserSpace CreateUserSpace(string userSpace, Dictionary<int, InCommand> com)
         {
-            var use = new UserSpace { UserSpaceName = userSpace, Commands = com };
+            var use = new UserSpace {UserSpaceName = userSpace, Commands = com};
             CollectedSpaces.AddDistinct(userSpace.ToUpper(), use);
             return use;
         }
@@ -326,38 +293,53 @@ namespace Interpreter
             Dispose(false);
         }
 
-        //TODO skeleton
-
-        public class InputEventArgs : EventArgs
-        {
-            public string Input { get; set; }
-            public string RequestId { get; set; }
-        }
-
         // Event to handle feedback, using EventHandler for proper event pattern
-        public event EventHandler<InputEventArgs> HandleFeedback;
+        internal event EventHandler<IrtFeedbackInputEventArgs> HandleFeedback;
 
-        internal void RequestFeedback(string requestId, IrtFeedbackNew promptCommandRegister)
+        internal void RequestFeedback(IrtFeedback feedbackRequest)
         {
-            if (requestId == null) return;
+            if (string.IsNullOrEmpty(feedbackRequest.RequestId)) return;
 
-            // Example: Set the requestId or use it to manage state
-            // _currentRequestId = requestId;
-            // _currentCommandRegister = promptCommandRegister;
+            //add my feedback request
+            _feedbackRegister = feedbackRequest;
 
-            Console.WriteLine("Prompt: Awaiting specific feedback...");
-            // Here you could wait for user input or prompt them in the UI
+            SendLogs?.Invoke(this, feedbackRequest.Feedback.ToString());
+
+            _lockInput = true;
         }
 
-        public void SendFeedback()
+        /// <summary>
+        /// Checks the feedback.
+        /// </summary>
+        /// <param name="input">The input.</param>
+        internal void CheckFeedback(string input)
         {
-            // Simulate receiving user input
+            var checkResult = IrtHelper.CheckInput(input, _feedbackRegister.Feedback.Options);
+            SendLogs(this, $"{IrtConst.FeedbackMessage} {input}");
 
-            // Trigger the event
-            OnHandleFeedback(new InputEventArgs { Input = "receivedInput", RequestId = "receivedRequestId" });
+            switch (checkResult)
+            {
+                case >= 0:
+                    //add a check and switch for input
+                    // Trigger the event
+                    OnHandleFeedback(_feedbackRegister.GenerateFeedbackAnswer((AvailableFeedback) checkResult));
+
+                    _lockInput = false;
+                    return;
+                case IrtConst.Error:
+                    SendLogs(this, IrtConst.ErrorFeedbackOptions);
+                    break;
+                case IrtConst.ErrorOptionNotAvailable:
+                    SendLogs(this, IrtConst.ErrorFeedbackOptionNotAllowed);
+                    break;
+            }
         }
 
-        protected virtual void OnHandleFeedback(InputEventArgs e)
+        /// <summary>
+        /// Raises the <see cref="E:HandleFeedback" /> event.
+        /// </summary>
+        /// <param name="e">The <see cref="IrtFeedbackInputEventArgs"/> instance containing the event data.</param>
+        internal void OnHandleFeedback(IrtFeedbackInputEventArgs e)
         {
             HandleFeedback?.Invoke(this, e); // Null-conditional operator to safely invoke event
         }

@@ -14,57 +14,7 @@ namespace Interpreter
     internal sealed class IrtFeedback
     {
         /// <summary>
-        ///     Gets or sets a value indicating whether [initial message was shown].
-        /// </summary>
-        /// <value>
-        ///     <c>true</c> if [initial message shown]; otherwise, <c>false</c>.
-        /// </value>
-        internal bool InitialMessageShown { get; set; }
-
-        /// <summary>
-        ///     The await input check, if true await correct answer
-        /// </summary>
-        /// <value>
-        ///     <c>true</c> if [await input]; otherwise, <c>false</c>.
-        /// </value>
-        internal bool AwaitInput { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the awaited input Id,
-        ///     Can be user Dictionary or the Internal Feedback Id. This just offers the options we are allowed to select.
-        /// </summary>
-        /// <value>
-        ///     The awaited input Id.
-        /// </value>
-        internal int AwaitedInput { get; init; }
-
-        /// <summary>
-        ///     Gets or sets a value indicating whether this instance is internal command.
-        /// </summary>
-        /// <value>
-        ///     <c>true</c> if this instance is internal command; otherwise, <c>false</c>.
-        /// </value>
-        internal bool IsInternalCommand { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the internal input.
-        /// </summary>
-        /// <value>
-        ///     The internal input.
-        /// </value>
-        internal string InternalInput { get; init; }
-
-        /// <summary>
-        ///     Gets or sets the command handler.
-        ///     Prepare and deliver our own Command Interpreter and let him do most of the work
-        /// </summary>
-        /// <value>
-        ///     The command handler.
-        /// </value>
-        internal IrtHandleInternal CommandHandler { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the key.
+        ///     Gets or sets the key of the command.
         /// </summary>
         /// <value>
         ///     The key.
@@ -72,41 +22,61 @@ namespace Interpreter
         internal int Key { get; init; }
 
         /// <summary>
-        ///     Gets or sets a value indicating whether [last selected option].
-        ///     Will be used for if Checks.
+        /// Gets the request identifier.
         /// </summary>
         /// <value>
-        ///     <c>true</c> if [last selected option]; otherwise, <c>false</c>.
+        /// The request identifier.
         /// </value>
-        internal bool? LastSelectedOption { get; set; }
+        internal string RequestId { get; init; }
 
         /// <summary>
-        ///     Gets or sets the awaited output.
+        /// Gets the feedback.
         /// </summary>
         /// <value>
-        ///     The awaited output.
+        /// The feedback.
         /// </value>
-        internal OutCommand AwaitedOutput { get; set; }
+        internal UserFeedback Feedback { get; init; }
 
         /// <summary>
-        ///     Handles the internal command.
+        /// Gets the branch identifier.
         /// </summary>
-        internal void HandleInternalCommand()
-        {
-            CommandHandler.ProcessInput(Key, InternalInput);
-        }
+        /// <value>
+        /// The branch identifier.
+        /// </value>
+        internal int BranchId { get; init; }
 
         /// <summary>
-        ///     Clears this instance.
+        /// Gets the command.
         /// </summary>
-        /// <param name="lastSelectedOption">if set to <c>true</c> [last selected option].</param>
-        internal void Clear(bool? lastSelectedOption)
+        /// <value>
+        /// The command.
+        /// </value>
+        internal string Command { get; init; }
+
+        /// <summary>
+        /// Gets the awaited output.
+        /// </summary>
+        /// <value>
+        /// The awaited output.
+        /// </value>
+        internal OutCommand AwaitedOutput { get; init; }
+
+        /// <summary>
+        ///     Generates the feedback answer.
+        /// </summary>
+        /// <param name="answer">The answer.</param>
+        /// <returns>Answer Event</returns>
+        internal IrtFeedbackInputEventArgs GenerateFeedbackAnswer(AvailableFeedback answer)
         {
-            AwaitInput = false;
-            IsInternalCommand = false;
-            AwaitedOutput = null;
-            CommandHandler = null;
-            LastSelectedOption = lastSelectedOption;
+            return new()
+            {
+                Command = Command,
+                Key = Key,
+                RequestId = RequestId,
+                BranchId = BranchId,
+                AwaitedOutput = AwaitedOutput,
+                Answer = answer
+            };
         }
     }
 }

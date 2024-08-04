@@ -10,11 +10,11 @@
 
 namespace Interpreter
 {
-    public sealed class IrtIfElseBlock
+    internal sealed class IrtIfElseBlock
     {
-        public string Condition { get; init; }
-        public string IfClause { get; init; }
-        public string ElseClause { get; init; }
+        internal string Condition { get; init; }
+        internal string IfClause { get; init; }
+        internal string ElseClause { get; init; }
 
         public override string ToString()
         {

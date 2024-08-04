@@ -312,10 +312,7 @@ namespace Interpreter
         /// <param name="command">The command.</param>
         private void SetResult(OutCommand command)
         {
-            if (_com[command.Command].FeedbackId == 0)
-                _prompt.SendCommand(this, command);
-            else
-                _prompt.SetFeedbackLoop(_com[command.Command].FeedbackId, command);
+            _prompt.SendCommand(this, command);
         }
 
         /// <summary>

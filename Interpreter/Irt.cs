@@ -241,7 +241,7 @@ namespace Interpreter
             foreach (var (key, inCommand) in com)
             {
                 if (string.Equals(input.ToUpperInvariant(), inCommand.Command.ToUpperInvariant(),
-                        StringComparison.Ordinal))
+                    StringComparison.Ordinal))
                 {
                     return
                         key;
