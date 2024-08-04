@@ -48,7 +48,7 @@ namespace Interpreter
 
 
         /// <summary>
-        /// Checks the input.
+        ///     Checks the input.
         /// </summary>
         /// <param name="input">The input.</param>
         /// <param name="feedbackOptions">The feedback options.</param>

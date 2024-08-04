@@ -40,7 +40,7 @@ namespace Interpreter
 
 
         /// <summary>
-        /// The feedback register
+        ///     The feedback register
         /// </summary>
         private IrtFeedback _feedbackRegister;
 
@@ -121,7 +121,7 @@ namespace Interpreter
             _lockInput = false;
             ResetState();
             //Userspace handler
-            var use = new UserSpace {UserSpaceName = userSpace, Commands = com, ExtensionCommands = extension};
+            var use = new UserSpace { UserSpaceName = userSpace, Commands = com, ExtensionCommands = extension };
 
             //Upper is needed because of the way we compare commands in the Interpreter
             CollectedSpaces.AddDistinct(userSpace.ToUpper(), use);
@@ -156,7 +156,7 @@ namespace Interpreter
         /// </summary>
         public void StartWindow()
         {
-            _prompt = new WindowPrompt(_interpret) {ShowInTaskbar = true};
+            _prompt = new WindowPrompt(_interpret) { ShowInTaskbar = true };
             _prompt.Show();
         }
 
@@ -276,7 +276,7 @@ namespace Interpreter
         /// <returns>New UserSpace</returns>
         private UserSpace CreateUserSpace(string userSpace, Dictionary<int, InCommand> com)
         {
-            var use = new UserSpace {UserSpaceName = userSpace, Commands = com};
+            var use = new UserSpace { UserSpaceName = userSpace, Commands = com };
             CollectedSpaces.AddDistinct(userSpace.ToUpper(), use);
             return use;
         }
@@ -309,7 +309,7 @@ namespace Interpreter
         }
 
         /// <summary>
-        /// Checks the feedback.
+        ///     Checks the feedback.
         /// </summary>
         /// <param name="input">The input.</param>
         internal void CheckFeedback(string input)
@@ -322,7 +322,7 @@ namespace Interpreter
                 case >= 0:
                     //add a check and switch for input
                     // Trigger the event
-                    OnHandleFeedback(_feedbackRegister.GenerateFeedbackAnswer((AvailableFeedback) checkResult));
+                    OnHandleFeedback(_feedbackRegister.GenerateFeedbackAnswer((AvailableFeedback)checkResult));
 
                     _lockInput = false;
                     return;
@@ -336,9 +336,9 @@ namespace Interpreter
         }
 
         /// <summary>
-        /// Raises the <see cref="E:HandleFeedback" /> event.
+        ///     Raises the <see cref="E:HandleFeedback" /> event.
         /// </summary>
-        /// <param name="e">The <see cref="IrtFeedbackInputEventArgs"/> instance containing the event data.</param>
+        /// <param name="e">The <see cref="IrtFeedbackInputEventArgs" /> instance containing the event data.</param>
         internal void OnHandleFeedback(IrtFeedbackInputEventArgs e)
         {
             HandleFeedback?.Invoke(this, e); // Null-conditional operator to safely invoke event

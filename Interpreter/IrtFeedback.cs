@@ -22,42 +22,42 @@ namespace Interpreter
         internal int Key { get; init; }
 
         /// <summary>
-        /// Gets the request identifier.
+        ///     Gets the request identifier.
         /// </summary>
         /// <value>
-        /// The request identifier.
+        ///     The request identifier.
         /// </value>
         internal string RequestId { get; init; }
 
         /// <summary>
-        /// Gets the feedback.
+        ///     Gets the feedback.
         /// </summary>
         /// <value>
-        /// The feedback.
+        ///     The feedback.
         /// </value>
         internal UserFeedback Feedback { get; init; }
 
         /// <summary>
-        /// Gets the branch identifier.
+        ///     Gets the branch identifier.
         /// </summary>
         /// <value>
-        /// The branch identifier.
+        ///     The branch identifier.
         /// </value>
         internal int BranchId { get; init; }
 
         /// <summary>
-        /// Gets the command.
+        ///     Gets the command.
         /// </summary>
         /// <value>
-        /// The command.
+        ///     The command.
         /// </value>
         internal string Command { get; init; }
 
         /// <summary>
-        /// Gets the awaited output.
+        ///     Gets the awaited output.
         /// </summary>
         /// <value>
-        /// The awaited output.
+        ///     The awaited output.
         /// </value>
         internal OutCommand AwaitedOutput { get; init; }
 
@@ -68,7 +68,7 @@ namespace Interpreter
         /// <returns>Answer Event</returns>
         internal IrtFeedbackInputEventArgs GenerateFeedbackAnswer(AvailableFeedback answer)
         {
-            return new()
+            return new IrtFeedbackInputEventArgs
             {
                 Command = Command,
                 Key = Key,
