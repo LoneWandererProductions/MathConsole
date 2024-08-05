@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using ExtendedSystemObjects;
 
 namespace Interpreter
 {
@@ -216,6 +217,43 @@ namespace Interpreter
 
             return -1; // Label not found
         }
+
+        /// <summary>
+        /// Parses the line.
+        ///  I want to make a CategorizedDictionary out of a huge batch file. the id is just the line count, line separator is ;
+        /// the category is the actual key labels will get the Category LABEL goto GOTO and the value is just the code.
+        /// the more interesting part will be the nested if else the outer if and else will get the Category IF_1 and ELSE_1 this category will start at the if and end at the end of the else branch,
+        /// the nested ifs will be Called IF_n and ELSE_n +1 etc the idea is to generate a linked list with commands 
+        /// </summary>
+        /// <param name="line">The line.</param>
+        /// <param name="lineCount">The line count.</param>
+        /// <param name="ifDepth">If depth.</param>
+        private void ParseLine(string line, int lineCount, int ifDepth)
+        {
+            var _dictionary = new CategorizedDictionary<int, string>();
+            if (line.StartsWith(":")) // Label
+            {
+                _dictionary.Add("LABEL", lineCount, line);
+            }
+            else if (line.Trim().StartsWith("goto")) // Goto
+            {
+                _dictionary.Add("GOTO", lineCount, line);
+            }
+            else if (line.Trim().StartsWith("if")) // If
+            {
+                ifDepth++;
+                _dictionary.Add($"IF_{ifDepth}", lineCount, line);
+            }
+            else if (line.Trim().StartsWith("else")) // Else
+            {
+                _dictionary.Add($"ELSE_{ifDepth}", lineCount, line);
+            }
+            else // Default
+            {
+                _dictionary.Add("COMMAND", lineCount, line);
+            }
+        }
+
 
         /// <summary>
         ///     Releases unmanaged and - optionally - managed resources.
