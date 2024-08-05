@@ -132,6 +132,11 @@ namespace Interpreter
         internal const string InternalLabel = "LABEL";
 
         /// <summary>
+        ///     The internal command await feedback, used for user feedback (const). Value: "AWAITFEEDBACK".
+        /// </summary>
+        internal const string InternalAwaitFeedback = "AWAITFEEDBACK";
+
+        /// <summary>
         ///     The error no commands provided (const). Value: "No Commands were provided".
         /// </summary>
         internal const string ErrorNoCommandsProvided = "No Commands were provided";
@@ -552,8 +557,7 @@ namespace Interpreter
                 new InCommand
                 {
                     Command = InternalIf,
-                    Description =
-                        "If : intended for batch commands and Container, aks for condition and executes everything after the following {}. The Parameter is the ",
+                    Description = $"If: Used for batch commands and containers. It requires a condition and executes all subsequent commands within the braces '{{' '}}'. Currently, only the '{InternalAwaitFeedback}' command is supported as a condition. Example usage: `If {InternalAwaitFeedback} {{ DoSomething() }}`.",
                     ParameterCount = 1
                 }
             },
@@ -563,7 +567,7 @@ namespace Interpreter
                 {
                     Command = InternalElse,
                     Description =
-                        "Else :must be followed after an If and the {} if not we will throw an error, if the If clause was wrong everything after else {} will be executed.",
+                        "Else :must be followed after an If and the {} if not, we will throw an error, if the If clause was wrong everything after else {} will be executed.",
                     ParameterCount = 0
                 }
             },
@@ -583,6 +587,15 @@ namespace Interpreter
                 {
                     Command = InternalLabel,
                     Description = "label : intended for batch commands and Container, Entry point for Goto Command.",
+                    ParameterCount = 1
+                }
+            },
+            {
+                4,
+                new InCommand
+                {
+                    Command = InternalAwaitFeedback,
+                    Description = "awaitfeedback : intended for batch commands and Container, requests user Feedback, based on the input the batch/container can proceed.",
                     ParameterCount = 1
                 }
             }

@@ -71,12 +71,12 @@ namespace Interpreter
         /// <summary>
         ///     Send selected Command to the Subscriber
         /// </summary>
-        public EventHandler<OutCommand> SendCommands { get; internal set; }
+        public EventHandler<OutCommand> SendCommands { get; set; }
 
         /// <summary>
         ///     Send Message to the Subscriber
         /// </summary>
-        public EventHandler<string> SendLogs { get; internal set; }
+        public EventHandler<string> SendLogs { get; set; }
 
         // Event to handle feedback, using EventHandler for proper event pattern
         internal event EventHandler<IrtFeedbackInputEventArgs> HandleFeedback;
