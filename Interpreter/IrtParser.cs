@@ -341,6 +341,8 @@ namespace Interpreter
 
                 var id = _com[command.Command].FeedbackId;
 
+
+                //Todo add access to the Internal Feedback as well
                 var feedback = _userFeedback[id];
                 var feedbackReceiver = new IrtFeedback
                 {

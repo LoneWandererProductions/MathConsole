@@ -38,7 +38,6 @@ namespace Interpreter
         /// </summary>
         private static int _count = -1;
 
-
         /// <summary>
         ///     The feedback register
         /// </summary>
@@ -72,12 +71,15 @@ namespace Interpreter
         /// <summary>
         ///     Send selected Command to the Subscriber
         /// </summary>
-        public EventHandler<OutCommand> SendCommands { get; set; }
+        public EventHandler<OutCommand> SendCommands { get; internal set; }
 
         /// <summary>
         ///     Send Message to the Subscriber
         /// </summary>
-        public EventHandler<string> SendLogs { get; set; }
+        public EventHandler<string> SendLogs { get; internal set; }
+
+        // Event to handle feedback, using EventHandler for proper event pattern
+        internal event EventHandler<IrtFeedbackInputEventArgs> HandleFeedback;
 
         /// <summary>
         ///     Gets the log.
@@ -93,7 +95,7 @@ namespace Interpreter
         /// <value>
         ///     <c>true</c> if disposed; otherwise, <c>false</c>.
         /// </value>
-        public bool Disposed { get; set; }
+        public bool Disposed { get; private set; }
 
         /// <summary>
         ///     Logs all activities
@@ -300,9 +302,6 @@ namespace Interpreter
             // Finalizer calls Dispose(false)
             Dispose(false);
         }
-
-        // Event to handle feedback, using EventHandler for proper event pattern
-        internal event EventHandler<IrtFeedbackInputEventArgs> HandleFeedback;
 
         /// <summary>
         /// Requests the feedback.
