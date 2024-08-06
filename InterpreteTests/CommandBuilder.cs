@@ -52,6 +52,7 @@ namespace InterpreteTests
 
             // Act
             var result = IrtIfElseParser.BuildCommand(inputcleaned);
+            Trace.WriteLine(result.ToString());
 
             // Assert
             foreach (var expected in expectedResults)
@@ -62,9 +63,6 @@ namespace InterpreteTests
                 Assert.IsTrue(result.TryGetValue(key, out var actualValue));
                 Assert.AreEqual(value, actualValue, $"Value mismatch for key {key}");
             }
-
-
-            Trace.WriteLine(result.ToString());
         }
     }
 }

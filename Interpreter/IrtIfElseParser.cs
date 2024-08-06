@@ -113,7 +113,6 @@ namespace Interpreter
             return commandRegister;
         }
 
-
         /// <summary>
         ///     Extracts the first if else.
         /// </summary>
