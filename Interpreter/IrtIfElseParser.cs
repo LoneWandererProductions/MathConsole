@@ -16,6 +16,104 @@ namespace Interpreter
 {
     internal static class IrtIfElseParser
     {
+        internal static CategorizedDictionary<int, string> BuildCommandnew(string inputcleaned)
+        {
+            var commandChain = BuidldCommand(inputcleaned, 0);
+        }
+
+        private static object BuidldCommand(string inputcleaned, int i)
+        {
+            input = Irt.RemoveLastOccurrence(input, IrtConst.AdvancedClose);
+            input = Irt.RemoveFirstOccurrence(input, IrtConst.AdvancedOpen);
+            input = input.Trim();
+
+            var formattedBlocks = new List<string>();
+            var keepParsing = true;
+
+            while (keepParsing)
+            {
+                var ifIndex = FindFirstIfIndex(input);
+                if (ifIndex == -1)
+                {
+                    keepParsing = false;
+                    if (!string.IsNullOrWhiteSpace(input))
+                        formattedBlocks.Add(input.Trim()); // Add remaining part as the last element
+                }
+                else
+                {
+                    // Add the part before the first 'if' to the list
+                    var beforeIf = input.Substring(0, ifIndex).Trim();
+                    if (!string.IsNullOrWhiteSpace(beforeIf)) formattedBlocks.Add(beforeIf);
+
+                    input = input.Substring(ifIndex); // Update input to start from 'if'
+
+                    var (ifElseBlock, elsePosition) = ExtractFirstIfElse(input);
+
+                    if (elsePosition == -1)
+                    {
+                        formattedBlocks.Add(ifElseBlock.Trim()); // Add entire 'if' block if no 'else' found
+                    }
+                    else
+                    {
+                        var ifBlock = input.Substring(0, elsePosition).Trim(); // Part up to 'else'
+                        var elseBlock =
+                            input.Substring(elsePosition, ifElseBlock.Length - elsePosition)
+                                .Trim(); // Part after 'else'
+                        formattedBlocks.Add(ifBlock);
+                        formattedBlocks.Add(elseBlock);
+                    }
+
+                    input = input.Substring(ifElseBlock.Length).Trim(); // Update input to remaining part
+                }
+            }
+
+            var commandRegister = new CategorizedDictionary<int, string>();
+            var commandIndex = 0;
+
+            foreach (var block in formattedBlocks)
+            {
+                var keywordIndex = StartsWith(block, IrtConst.InternContainerCommands);
+
+                switch (keywordIndex)
+                {
+                    case 0: // IF
+                    case 1: // ELSE
+                        commandRegister.Add(IrtConst.InternContainerCommands[keywordIndex].Command, commandIndex,
+                            block);
+                        break;
+
+                    default:
+                        foreach (var trimmedSubCommand in Irt.SplitParameter(block, IrtConst.NewCommand)
+                                     .Select(subCommand => subCommand.Trim()))
+                        {
+                            keywordIndex = StartsWith(trimmedSubCommand, IrtConst.InternContainerCommands);
+                            commandIndex++;
+
+                            switch (keywordIndex)
+                            {
+                                case 2: // GOTO
+                                case 3: // LABEL
+                                    commandRegister.Add(IrtConst.InternContainerCommands[keywordIndex].Command,
+                                        commandIndex, trimmedSubCommand);
+                                    break;
+                                default:
+                                    if (!string.IsNullOrEmpty(trimmedSubCommand))
+                                        commandRegister.Add("COMMAND", commandIndex, trimmedSubCommand);
+
+                                    break;
+                            }
+                        }
+
+                        break;
+                }
+
+                commandIndex++;
+            }
+
+            return commandRegister;
+        }
+
+
         /// <summary>
         ///     Builds the command.
         /// </summary>
@@ -399,5 +497,7 @@ namespace Interpreter
 
             return IrtConst.Error; // Not found or no valid "if" followed by '('
         }
+
+
     }
 }

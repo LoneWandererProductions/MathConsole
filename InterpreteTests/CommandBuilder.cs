@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
+using System.Security.Policy;
+using System.Windows.Documents;
 using Interpreter;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -52,7 +54,7 @@ namespace InterpreteTests
 
             // Act
             var result = IrtIfElseParser.BuildCommand(inputcleaned);
-            Trace.WriteLine(result.ToString());
+            result = IrtIfElseParser.BuildCommandnew(inputcleaned);
 
             // Assert
             foreach (var expected in expectedResults)
@@ -63,6 +65,45 @@ namespace InterpreteTests
                 Assert.IsTrue(result.TryGetValue(key, out var actualValue));
                 Assert.AreEqual(value, actualValue, $"Value mismatch for key {key}");
             }
+
+            Trace.WriteLine(result.ToString());
+
+            inputcleaned = "{"+
+                            "Print(hello World);"+
+                            "if (condition1)"+
+                            "{"+
+                            "command1;"+
+                            "if (condition2)"+
+                            "{" +
+                            "command2;" +
+                            "}"+
+                            "}"+
+                            "Label(one);"+
+                            "Print(passed label one);" +
+                            "goto(two);" + 
+                            "Print(Should not be printed);"+
+                            "Label(two);"+
+                            "Print(Finish);"+
+                            "}";
+
+
+            var finalResults = new List<(int Key, string Category, string Value)>
+            {
+                (1, "COMMAND", "Print(hello World)"),
+                (2, "IF_1", "if(condition1)"),      // IF block 1
+                (3, "COMMAND", "command1"),
+                (4, "IF_2", "if(condition2)"),      // Nested IF block 2 within IF 1
+                (5, "COMMAND", "command2"),
+                (6, "IF_2_END", ""),               // End of IF block 2
+                (7, "IF_1_END_NOELSE", ""),        // End of IF block 1 with no ELSE
+                (8, "LABEL", "Label(one)"),
+                (9, "COMMAND", "Print(passed label one)"),
+                (10, "GOTO", "goto(two)"),
+                (11, "COMMAND", "Print(Should not be printed)"),
+                (12, "LABEL", "Label(two)"),
+                (13, "COMMAND", "Print(Finish)")
+            };
+
         }
     }
 }
