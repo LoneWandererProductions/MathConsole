@@ -16,12 +16,32 @@ namespace Interpreter
 {
     internal static class IrtIfElseParser
     {
-        internal static CategorizedDictionary<int, string> BuildCommandnew(string inputcleaned)
+        internal static CategorizedDictionary<int, string> BuildCommandnew(string input)
         {
-            var commandChain = BuidldCommand(inputcleaned, 0);
+            input = Irt.RemoveLastOccurrence(input, IrtConst.AdvancedClose);
+            input = Irt.RemoveFirstOccurrence(input, IrtConst.AdvancedOpen);
+            input = input.Trim();
+
+            var formattedBlocks = new List<string>();
+            var keepParsing = true;
+
+            while (keepParsing)
+            {
+                var ifIndex = FindFirstIfIndex(input);
+
+                if (ifIndex == -1)
+                {
+                    keepParsing = false;
+                    if (!string.IsNullOrWhiteSpace(input))
+                        formattedBlocks.Add(input.Trim()); // Add remaining part as the last element
+                }
+            }
+
+
+            return null;
         }
 
-        private static object BuidldCommand(string inputcleaned, int i)
+        private static object BuidldCommand(string input, int i)
         {
             input = Irt.RemoveLastOccurrence(input, IrtConst.AdvancedClose);
             input = Irt.RemoveFirstOccurrence(input, IrtConst.AdvancedOpen);
@@ -479,7 +499,7 @@ namespace Interpreter
         /// </summary>
         /// <param name="input">The input.</param>
         /// <returns>index of first if</returns>
-        private static int FindFirstIfIndex(string input)
+        internal static int FindFirstIfIndex(string input)
         {
             var position = input.IndexOf("if", StringComparison.OrdinalIgnoreCase);
 
