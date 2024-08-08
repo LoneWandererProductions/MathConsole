@@ -16,36 +16,63 @@ namespace Interpreter
         {
             while (true)
             {
-                int ifIndex = IrtIfElseParser.FindFirstIfIndex(code.Substring(startIndex));
+                // Find the next 'if' statement in the code starting from startIndex
+                var ifIndex = IrtIfElseParser.FindFirstIfIndex(code.Substring(startIndex));
                 if (ifIndex == -1)
                     break;
 
                 // Adjust ifIndex to the original code's index
                 ifIndex += startIndex;
 
-                // Extract the if-else block starting from `ifIndex`
-                string codeFromIfIndex = code.Substring(ifIndex);
+                // Extract the outermost if-else block
+                var codeFromIfIndex = code.Substring(ifIndex);
                 var (block, elsePosition) = IrtIfElseParser.ExtractFirstIfElse(codeFromIfIndex);
 
                 // Calculate the correct index for `elsePosition`
-                int actualElseIndex = elsePosition == -1 ? -1 : elsePosition + ifIndex;
+                var actualElseIndex = elsePosition == -1 ? -1 : elsePosition + ifIndex;
 
-                // Save the extracted block and its positions
-                clauses.Add(new IfElseClause
+                // Save the extracted outer block and its positions
+                var ifElseClause = new IfElseClause
                 {
                     IfIndex = ifIndex,
                     Block = block,
                     ElseIndex = actualElseIndex
-                });
+                };
+                clauses.Add(ifElseClause);
+
+                // Extract the code within the `if` block
+                int ifBlockStart = block.IndexOf('{') + 1;
+                int ifBlockEnd = block.LastIndexOf('}');
+
+                if (ifBlockStart > 0 && ifBlockEnd > ifBlockStart) // Ensure valid indices
+                {
+                    string ifBlockContent = block.Substring(ifBlockStart, ifBlockEnd - ifBlockStart);
+
+                    // Recursively parse the code within the `if` block
+                    ParseIfElseClausesRecursively(ifBlockContent, clauses, 0);
+                }
+
+                // If there's an `else`, extract the code within the `else` block
+                if (elsePosition != -1)
+                {
+                    int elseBlockStart = block.IndexOf('{', ifBlockEnd) + 1;
+                    int elseBlockEnd = block.LastIndexOf('}');
+
+                    if (elseBlockStart > 0 && elseBlockEnd > elseBlockStart) // Ensure valid indices
+                    {
+                        string elseBlockContent = block.Substring(elseBlockStart, elseBlockEnd - elseBlockStart);
+
+                        // Recursively parse the code within the `else` block
+                        ParseIfElseClausesRecursively(elseBlockContent, clauses, 0);
+                    }
+                }
 
                 // Move the startIndex to just after the processed block
-                int blockEndIndex = ifIndex + block.Length;
-                string remainingCode = code.Substring(blockEndIndex);
+                var blockEndIndex = ifIndex + block.Length;
+                if (blockEndIndex >= code.Length)
+                    break;
 
-                // Continue parsing the remaining code from the beginning of the remaining string
-                // Note: startIndex is reset to 0 here to process from the beginning of the remaining string
-                startIndex = 0;
-                code = remainingCode;
+                startIndex = blockEndIndex;
             }
         }
 

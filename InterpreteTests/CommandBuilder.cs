@@ -110,7 +110,7 @@ namespace InterpreteTests
         public void TestParseIfElseClauses_SingleIfElse()
         {
             // Arrange
-            string code = "if(condition1) { /* code */ } else { /* code */ }";
+            var code = "if(condition1) { /* code */ } else { /* code */ }";
 
             // Act
             var clauses = IfElseParser2.ParseIfElseClauses(code);
@@ -126,7 +126,7 @@ namespace InterpreteTests
         public void TestParseIfElseClauses_NestedIfElse()
         {
             // Arrange
-            string code = "if(condition1) { if(condition2) { /* nested code */ } else { /* nested else code */ } } else { /* outer else code */ }";
+            var code = "if(condition1) { if(condition2) { /* nested code */ } else { /* nested else code */ } } else { /* outer else code */ }";
 
             // Act
             var clauses = IfElseParser2.ParseIfElseClauses(code);
@@ -137,10 +137,10 @@ namespace InterpreteTests
             // Check the first clause
             Assert.AreEqual(0, clauses[0].IfIndex, "IfIndex of the first clause should be 0.");
             Assert.IsTrue(clauses[0].Block.Contains("if(condition2)"), "Block should contain the nested if.");
-            Assert.AreEqual(48, clauses[0].ElseIndex, "ElseIndex of the first clause should be 48.");
+            Assert.AreEqual(88, clauses[0].ElseIndex, "ElseIndex of the first clause should be 88.");
 
             // Check the second clause
-            Assert.AreEqual(48, clauses[1].IfIndex, "IfIndex of the second clause should be 48.");
+            Assert.AreEqual(1, clauses[1].IfIndex, "IfIndex of the second clause should be 1.");
             Assert.AreEqual("else { /* outer else code */ }", clauses[1].Block);
             Assert.AreEqual(-1, clauses[1].ElseIndex, "The second clause should not have an outer else.");
         }
