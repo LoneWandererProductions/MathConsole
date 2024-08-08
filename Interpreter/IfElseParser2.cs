@@ -11,11 +11,15 @@ namespace Interpreter
             ParseIfElseClausesRecursively(code, clauses, 0);
             return clauses;
         }
-        private static void ParseIfElseClausesRecursively(string code, List<IfElseClause> clauses, int startIndex)
+
+        private static void ParseIfElseClausesRecursively(string code, List<IfElseClause> clauses, int startIndex = 0)
         {
-            int ifIndex = IrtIfElseParser.FindFirstIfIndex(code.Substring(startIndex));
-            while (ifIndex != -1)
+            while (true)
             {
+                int ifIndex = IrtIfElseParser.FindFirstIfIndex(code.Substring(startIndex));
+                if (ifIndex == -1)
+                    break;
+
                 // Adjust ifIndex to the original code's index
                 ifIndex += startIndex;
 
@@ -39,12 +43,9 @@ namespace Interpreter
                 string remainingCode = code.Substring(blockEndIndex);
 
                 // Continue parsing the remaining code from the beginning of the remaining string
-                // Adjust startIndex for the recursive call
-                ParseIfElseClausesRecursively(remainingCode, clauses, 0);
-
-                // Find the next top-level `if` statement in the remaining code
-                ifIndex = IrtIfElseParser.FindFirstIfIndex(remainingCode);
-                ifIndex = ifIndex == -1 ? -1 : ifIndex + blockEndIndex;
+                // Note: startIndex is reset to 0 here to process from the beginning of the remaining string
+                startIndex = 0;
+                code = remainingCode;
             }
         }
 
