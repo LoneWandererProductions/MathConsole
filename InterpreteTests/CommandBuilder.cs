@@ -118,7 +118,7 @@ namespace InterpreteTests
             // Assert
             Assert.AreEqual(1, clauses.Count, "Expected 1 if-else clause.");
             Assert.AreEqual(0, clauses[0].IfIndex, "IfIndex should be 0.");
-            Assert.AreEqual(20, clauses[0].ElseIndex, "ElseIndex should be 20.");
+            Assert.AreEqual(30, clauses[0].ElseIndex, "ElseIndex should be 30.");
             Assert.AreEqual("if(condition1) { /* code */ } else { /* code */ }", clauses[0].Block);
         }
 
