@@ -12,127 +12,69 @@ using System.Linq;
 using System.Text;
 using ExtendedSystemObjects;
 
+
 namespace Interpreter
 {
     internal static class IrtIfElseParser
     {
-        internal static CategorizedDictionary<int, string> BuildCommandnew(string input)
+        public static List<IfElseClaused> ParseIfElseClauses(string code)
         {
-            input = Irt.RemoveLastOccurrence(input, IrtConst.AdvancedClose);
-            input = Irt.RemoveFirstOccurrence(input, IrtConst.AdvancedOpen);
-            input = input.Trim();
-
-            var formattedBlocks = new List<string>();
-            var keepParsing = true;
-
-            while (keepParsing)
-            {
-                var ifIndex = FindFirstIfIndex(input);
-
-                if (ifIndex == -1)
-                {
-                    keepParsing = false;
-                    if (!string.IsNullOrWhiteSpace(input))
-                        formattedBlocks.Add(input.Trim()); // Add remaining part as the last element
-                }
-            }
-
-
-            return null;
+            var clauses = new List<IfElseClaused>();
+            ParseIfElseClausesRecursively(code, clauses, 0);  // Start at layer 0
+            return clauses;
         }
 
-        private static object BuidldCommand(string input, int i)
+
+        internal static void ParseIfElseClausesRecursively(string code, List<IfElseClaused> clauses, int layer)
         {
-            input = Irt.RemoveLastOccurrence(input, IrtConst.AdvancedClose);
-            input = Irt.RemoveFirstOccurrence(input, IrtConst.AdvancedOpen);
-            input = input.Trim();
-
-            var formattedBlocks = new List<string>();
-            var keepParsing = true;
-
-            while (keepParsing)
+            while (true)
             {
-                var ifIndex = FindFirstIfIndex(input);
+                // Find the next 'if' statement in the current substring
+                int ifIndex = IrtIfElseParser.FindFirstIfIndex(code);
                 if (ifIndex == -1)
+                    break;
+
+                // Extract the substring starting from the found 'if' index
+                var codeFromIfIndex = code.Substring(ifIndex);
+                var (block, elsePosition) = IrtIfElseParser.ExtractFirstIfElse(codeFromIfIndex);
+
+                // Extract `if` and `else` clauses from the block
+                var ifClause = block.Substring(0, elsePosition).Trim();
+                var elseClause = elsePosition == block.Length ? null : block.Substring(elsePosition).Trim();
+
+                // Save the extracted block with the current layer
+                var ifElseClause = new IfElseClaused
                 {
-                    keepParsing = false;
-                    if (!string.IsNullOrWhiteSpace(input))
-                        formattedBlocks.Add(input.Trim()); // Add remaining part as the last element
-                }
-                else
+                    Parent = code,
+                    IfClause = ifClause,
+                    ElseClause = elseClause,
+                    Layer = layer // Set the current depth level
+                };
+                clauses.Add(ifElseClause);
+
+                // Continue parsing the `ifClause` and `elseClause`
+                if (!string.IsNullOrWhiteSpace(ifClause))
                 {
-                    // Add the part before the first 'if' to the list
-                    var beforeIf = input.Substring(0, ifIndex).Trim();
-                    if (!string.IsNullOrWhiteSpace(beforeIf)) formattedBlocks.Add(beforeIf);
-
-                    input = input.Substring(ifIndex); // Update input to start from 'if'
-
-                    var (ifElseBlock, elsePosition) = ExtractFirstIfElse(input);
-
-                    if (elsePosition == -1)
-                    {
-                        formattedBlocks.Add(ifElseBlock.Trim()); // Add entire 'if' block if no 'else' found
-                    }
-                    else
-                    {
-                        var ifBlock = input.Substring(0, elsePosition).Trim(); // Part up to 'else'
-                        var elseBlock =
-                            input.Substring(elsePosition, ifElseBlock.Length - elsePosition)
-                                .Trim(); // Part after 'else'
-                        formattedBlocks.Add(ifBlock);
-                        formattedBlocks.Add(elseBlock);
-                    }
-
-                    input = input.Substring(ifElseBlock.Length).Trim(); // Update input to remaining part
+                    ParseIfElseClausesRecursively(ifClause, clauses, layer + 1);
                 }
+
+                if (!string.IsNullOrWhiteSpace(elseClause))
+                {
+                    ParseIfElseClausesRecursively(elseClause, clauses, layer + 1);
+                }
+
+                // Stop processing the current block and move on
+                break; // Only process one `if-else` block per call
             }
-
-            var commandRegister = new CategorizedDictionary<int, string>();
-            var commandIndex = 0;
-
-            foreach (var block in formattedBlocks)
-            {
-                var keywordIndex = StartsWith(block, IrtConst.InternContainerCommands);
-
-                switch (keywordIndex)
-                {
-                    case 0: // IF
-                    case 1: // ELSE
-                        commandRegister.Add(IrtConst.InternContainerCommands[keywordIndex].Command, commandIndex,
-                            block);
-                        break;
-
-                    default:
-                        foreach (var trimmedSubCommand in Irt.SplitParameter(block, IrtConst.NewCommand)
-                                     .Select(subCommand => subCommand.Trim()))
-                        {
-                            keywordIndex = StartsWith(trimmedSubCommand, IrtConst.InternContainerCommands);
-                            commandIndex++;
-
-                            switch (keywordIndex)
-                            {
-                                case 2: // GOTO
-                                case 3: // LABEL
-                                    commandRegister.Add(IrtConst.InternContainerCommands[keywordIndex].Command,
-                                        commandIndex, trimmedSubCommand);
-                                    break;
-                                default:
-                                    if (!string.IsNullOrEmpty(trimmedSubCommand))
-                                        commandRegister.Add("COMMAND", commandIndex, trimmedSubCommand);
-
-                                    break;
-                            }
-                        }
-
-                        break;
-                }
-
-                commandIndex++;
-            }
-
-            return commandRegister;
         }
 
+        public class IfElseClaused
+        {
+            public string Parent { get; set; }
+            public string IfClause { get; set; }
+            public string ElseClause { get; set; }
+            public int Layer { get; set; } // Depth level of the `if-else` structure
+        }
 
         /// <summary>
         ///     Builds the command.

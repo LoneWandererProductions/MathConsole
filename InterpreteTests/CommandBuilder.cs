@@ -106,6 +106,31 @@ namespace InterpreteTests
 
         }
 
+
+        [TestMethod]
+        public void TestParseIfElseClausesNestedIfElse()
+        {
+            // Arrange
+            string code = "if(condition1) { if(condition2) { /* nested code */ } else { /* nested else code */ } } else { /* outer else code */ }";
+
+            // Act
+            var clauses = IrtIfElseParser.ParseIfElseClauses(code);
+
+            // Assert
+            Assert.AreEqual(2, clauses.Count, "Expected 2 if-else clauses.");
+
+            // Check the first clause (Layer 0)
+            Assert.AreEqual(0, clauses[0].Layer, "Layer of the first clause should be 0.");
+            Assert.IsTrue(clauses[0].IfClause.Contains("if(condition2)"), "IfClause should contain the nested if.");
+            Assert.IsNotNull(clauses[0].ElseClause, "ElseClause should not be null.");
+
+            // Check the second clause (Layer 1)
+            Assert.AreEqual(1, clauses[1].Layer, "Layer of the second clause should be 1.");
+            Assert.AreEqual("else { /* outer else code */ }", clauses[1].ElseClause);
+            Assert.IsNull(clauses[1].IfClause, "The second clause should not have an ifClause.");
+        }
+
+
         [TestMethod]
         public void TestParseIfElseClauses_SingleIfElse()
         {
