@@ -205,9 +205,11 @@ namespace Interpreter
             string currentCondition = null;
 
             foreach (var token in inputParts.SelectMany(Tokenize))
+            {
                 if (token.StartsWith("if(", StringComparison.Ordinal))
                 {
-                    var condition = token.Substring(3, token.Length - 4);
+                    // Start a new if block
+                    var condition = token.Substring(3, token.Length - 4); // Extract condition
                     stack.Push((currentCondition, currentIfClause, currentElseClause, inElse));
                     currentCondition = condition;
                     currentIfClause = new StringBuilder();
@@ -216,17 +218,17 @@ namespace Interpreter
                 }
                 else
                 {
-                    if (token.ToUpperInvariant() != IrtConst.InternalElse)
+                    if (!string.Equals(token, "ELSE", StringComparison.InvariantCultureIgnoreCase))
+                    {
                         switch (token.ToUpperInvariant())
                         {
                             case "}" when !inElse:
-                                // Skip the closing brace if not in else branch
+                                // End of an if block, continue
                                 break;
                             case "}" when inElse:
-                            {
+                                // End of else block
                                 if (stack.Count == 0)
-                                    throw new InvalidOperationException(
-                                        "Invalid input string: unmatched closing brace");
+                                    throw new InvalidOperationException("Invalid input string: unmatched closing brace");
 
                                 var (parentCondition, parentIfPart, parentElsePart, parentInElse) = stack.Pop();
 
@@ -240,7 +242,8 @@ namespace Interpreter
                                 var nestedIfElse =
                                     $"if({innerIfElseBlock.Condition}) {{ {innerIfElseBlock.IfClause} }} else {{ {innerIfElseBlock.ElseClause} }}";
 
-                                if (parentCondition == null) return innerIfElseBlock;
+                                if (parentCondition == null)
+                                    return innerIfElseBlock;
 
                                 if (parentInElse)
                                     parentElsePart.Append(nestedIfElse);
@@ -252,26 +255,28 @@ namespace Interpreter
                                 currentElseClause = parentElsePart;
                                 inElse = parentInElse;
                                 break;
-                            }
                             case "{":
-                                // Skip the opening brace
+                                // Skip opening brace
                                 break;
                             default:
-                            {
+                                // Append token to the appropriate clause
                                 if (inElse)
                                     currentElseClause.Append($"{token.Trim()} ");
                                 else
                                     currentIfClause.Append($"{token.Trim()} ");
-
                                 break;
-                            }
                         }
+                    }
                     else
+                    {
                         inElse = true;
+                    }
                 }
+            }
 
             throw new InvalidOperationException("Invalid input string");
         }
+
 
         private static IEnumerable<string> Tokenize(string input)
         {
@@ -281,68 +286,70 @@ namespace Interpreter
             string cache;
 
             for (var i = 0; i < input.Length; i++)
+            {
                 switch (input[i])
                 {
-                    case IrtConst.AdvancedOpen:
-                    case IrtConst.AdvancedClose:
+                    case '{':
+                    case '}':
                         // Add any buffered string if it exists
                         if (sb.Length > 0)
                         {
                             cache = sb.ToString();
                             if (!string.IsNullOrWhiteSpace(cache)) tokens.Add(cache);
-
                             sb.Clear();
                         }
 
+                        // Add the brace as a separate token
                         tokens.Add(input[i].ToString());
-                        continue;
+                        break;
 
                     default:
+                        // Handle 'if' statements
                         if (input.Substring(i).StartsWith("if(", StringComparison.Ordinal))
                         {
                             if (sb.Length > 0)
                             {
                                 cache = sb.ToString();
                                 if (!string.IsNullOrWhiteSpace(cache)) tokens.Add(cache);
-
                                 sb.Clear();
                             }
 
                             var endIdx = input.IndexOf(')', i);
                             if (endIdx == -1)
-                                throw new InvalidOperationException(
-                                    "Invalid input string: missing closing parenthesis for 'if'");
+                                throw new InvalidOperationException("Invalid input string: missing closing parenthesis for 'if'");
 
                             tokens.Add(input.Substring(i, endIdx - i + 1));
-                            i = endIdx;
+                            i = endIdx; // Skip past the end of the 'if' condition
                         }
+                        // Handle 'else'
                         else if (input.Substring(i).StartsWith("else", StringComparison.Ordinal))
                         {
                             if (sb.Length > 0)
                             {
                                 cache = sb.ToString();
                                 if (!string.IsNullOrWhiteSpace(cache)) tokens.Add(cache);
-
                                 sb.Clear();
                             }
 
                             tokens.Add("else");
-                            i += 3; // Skip 'else'
+                            i += 3; // Skip past "else"
                         }
+                        // Accumulate characters into the buffer
                         else
                         {
                             sb.Append(input[i]);
                         }
-
                         break;
                 }
+            }
 
-            // Final check to add any remaining token
+            // Final check to add any remaining buffered text
             cache = sb.ToString();
             if (!string.IsNullOrWhiteSpace(cache)) tokens.Add(cache);
 
             return tokens;
         }
+
 
         /// <summary>
         ///     Starts the with.
