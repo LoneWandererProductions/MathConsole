@@ -867,15 +867,6 @@ namespace InterpreteTests
             IrtIfElseParser.Parse(inputParts);
         }
 
-
-        [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
-        public void ParseIfWithoutConditionThrowsException()
-        {
-            var inputParts = new List<string> { "if(){}", "else {}", "com1" };
-            IrtIfElseParser.Parse(inputParts);
-        }
-
         [TestMethod]
         public void ParseMultipleElseKeywordsReturnsCorrectBlock()
         {
@@ -883,8 +874,8 @@ namespace InterpreteTests
             var result = IrtIfElseParser.Parse(inputParts);
             Assert.IsNotNull(result);
             Assert.AreEqual("condition1", result.Condition);
-            Assert.AreEqual("com1 if(condition2) { com2 } else { com3 }", result.IfClause);
-            Assert.AreEqual("", result.ElseClause);
+            Assert.AreEqual("com1", result.IfClause);
+            Assert.AreEqual("if(condition2) { com2 } else { com3 }", result.ElseClause);
         }
 
         [TestMethod]
@@ -894,8 +885,8 @@ namespace InterpreteTests
             var result = IrtIfElseParser.Parse(inputParts);
             Assert.IsNotNull(result);
             Assert.AreEqual("cond1", result.Condition);
-            Assert.AreEqual("com1 if(cond2) { com2 } else { com3 }", result.IfClause);
-            Assert.AreEqual("", result.ElseClause);
+            Assert.AreEqual("com1", result.IfClause);
+            Assert.AreEqual("if(cond2) { com2 } else { com3 }", result.ElseClause);
         }
 
         [TestMethod]

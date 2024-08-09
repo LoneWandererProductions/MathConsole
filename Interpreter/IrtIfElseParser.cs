@@ -41,28 +41,18 @@ namespace Interpreter
                     break;
                 }
 
-                // Extract `if` and `else` clauses from the block
-                string ifClause = block.Substring(0, elsePosition).Trim();
-                string elseClause = elsePosition == -1 ? null : block.Substring(elsePosition).Trim();
+                var ifElseClause = GenerateClause(code, block, elsePosition, layer);
 
-                // Save the extracted block with the current layer
-                var ifElseClause = new IfElseClause
-                {
-                    Parent = code,
-                    IfClause = ifClause,
-                    ElseClause = elseClause,
-                    Layer = layer // Set the current depth level
-                };
                 clauses.Add(ifElseClause);
 
                 // Remove outer `if` and `else` clauses before recursive parsing
-                string innerIfClause = RemoveOuterIfElse(ifClause);
+                string innerIfClause = RemoveOuterIfElse(ifElseClause.IfClause);
                 if (innerIfClause.Length > 0)
                 {
                     ParseIfElseClausesRecursively(innerIfClause, clauses, layer + 1);
                 }
 
-                string innerElseClause = RemoveOuterIfElse(elseClause);
+                string innerElseClause = RemoveOuterIfElse(ifElseClause.ElseClause);
                 if (innerElseClause.Length > 0)
                 {
                     ParseIfElseClausesRecursively(innerElseClause, clauses, layer + 1);
@@ -71,6 +61,22 @@ namespace Interpreter
                 // Stop processing the current block and move on
                 break; // Only process one `if-else` block per call
             }
+        }
+
+        private static IfElseClause GenerateClause(string code, string block, int elsePosition, int layer)
+        {
+            // Extract `if` and `else` clauses from the block
+            string ifClause = block.Substring(0, elsePosition).Trim();
+            string elseClause = elsePosition == -1 ? null : block.Substring(elsePosition).Trim();
+
+            // Save the extracted block with the current layer
+            return new IfElseClause
+            {
+                Parent = code,
+                IfClause = ifClause,
+                ElseClause = elseClause,
+                Layer = layer // Set the current depth level
+            };
         }
 
         // Method to remove the outermost if and else keywords
