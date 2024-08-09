@@ -290,7 +290,7 @@ namespace Interpreter
             return (input.Substring(start, end - start + 1).Trim(), elsePosition);
         }
 
-        //TODO do not forget the values after the last }, will be removed now useless for me!
+
         internal static IrtIfElseBlock Parse(IEnumerable<string> inputParts)
         {
             var stack = new Stack<(string Condition, StringBuilder IfClause, StringBuilder ElseClause, bool InElse)>();

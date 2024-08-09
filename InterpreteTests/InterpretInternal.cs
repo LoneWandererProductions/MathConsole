@@ -843,6 +843,108 @@ namespace InterpreteTests
             Assert.AreEqual(24, elsePosition);
         }
 
+        [TestMethod]
+        public void ExtractFirstIfElseEmptyInputReturnsNull()
+        {
+            var input = "";
+            var result = IrtIfElseParser.ExtractFirstIfElse(input);
+            Assert.IsNull(result.block);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void ParseSingleOpeningBraceThrowsException()
+        {
+            var inputParts = new List<string> { "if(condition){com1", "com2" };
+            IrtIfElseParser.Parse(inputParts);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void ParseSingleClosingBraceThrowsException()
+        {
+            var inputParts = new List<string> { "if(condition){com1", "com2}", "else" };
+            IrtIfElseParser.Parse(inputParts);
+        }
+
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void ParseIfWithoutConditionThrowsException()
+        {
+            var inputParts = new List<string> { "if(){}", "else {}", "com1" };
+            IrtIfElseParser.Parse(inputParts);
+        }
+
+        [TestMethod]
+        public void ParseMultipleElseKeywordsReturnsCorrectBlock()
+        {
+            var inputParts = new List<string> { "if(condition1){com1", "}else{if(condition2){com2", "}else{com3", "}}}" };
+            var result = IrtIfElseParser.Parse(inputParts);
+            Assert.IsNotNull(result);
+            Assert.AreEqual("condition1", result.Condition);
+            Assert.AreEqual("com1 if(condition2) { com2 } else { com3 }", result.IfClause);
+            Assert.AreEqual("", result.ElseClause);
+        }
+
+        [TestMethod]
+        public void ParseAdjacentIfElseBlocksReturnsCorrectBlock()
+        {
+            var inputParts = new List<string> { "if(cond1){com1", "}else{if(cond2){com2", "}else{com3", "}}}" };
+            var result = IrtIfElseParser.Parse(inputParts);
+            Assert.IsNotNull(result);
+            Assert.AreEqual("cond1", result.Condition);
+            Assert.AreEqual("com1 if(cond2) { com2 } else { com3 }", result.IfClause);
+            Assert.AreEqual("", result.ElseClause);
+        }
+
+        [TestMethod]
+        public void ParseIfWithoutElseReturnsCorrectBlock()
+        {
+            var inputParts = new List<string> { "if(condition){com1", "com2", "com3}" };
+            var result = IrtIfElseParser.Parse(inputParts);
+            Assert.IsNotNull(result);
+            Assert.AreEqual("condition", result.Condition);
+            Assert.AreEqual("com1 com2 com3", result.IfClause);
+            Assert.AreEqual("", result.ElseClause);
+        }
+
+
+        [TestMethod]
+        public void ParseExtraWhitespacesReturnsCorrectBlock()
+        {
+            var inputParts = new List<string> { "  if ( condition ) {  com1;  ", "com2; } else {  com3; }  " };
+            var result = IrtIfElseParser.Parse(inputParts);
+            Assert.IsNotNull(result);
+            Assert.AreEqual("condition", result.Condition);
+            Assert.AreEqual("com1; com2;", result.IfClause);
+            Assert.AreEqual("com3;", result.ElseClause);
+        }
+
+
+        [TestMethod]
+        public void ParseIfElseWithCommentsReturnsCorrectBlock()
+        {
+            var inputParts = new List<string> { "if(condition) { /* comment */ com1", "com2", "} else { // comment", "com3 }" };
+            var result = IrtIfElseParser.Parse(inputParts);
+            Assert.IsNotNull(result);
+            Assert.AreEqual("condition", result.Condition);
+            Assert.AreEqual("/* comment */ com1 com2", result.IfClause);
+            Assert.AreEqual("// comment com3", result.ElseClause);
+        }
+
+
+        [TestMethod]
+        public void ParseMixedBracesAndKeywordsReturnsCorrectBlock()
+        {
+            var inputParts = new List<string> { "if(cond1) { com1; } else if(cond2) { com2; } else { com3; }" };
+            var result = IrtIfElseParser.Parse(inputParts);
+            Assert.IsNotNull(result);
+            Assert.AreEqual("cond1", result.Condition);
+            Assert.AreEqual("com1;", result.IfClause);
+            Assert.AreEqual("if(cond2) { com2; } else { com3; }", result.ElseClause);
+        }
+
 
         /// <summary>
         ///     Logs the messages.
