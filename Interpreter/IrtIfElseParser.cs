@@ -6,114 +6,209 @@
 * PROGRAMER:   Peter Geinitz (Wayfarer)
 */
 
+using ExtendedSystemObjects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using ExtendedSystemObjects;
-
 
 namespace Interpreter
 {
     internal static class IrtIfElseParser
     {
-   
+        public static List<IfElseClause> ParseIfElseClauses(string code)
+        {
+            var clauses = new List<IfElseClause>();
+            ParseIfElseClausesRecursively(code, clauses, 0);
+            return clauses;
+        }
+
+        private static void ParseIfElseClausesRecursively(string code, List<IfElseClause> clauses, int layer)
+        {
+            while (true)
+            {
+                // Find the next 'if' statement in the current substring
+                int ifIndex = IrtIfElseParser.FindFirstIfIndex(code);
+                if (ifIndex == -1)
+                    break;
+
+                // Extract the substring starting from the found 'if' index
+                var codeFromIfIndex = code.Substring(ifIndex);
+                var (block, elsePosition) = IrtIfElseParser.ExtractFirstIfElse(codeFromIfIndex);
+
+                if (string.IsNullOrWhiteSpace(block))
+                {
+                    break;
+                }
+
+                // Extract `if` and `else` clauses from the block
+                string ifClause = block.Substring(0, elsePosition).Trim();
+                string elseClause = elsePosition == -1 ? null : block.Substring(elsePosition).Trim();
+
+                // Save the extracted block with the current layer
+                var ifElseClause = new IfElseClause
+                {
+                    Parent = code,
+                    IfClause = ifClause,
+                    ElseClause = elseClause,
+                    Layer = layer // Set the current depth level
+                };
+                clauses.Add(ifElseClause);
+
+                // Remove outer `if` and `else` clauses before recursive parsing
+                string innerIfClause = RemoveOuterIfElse(ifClause);
+                if (innerIfClause.Length > 0)
+                {
+                    ParseIfElseClausesRecursively(innerIfClause, clauses, layer + 1);
+                }
+
+                string innerElseClause = RemoveOuterIfElse(elseClause);
+                if (innerElseClause.Length > 0)
+                {
+                    ParseIfElseClausesRecursively(innerElseClause, clauses, layer + 1);
+                }
+
+                // Stop processing the current block and move on
+                break; // Only process one `if-else` block per call
+            }
+        }
+
+        // Method to remove the outermost if and else keywords
+        private static string RemoveOuterIfElse(string code)
+        {
+            if (code.StartsWith("if"))
+            {
+                int openBraceIndex = code.IndexOf('{');
+                int closeBraceIndex = FindBlockEnd(code, openBraceIndex);
+                if (closeBraceIndex != -1)
+                {
+                    return code.Substring(openBraceIndex + 1, closeBraceIndex - openBraceIndex - 1).Trim();
+                }
+            }
+            return code;
+        }
+
+        // Finds the index of the closing brace that matches the opening brace at the given start index.
+        public static int FindBlockEnd(string code, int start)
+        {
+            int braceCount = 0;
+
+            for (int i = start; i < code.Length; i++)
+            {
+                if (code[i] == '{')
+                {
+                    braceCount++;
+                }
+                else if (code[i] == '}')
+                {
+                    braceCount--;
+                    if (braceCount == 0)
+                    {
+                        return i; // Return the index of the closing brace
+                    }
+                }
+            }
+
+            return -1; // No matching closing brace found
+        }
+
         /// <summary>
         ///     Builds the command.
         /// </summary>
         /// <param name="input">The input.</param>
         /// <returns>Command Register</returns>
         internal static CategorizedDictionary<int, string> BuildCommand(string input)
+        {
+            input = Irt.RemoveLastOccurrence(input, IrtConst.AdvancedClose);
+            input = Irt.RemoveFirstOccurrence(input, IrtConst.AdvancedOpen);
+            input = input.Trim();
+
+            var formattedBlocks = new List<string>();
+            var keepParsing = true;
+
+            while (keepParsing)
             {
-                input = Irt.RemoveLastOccurrence(input, IrtConst.AdvancedClose);
-                input = Irt.RemoveFirstOccurrence(input, IrtConst.AdvancedOpen);
-                input = input.Trim();
-
-                var formattedBlocks = new List<string>();
-                var keepParsing = true;
-
-                while (keepParsing)
+                var ifIndex = FindFirstIfIndex(input);
+                if (ifIndex == -1)
                 {
-                    var ifIndex = FindFirstIfIndex(input);
-                    if (ifIndex == -1)
+                    keepParsing = false;
+                    if (!string.IsNullOrWhiteSpace(input))
+                        formattedBlocks.Add(input.Trim()); // Add remaining part as the last element
+                }
+                else
+                {
+                    // Add the part before the first 'if' to the list
+                    var beforeIf = input.Substring(0, ifIndex).Trim();
+                    if (!string.IsNullOrWhiteSpace(beforeIf)) formattedBlocks.Add(beforeIf);
+
+                    input = input.Substring(ifIndex); // Update input to start from 'if'
+
+                    var (ifElseBlock, elsePosition) = ExtractFirstIfElse(input);
+
+                    if (elsePosition == -1)
                     {
-                        keepParsing = false;
-                        if (!string.IsNullOrWhiteSpace(input))
-                            formattedBlocks.Add(input.Trim()); // Add remaining part as the last element
+                        formattedBlocks.Add(ifElseBlock.Trim()); // Add entire 'if' block if no 'else' found
                     }
                     else
                     {
-                        // Add the part before the first 'if' to the list
-                        var beforeIf = input.Substring(0, ifIndex).Trim();
-                        if (!string.IsNullOrWhiteSpace(beforeIf)) formattedBlocks.Add(beforeIf);
-
-                        input = input.Substring(ifIndex); // Update input to start from 'if'
-
-                        var (ifElseBlock, elsePosition) = ExtractFirstIfElse(input);
-
-                        if (elsePosition == -1)
-                        {
-                            formattedBlocks.Add(ifElseBlock.Trim()); // Add entire 'if' block if no 'else' found
-                        }
-                        else
-                        {
-                            var ifBlock = input.Substring(0, elsePosition).Trim(); // Part up to 'else'
-                            var elseBlock =
-                                input.Substring(elsePosition, ifElseBlock.Length - elsePosition)
-                                    .Trim(); // Part after 'else'
-                            formattedBlocks.Add(ifBlock);
-                            formattedBlocks.Add(elseBlock);
-                        }
-
-                        input = input.Substring(ifElseBlock.Length).Trim(); // Update input to remaining part
-                    }
-                }
-
-                var commandRegister = new CategorizedDictionary<int, string>();
-                var commandIndex = 0;
-
-                foreach (var block in formattedBlocks)
-                {
-                    var keywordIndex = StartsWith(block, IrtConst.InternContainerCommands);
-
-                    switch (keywordIndex)
-                    {
-                        case 0: // IF
-                        case 1: // ELSE
-                            commandRegister.Add(IrtConst.InternContainerCommands[keywordIndex].Command, commandIndex,
-                                block);
-                            break;
-
-                        default:
-                            foreach (var trimmedSubCommand in Irt.SplitParameter(block, IrtConst.NewCommand)
-                                         .Select(subCommand => subCommand.Trim()))
-                            {
-                                keywordIndex = StartsWith(trimmedSubCommand, IrtConst.InternContainerCommands);
-                                commandIndex++;
-
-                                switch (keywordIndex)
-                                {
-                                    case 2: // GOTO
-                                    case 3: // LABEL
-                                        commandRegister.Add(IrtConst.InternContainerCommands[keywordIndex].Command,
-                                            commandIndex, trimmedSubCommand);
-                                        break;
-                                    default:
-                                        if (!string.IsNullOrEmpty(trimmedSubCommand))
-                                            commandRegister.Add("COMMAND", commandIndex, trimmedSubCommand);
-
-                                        break;
-                                }
-                            }
-
-                            break;
+                        var ifBlock = input.Substring(0, elsePosition).Trim(); // Part up to 'else'
+                        var elseBlock =
+                            input.Substring(elsePosition, ifElseBlock.Length - elsePosition)
+                                .Trim(); // Part after 'else'
+                        formattedBlocks.Add(ifBlock);
+                        formattedBlocks.Add(elseBlock);
                     }
 
-                    commandIndex++;
+                    input = input.Substring(ifElseBlock.Length).Trim(); // Update input to remaining part
                 }
-
-                return commandRegister;
             }
+
+            var commandRegister = new CategorizedDictionary<int, string>();
+            var commandIndex = 0;
+
+            foreach (var block in formattedBlocks)
+            {
+                var keywordIndex = StartsWith(block, IrtConst.InternContainerCommands);
+
+                switch (keywordIndex)
+                {
+                    case 0: // IF
+                    case 1: // ELSE
+                        commandRegister.Add(IrtConst.InternContainerCommands[keywordIndex].Command, commandIndex,
+                            block);
+                        break;
+
+                    default:
+                        foreach (var trimmedSubCommand in Irt.SplitParameter(block, IrtConst.NewCommand)
+                                     .Select(subCommand => subCommand.Trim()))
+                        {
+                            keywordIndex = StartsWith(trimmedSubCommand, IrtConst.InternContainerCommands);
+                            commandIndex++;
+
+                            switch (keywordIndex)
+                            {
+                                case 2: // GOTO
+                                case 3: // LABEL
+                                    commandRegister.Add(IrtConst.InternContainerCommands[keywordIndex].Command,
+                                        commandIndex, trimmedSubCommand);
+                                    break;
+
+                                default:
+                                    if (!string.IsNullOrEmpty(trimmedSubCommand))
+                                        commandRegister.Add("COMMAND", commandIndex, trimmedSubCommand);
+
+                                    break;
+                            }
+                        }
+
+                        break;
+                }
+
+                commandIndex++;
+            }
+
+            return commandRegister;
+        }
 
         /// <summary>
         ///     Extracts the first if else.
@@ -206,7 +301,7 @@ namespace Interpreter
 
             foreach (var token in inputParts.SelectMany(Tokenize))
             {
-                if (token.StartsWith("if(", StringComparison.Ordinal))
+                if (token.StartsWith("if(", StringComparison.InvariantCultureIgnoreCase))
                 {
                     // Start a new if block
                     var condition = token.Substring(3, token.Length - 4); // Extract condition
@@ -225,6 +320,7 @@ namespace Interpreter
                             case "}" when !inElse:
                                 // End of an if block, continue
                                 break;
+
                             case "}" when inElse:
                                 // End of else block
                                 if (stack.Count == 0)
@@ -255,9 +351,11 @@ namespace Interpreter
                                 currentElseClause = parentElsePart;
                                 inElse = parentInElse;
                                 break;
+
                             case "{":
                                 // Skip opening brace
                                 break;
+
                             default:
                                 // Append token to the appropriate clause
                                 if (inElse)
@@ -276,7 +374,6 @@ namespace Interpreter
 
             throw new InvalidOperationException("Invalid input string");
         }
-
 
         private static IEnumerable<string> Tokenize(string input)
         {
@@ -305,7 +402,7 @@ namespace Interpreter
 
                     default:
                         // Handle 'if' statements
-                        if (input.Substring(i).StartsWith("if(", StringComparison.Ordinal))
+                        if (input.Substring(i).StartsWith("if(", StringComparison.InvariantCultureIgnoreCase))
                         {
                             if (sb.Length > 0)
                             {
@@ -322,7 +419,7 @@ namespace Interpreter
                             i = endIdx; // Skip past the end of the 'if' condition
                         }
                         // Handle 'else'
-                        else if (input.Substring(i).StartsWith("else", StringComparison.Ordinal))
+                        else if (input.Substring(i).StartsWith("else", StringComparison.InvariantCultureIgnoreCase))
                         {
                             if (sb.Length > 0)
                             {
@@ -349,7 +446,6 @@ namespace Interpreter
 
             return tokens;
         }
-
 
         /// <summary>
         ///     Starts the with.
@@ -378,7 +474,7 @@ namespace Interpreter
 
             foreach (var (key, inCommand) in com)
                 if (string.Equals(input.ToUpperInvariant(), inCommand.Command.ToUpperInvariant(),
-                        StringComparison.Ordinal))
+                           StringComparison.OrdinalIgnoreCase))
                     return
                         key;
 

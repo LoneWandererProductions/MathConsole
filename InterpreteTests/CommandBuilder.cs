@@ -114,7 +114,7 @@ namespace InterpreteTests
             string code = "if(condition1) { if(condition2) { /* nested code */ } else { /* nested else code */ } } else { /* outer else code */ }";
 
             // Act
-            var clauses = IfElseParser2.ParseIfElseClauses(code);
+            var clauses = IrtIfElseParser.ParseIfElseClauses(code);
 
             // Assert
             Assert.AreEqual(2, clauses.Count, "Expected 2 if-else clauses.");
