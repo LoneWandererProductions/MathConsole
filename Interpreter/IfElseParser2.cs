@@ -5,83 +5,111 @@ namespace Interpreter
 {
     internal static class IfElseParser2
     {
-        public static List<IfElseClause> ParseIfElseClauses(string code)
+        public static List<IfElseClaused> ParseIfElseClauses(string code)
         {
-            var clauses = new List<IfElseClause>();
+            var clauses = new List<IfElseClaused>();
             ParseIfElseClausesRecursively(code, clauses, 0);
             return clauses;
         }
 
-        private static void ParseIfElseClausesRecursively(string code, List<IfElseClause> clauses, int startIndex = 0)
+        private static void ParseIfElseClausesRecursively(string code, List<IfElseClaused> clauses, int layer)
         {
             while (true)
             {
-                // Find the next 'if' statement in the code starting from startIndex
-                var ifIndex = IrtIfElseParser.FindFirstIfIndex(code.Substring(startIndex));
+                // Find the next 'if' statement in the current substring
+                int ifIndex = IrtIfElseParser.FindFirstIfIndex(code);
                 if (ifIndex == -1)
                     break;
 
-                // Adjust ifIndex to the original code's index
-                ifIndex += startIndex;
-
-                // Extract the outermost if-else block
+                // Extract the substring starting from the found 'if' index
                 var codeFromIfIndex = code.Substring(ifIndex);
                 var (block, elsePosition) = IrtIfElseParser.ExtractFirstIfElse(codeFromIfIndex);
+                //var (block, elsePosition) = ExtractFirstIfElseNew(codeFromIfIndex);
 
-                // Calculate the correct index for `elsePosition`
-                var actualElseIndex = elsePosition == -1 ? -1 : elsePosition + ifIndex;
-
-                // Save the extracted outer block and its positions
-                var ifElseClause = new IfElseClause
+                if (string.IsNullOrWhiteSpace(block))
                 {
-                    IfIndex = ifIndex,
-                    Block = block,
-                    ElseIndex = actualElseIndex
+                    break;
+                }
+
+                // Extract `if` and `else` clauses from the block
+                string ifClause = block.Substring(0, elsePosition).Trim();
+                string elseClause = elsePosition == block.Length ? null : block.Substring(elsePosition).Trim();
+
+                // Save the extracted block with the current layer
+                var ifElseClause = new IfElseClaused
+                {
+                    Parent = code,
+                    IfClause = ifClause,
+                    ElseClause = elseClause,
+                    Layer = layer // Set the current depth level
                 };
                 clauses.Add(ifElseClause);
 
-                // Extract the code within the `if` block
-                int ifBlockStart = block.IndexOf('{') + 1;
-                int ifBlockEnd = block.LastIndexOf('}');
-
-                if (ifBlockStart > 0 && ifBlockEnd > ifBlockStart) // Ensure valid indices
+                // Remove outer `if` and `else` clauses before recursive parsing
+                ifClause = RemoveOuterIfElse(ifClause);
+                if (ifClause.Length > 0)
                 {
-                    string ifBlockContent = block.Substring(ifBlockStart, ifBlockEnd - ifBlockStart);
-
-                    // Recursively parse the code within the `if` block
-                    ParseIfElseClausesRecursively(ifBlockContent, clauses, 0);
+                    ParseIfElseClausesRecursively(ifClause, clauses, layer + 1);
                 }
 
-                // If there's an `else`, extract the code within the `else` block
-                if (elsePosition != -1)
+                ifClause = RemoveOuterIfElse(elseClause);
+                if (elseClause.Length > 0)
                 {
-                    int elseBlockStart = block.IndexOf('{', ifBlockEnd) + 1;
-                    int elseBlockEnd = block.LastIndexOf('}');
-
-                    if (elseBlockStart > 0 && elseBlockEnd > elseBlockStart) // Ensure valid indices
-                    {
-                        string elseBlockContent = block.Substring(elseBlockStart, elseBlockEnd - elseBlockStart);
-
-                        // Recursively parse the code within the `else` block
-                        ParseIfElseClausesRecursively(elseBlockContent, clauses, 0);
-                    }
+                    ParseIfElseClausesRecursively(elseClause, clauses, layer + 1);
                 }
 
-                // Move the startIndex to just after the processed block
-                var blockEndIndex = ifIndex + block.Length;
-                if (blockEndIndex >= code.Length)
-                    break;
-
-                startIndex = blockEndIndex;
+                // Stop processing the current block and move on
+                break; // Only process one `if-else` block per call
             }
         }
 
-
-        public class IfElseClause
+        // Method to remove the outermost if and else keywords
+        private static string RemoveOuterIfElse(string code)
         {
-            public int IfIndex { get; set; }
-            public string Block { get; set; }
-            public int ElseIndex { get; set; } // Index of the outermost `else`
+            int ifIndex = code.IndexOf("if");
+            if (ifIndex == 0) // Only remove if the code starts with "if"
+            {
+                // Remove the "if" keyword and the outermost braces
+                int openBraceIndex = code.IndexOf('{');
+                int closeBraceIndex = FindBlockEnd(code, openBraceIndex);
+                if (closeBraceIndex != -1)
+                {
+                    return code.Substring(openBraceIndex + 1, closeBraceIndex - openBraceIndex - 1).Trim();
+                }
+            }
+            return code;
+        }
+
+        // Finds the index of the closing brace that matches the opening brace at the given start index.
+        public static int FindBlockEnd(string code, int start)
+        {
+            int braceCount = 0;
+
+            for (int i = start; i < code.Length; i++)
+            {
+                if (code[i] == '{')
+                {
+                    braceCount++;
+                }
+                else if (code[i] == '}')
+                {
+                    braceCount--;
+                    if (braceCount == 0)
+                    {
+                        return i; // Return the index of the closing brace
+                    }
+                }
+            }
+
+            return -1; // No matching closing brace found
+        }
+
+        public class IfElseClaused
+        {
+            public string Parent { get; set; }
+            public string IfClause { get; set; }
+            public string ElseClause { get; set; }
+            public int Layer { get; set; } // Depth level of the `if-else` structure
         }
     }
 }

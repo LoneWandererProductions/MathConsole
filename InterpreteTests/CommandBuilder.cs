@@ -114,7 +114,7 @@ namespace InterpreteTests
             string code = "if(condition1) { if(condition2) { /* nested code */ } else { /* nested else code */ } } else { /* outer else code */ }";
 
             // Act
-            var clauses = IrtIfElseParser.ParseIfElseClauses(code);
+            var clauses = IfElseParser2.ParseIfElseClauses(code);
 
             // Assert
             Assert.AreEqual(2, clauses.Count, "Expected 2 if-else clauses.");
@@ -126,48 +126,7 @@ namespace InterpreteTests
 
             // Check the second clause (Layer 1)
             Assert.AreEqual(1, clauses[1].Layer, "Layer of the second clause should be 1.");
-            Assert.AreEqual("else { /* outer else code */ }", clauses[1].ElseClause);
-            Assert.IsNull(clauses[1].IfClause, "The second clause should not have an ifClause.");
-        }
-
-
-        [TestMethod]
-        public void TestParseIfElseClauses_SingleIfElse()
-        {
-            // Arrange
-            var code = "if(condition1) { /* code */ } else { /* code */ }";
-
-            // Act
-            var clauses = IfElseParser2.ParseIfElseClauses(code);
-
-            // Assert
-            Assert.AreEqual(1, clauses.Count, "Expected 1 if-else clause.");
-            Assert.AreEqual(0, clauses[0].IfIndex, "IfIndex should be 0.");
-            Assert.AreEqual(30, clauses[0].ElseIndex, "ElseIndex should be 30.");
-            Assert.AreEqual("if(condition1) { /* code */ } else { /* code */ }", clauses[0].Block);
-        }
-
-        [TestMethod]
-        public void TestParseIfElseClauses_NestedIfElse()
-        {
-            // Arrange
-            var code = "if(condition1) { if(condition2) { /* nested code */ } else { /* nested else code */ } } else { /* outer else code */ }";
-
-            // Act
-            var clauses = IfElseParser2.ParseIfElseClauses(code);
-
-            // Assert
-            Assert.AreEqual(2, clauses.Count, "Expected 2 if-else clauses.");
-
-            // Check the first clause
-            Assert.AreEqual(0, clauses[0].IfIndex, "IfIndex of the first clause should be 0.");
-            Assert.IsTrue(clauses[0].Block.Contains("if(condition2)"), "Block should contain the nested if.");
-            Assert.AreEqual(88, clauses[0].ElseIndex, "ElseIndex of the first clause should be 88.");
-
-            // Check the second clause
-            Assert.AreEqual(1, clauses[1].IfIndex, "IfIndex of the second clause should be 1.");
-            Assert.AreEqual("else { /* outer else code */ }", clauses[1].Block);
-            Assert.AreEqual(-1, clauses[1].ElseIndex, "The second clause should not have an outer else.");
+            Assert.AreEqual("else { /* nested else code */ }", clauses[1].ElseClause);
         }
     }
 }
