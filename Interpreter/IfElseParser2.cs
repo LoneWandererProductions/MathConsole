@@ -24,7 +24,6 @@ namespace Interpreter
                 // Extract the substring starting from the found 'if' index
                 var codeFromIfIndex = code.Substring(ifIndex);
                 var (block, elsePosition) = IrtIfElseParser.ExtractFirstIfElse(codeFromIfIndex);
-                //var (block, elsePosition) = ExtractFirstIfElseNew(codeFromIfIndex);
 
                 if (string.IsNullOrWhiteSpace(block))
                 {
@@ -33,7 +32,7 @@ namespace Interpreter
 
                 // Extract `if` and `else` clauses from the block
                 string ifClause = block.Substring(0, elsePosition).Trim();
-                string elseClause = elsePosition == block.Length ? null : block.Substring(elsePosition).Trim();
+                string elseClause = elsePosition == -1 ? null : block.Substring(elsePosition).Trim();
 
                 // Save the extracted block with the current layer
                 var ifElseClause = new IfElseClaused
@@ -46,16 +45,16 @@ namespace Interpreter
                 clauses.Add(ifElseClause);
 
                 // Remove outer `if` and `else` clauses before recursive parsing
-                ifClause = RemoveOuterIfElse(ifClause);
-                if (ifClause.Length > 0)
+                string innerIfClause = RemoveOuterIfElse(ifClause);
+                if (innerIfClause.Length > 0)
                 {
-                    ParseIfElseClausesRecursively(ifClause, clauses, layer + 1);
+                    ParseIfElseClausesRecursively(innerIfClause, clauses, layer + 1);
                 }
 
-                ifClause = RemoveOuterIfElse(elseClause);
-                if (elseClause.Length > 0)
+                string innerElseClause = RemoveOuterIfElse(elseClause);
+                if (innerElseClause.Length > 0)
                 {
-                    ParseIfElseClausesRecursively(elseClause, clauses, layer + 1);
+                    ParseIfElseClausesRecursively(innerElseClause, clauses, layer + 1);
                 }
 
                 // Stop processing the current block and move on
@@ -66,10 +65,8 @@ namespace Interpreter
         // Method to remove the outermost if and else keywords
         private static string RemoveOuterIfElse(string code)
         {
-            int ifIndex = code.IndexOf("if");
-            if (ifIndex == 0) // Only remove if the code starts with "if"
+            if (code.StartsWith("if"))
             {
-                // Remove the "if" keyword and the outermost braces
                 int openBraceIndex = code.IndexOf('{');
                 int closeBraceIndex = FindBlockEnd(code, openBraceIndex);
                 if (closeBraceIndex != -1)
