@@ -51,8 +51,8 @@ namespace InterpreteTests
             };
 
             // Act
-            var result = IrtIfElseParser.BuildCommand(inputcleaned);
-            result = IrtIfElseParser.BuildCommand(inputcleaned);
+            var result = IrtParserCommand.BuildCommand(inputcleaned);
+            result = IrtParserCommand.BuildCommand(inputcleaned);
 
             // Assert
             foreach (var expected in expectedResults)
@@ -112,7 +112,7 @@ namespace InterpreteTests
             string code = "if(condition1) { if(condition2) { /* nested code */ } else { /* nested else code */ } } else { /* outer else code */ }";
 
             // Act
-            var clauses = IrtIfElseParser.ParseIfElseClauses(code);
+            var clauses = IrtParserCommand.ParseIfElseClauses(code);
 
             // Assert
             Assert.AreEqual(2, clauses.Count, "Expected 2 if-else clauses.");

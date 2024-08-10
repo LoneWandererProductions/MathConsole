@@ -67,11 +67,11 @@ namespace Interpreter
         /// <param name="inputString">The input string.</param>
         internal void ProcessInput(int key, string inputString)
         {
-            var (status, parts) = Irt.GetParameters(inputString, key, IrtConst.InternCommands);
+            var (status, parts) = IrtKernel.GetParameters(inputString, key, IrtConst.InternCommands);
 
             //handle normal command and batch/containers
             var parameter = status == IrtConst.ParameterCommand
-                ? Irt.SplitParameter(parts, IrtConst.Splitter)
+                ? IrtKernel.SplitParameter(parts, IrtConst.Splitter)
                 : new List<string> { parts };
 
             //check for batch and Command Files
@@ -82,7 +82,7 @@ namespace Interpreter
             }
 
             //check for Parameter Overload
-            var check = Irt.CheckOverload(IrtConst.InternCommands[key].Command, parameter.Count,
+            var check = IrtKernel.CheckOverload(IrtConst.InternCommands[key].Command, parameter.Count,
                 IrtConst.InternCommands);
 
             if (check == null)
@@ -170,7 +170,7 @@ namespace Interpreter
                 return;
             }
 
-            var key = Irt.CheckForKeyWord(parameterPart, _commands);
+            var key = IrtKernel.CheckForKeyWord(parameterPart, _commands);
 
             if (key == IrtConst.Error)
             {
@@ -187,7 +187,7 @@ namespace Interpreter
         /// <param name="parameterPart">The parameter part.</param>
         private void CommandUse(string parameterPart)
         {
-            parameterPart = Irt.RemoveParenthesis(parameterPart, IrtConst.BaseOpen, IrtConst.BaseClose);
+            parameterPart = IrtKernel.RemoveParenthesis(parameterPart, IrtConst.BaseOpen, IrtConst.BaseClose);
 
             if (!_prompt.CollectedSpaces.ContainsKey(parameterPart))
             {

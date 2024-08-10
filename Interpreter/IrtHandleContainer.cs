@@ -73,8 +73,8 @@ namespace Interpreter
         /// <param name="parameterPart">Parameter Part.</param>
         internal void CommandContainer(string parameterPart)
         {
-            parameterPart = Irt.RemoveLastOccurrence(parameterPart, IrtConst.AdvancedClose);
-            parameterPart = Irt.RemoveFirstOccurrence(parameterPart, IrtConst.AdvancedOpen);
+            parameterPart = IrtKernel.RemoveLastOccurrence(parameterPart, IrtConst.AdvancedClose);
+            parameterPart = IrtKernel.RemoveFirstOccurrence(parameterPart, IrtConst.AdvancedOpen);
 
             GenerateCommands(parameterPart);
         }
@@ -85,7 +85,7 @@ namespace Interpreter
         /// <param name="parameterPart">The parameter part.</param>
         internal void CommandBatchExecute(string parameterPart)
         {
-            parameterPart = Irt.RemoveParenthesis(parameterPart, IrtConst.BaseOpen, IrtConst.BaseClose);
+            parameterPart = IrtKernel.RemoveParenthesis(parameterPart, IrtConst.BaseOpen, IrtConst.BaseClose);
             parameterPart = IrtHelper.ReadBatchFile(parameterPart);
 
             if (string.IsNullOrEmpty(parameterPart))
@@ -104,7 +104,7 @@ namespace Interpreter
         /// <param name="parameterPart">The parameter part.</param>
         private void GenerateCommands(string parameterPart)
         {
-            var commands = Irt.SplitParameter(parameterPart, IrtConst.NewCommand).ToList();
+            var commands = IrtKernel.SplitParameter(parameterPart, IrtConst.NewCommand).ToList();
             var currentPosition = 0;
 
             while (currentPosition < commands.Count)
@@ -112,7 +112,7 @@ namespace Interpreter
                 var com = commands[currentPosition];
 
                 // Check if it contains a Keyword
-                var key = Irt.CheckForKeyWord(com, IrtConst.InternContainerCommands);
+                var key = IrtKernel.CheckForKeyWord(com, IrtConst.InternContainerCommands);
 
                 if (key == IrtConst.Error)
                 {
@@ -187,7 +187,7 @@ namespace Interpreter
         {
             position = 0;
 
-            var (status, label) = Irt.GetParameters(input, key, IrtConst.InternContainerCommands);
+            var (status, label) = IrtKernel.GetParameters(input, key, IrtConst.InternContainerCommands);
 
             if (status != IrtConst.ParameterCommand || string.IsNullOrEmpty(label)) return false;
 
@@ -210,7 +210,7 @@ namespace Interpreter
             for (var i = 0; i < commands.Count; i++)
             {
                 var input = commands[i];
-                var check = Irt.CheckFormat(input, IrtConst.InternalLabel, label);
+                var check = IrtKernel.CheckFormat(input, IrtConst.InternalLabel, label);
                 if (check) // Customize this condition to match your label logic
                     return i;
             }

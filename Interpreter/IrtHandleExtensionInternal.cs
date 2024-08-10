@@ -42,7 +42,7 @@ namespace Interpreter
         /// <summary>
         ///     Instance of IrtParser for internal use.
         /// </summary>
-        private IrtParser _irtHandlePrompt;
+        private IrtParserInput _irtHandlePrompt;
 
         /// <summary>
         ///     Instance of Prompt to handle command input/output.
@@ -63,7 +63,7 @@ namespace Interpreter
         /// <param name="commands">Dictionary of commands.</param>
         /// <param name="prompt">Instance of Prompt.</param>
         /// <param name="irtInternal">Instance of IrtHandleInternal.</param>
-        public IrtHandleExtensionInternal(IrtParser irtPrompt, Dictionary<int, InCommand> commands, Prompt prompt,
+        public IrtHandleExtensionInternal(IrtParserInput irtPrompt, Dictionary<int, InCommand> commands, Prompt prompt,
             IrtHandleInternal irtInternal)
         {
             _irtHandlePrompt = irtPrompt;
@@ -116,7 +116,7 @@ namespace Interpreter
         /// <param name="extension">The extension command to process.</param>
         private void ProcessHelpCommand(ExtensionCommands extension)
         {
-            var key = Irt.CheckForKeyWord(extension.BaseCommand, IrtConst.InternCommands);
+            var key = IrtKernel.CheckForKeyWord(extension.BaseCommand, IrtConst.InternCommands);
             if (key != IrtConst.Error)
                 HandleInternalCommand(extension, key);
             else

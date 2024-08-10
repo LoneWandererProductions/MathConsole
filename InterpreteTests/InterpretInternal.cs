@@ -50,7 +50,7 @@ namespace InterpreteTests
         public void SingleCheckShouldReturnTrueForBalancedParentheses()
         {
             const string input = "(a + b) * c";
-            var result = Irt.SingleCheck(input);
+            var result = IrtKernel.SingleCheck(input);
             Assert.IsTrue(result);
         }
 
@@ -61,7 +61,7 @@ namespace InterpreteTests
         public void SingleCheckShouldReturnFalseForUnbalancedParentheses()
         {
             const string input = "(a + b * c";
-            var result = Irt.SingleCheck(input);
+            var result = IrtKernel.SingleCheck(input);
             Assert.IsFalse(result);
         }
 
@@ -72,7 +72,7 @@ namespace InterpreteTests
         public void RemoveParenthesisShouldRemoveOuterParenthesesWhenWellFormed()
         {
             const string input = "(abc)";
-            var result = Irt.RemoveParenthesis(input, '(', ')');
+            var result = IrtKernel.RemoveParenthesis(input, '(', ')');
             Assert.AreEqual("abc", result);
         }
 
@@ -83,7 +83,7 @@ namespace InterpreteTests
         public void RemoveParenthesisShouldReturnInput()
         {
             const string input = "abc";
-            var result = Irt.RemoveParenthesis(input, '(', ')');
+            var result = IrtKernel.RemoveParenthesis(input, '(', ')');
             Assert.AreEqual("abc", result);
         }
 
@@ -94,7 +94,7 @@ namespace InterpreteTests
         public void RemoveParenthesisShouldReturnErrorMessageWhenInputHasMismatchedParentheses()
         {
             const string input = "(abc";
-            var result = Irt.RemoveParenthesis(input, '(', ')');
+            var result = IrtKernel.RemoveParenthesis(input, '(', ')');
             Assert.AreEqual(IrtConst.ParenthesisError, result);
         }
 
@@ -109,7 +109,7 @@ namespace InterpreteTests
                 { 1, new InCommand { Command = "command", ParameterCount = 2 } }
             };
 
-            var result = Irt.CheckOverload("command", 2, commands);
+            var result = IrtKernel.CheckOverload("command", 2, commands);
             Assert.AreEqual(1, result);
         }
 
@@ -124,7 +124,7 @@ namespace InterpreteTests
                 { 1, new InCommand { Command = "command", ParameterCount = 2 } }
             };
 
-            var result = Irt.CheckOverload("command", 3, commands);
+            var result = IrtKernel.CheckOverload("command", 3, commands);
             Assert.IsNull(result);
         }
 
@@ -139,7 +139,7 @@ namespace InterpreteTests
             var expected = "text )( , )txt )( ,( more text";
 
             // Act
-            var result = Irt.WellFormedParenthesis(input);
+            var result = IrtKernel.WellFormedParenthesis(input);
 
             // Assert
             Assert.AreEqual(expected, result);
@@ -149,7 +149,7 @@ namespace InterpreteTests
             expected = "text{   internal(12 ,,,44   ),  internal4(      ,5)}";
 
             // Act
-            result = Irt.WellFormedParenthesis(input);
+            result = IrtKernel.WellFormedParenthesis(input);
 
             // Assert
             Assert.AreEqual(expected, result);
@@ -161,7 +161,7 @@ namespace InterpreteTests
         [TestMethod]
         public void RemoveParenthesisWithMalformedParenthesesReturnsError()
         {
-            var result = Irt.RemoveParenthesis("(a + b", '(', ')');
+            var result = IrtKernel.RemoveParenthesis("(a + b", '(', ')');
 
             Assert.AreEqual(IrtConst.ParenthesisError, result);
         }
@@ -177,7 +177,7 @@ namespace InterpreteTests
                 { 1, new InCommand { Command = "TEST" } }
             };
 
-            var result = Irt.CheckForKeyWord("INVALID", commands);
+            var result = IrtKernel.CheckForKeyWord("INVALID", commands);
 
             Assert.AreEqual(IrtConst.Error, result);
         }
@@ -189,7 +189,7 @@ namespace InterpreteTests
         public void SingleCheckShouldReturnTrueForNestedBalancedParentheses()
         {
             const string input = "((a + b) * (c - d))";
-            var result = Irt.SingleCheck(input);
+            var result = IrtKernel.SingleCheck(input);
             Assert.IsTrue(result);
         }
 
@@ -200,7 +200,7 @@ namespace InterpreteTests
         public void SingleCheckShouldReturnFalseForDifferentCountUnbalancedParentheses()
         {
             const string input = "(a + b) * (c - d";
-            var result = Irt.SingleCheck(input);
+            var result = IrtKernel.SingleCheck(input);
             Assert.IsFalse(result);
         }
 
@@ -213,7 +213,7 @@ namespace InterpreteTests
             const string input = "{(a + b) * [c - d]}";
             var openParenthesis = new[] { '(', '{', '[' };
             var closeParenthesis = new[] { ')', '}', ']' };
-            var result = Irt.CheckMultiple(input, openParenthesis, closeParenthesis);
+            var result = IrtKernel.CheckMultiple(input, openParenthesis, closeParenthesis);
             Assert.IsTrue(result);
         }
 
@@ -226,7 +226,7 @@ namespace InterpreteTests
             const string input = "{(a + b) * [c - d}";
             var openParenthesis = new[] { '(', '{', '[' };
             var closeParenthesis = new[] { ')', '}', ']' };
-            var result = Irt.CheckMultiple(input, openParenthesis, closeParenthesis);
+            var result = IrtKernel.CheckMultiple(input, openParenthesis, closeParenthesis);
             Assert.IsFalse(result);
         }
 
@@ -237,7 +237,7 @@ namespace InterpreteTests
         public void RemoveParenthesisShouldRemoveOuterCurlyBracesWhenWellFormed()
         {
             const string input = "{abc}";
-            var result = Irt.RemoveParenthesis(input, '{', '}');
+            var result = IrtKernel.RemoveParenthesis(input, '{', '}');
             Assert.AreEqual("abc", result);
         }
 
@@ -253,7 +253,7 @@ namespace InterpreteTests
                 { 2, new InCommand { Command = "VALID" } }
             };
 
-            var result = Irt.CheckForKeyWord("VALID", commands);
+            var result = IrtKernel.CheckForKeyWord("VALID", commands);
             Assert.AreEqual(2, result);
         }
 
@@ -263,7 +263,7 @@ namespace InterpreteTests
         [TestMethod]
         public void SplitParameterSingleParameterShouldReturnSingleParameter()
         {
-            var result = Irt.SplitParameter("parameter1", ',');
+            var result = IrtKernel.SplitParameter("parameter1", ',');
             CollectionAssert.AreEqual(new List<string> { "parameter1" }, result);
         }
 
@@ -273,7 +273,7 @@ namespace InterpreteTests
         [TestMethod]
         public void SplitParameterMultipleParametersShouldReturnAllParameters()
         {
-            var result = Irt.SplitParameter("parameter1,parameter2,parameter3", ',');
+            var result = IrtKernel.SplitParameter("parameter1,parameter2,parameter3", ',');
             CollectionAssert.AreEqual(new List<string> { "parameter1", "parameter2", "parameter3" }, result);
         }
 
@@ -283,7 +283,7 @@ namespace InterpreteTests
         [TestMethod]
         public void SplitParameterWithSpacesShouldTrimSpaces()
         {
-            var result = Irt.SplitParameter(" parameter1 , parameter2 , parameter3 ", ',');
+            var result = IrtKernel.SplitParameter(" parameter1 , parameter2 , parameter3 ", ',');
             CollectionAssert.AreEqual(new List<string> { "parameter1", "parameter2", "parameter3" }, result);
         }
 
@@ -293,7 +293,7 @@ namespace InterpreteTests
         [TestMethod]
         public void SplitParameterEmptyParametersShouldRemoveEmptyParameters()
         {
-            var result = Irt.SplitParameter("parameter1,,parameter3", ',');
+            var result = IrtKernel.SplitParameter("parameter1,,parameter3", ',');
             CollectionAssert.AreEqual(new List<string> { "parameter1", "parameter3" }, result);
         }
 
@@ -303,7 +303,7 @@ namespace InterpreteTests
         [TestMethod]
         public void SplitParameterEmptyAndWhitespaceParametersShouldRemoveEmptyAndWhitespaceParameters()
         {
-            var result = Irt.SplitParameter("parameter1, ,parameter3", ',');
+            var result = IrtKernel.SplitParameter("parameter1, ,parameter3", ',');
             CollectionAssert.AreEqual(new List<string> { "parameter1", "parameter3" }, result);
         }
 
@@ -313,7 +313,7 @@ namespace InterpreteTests
         [TestMethod]
         public void SplitParameterCustomSplitterShouldSplitByCustomSplitter()
         {
-            var result = Irt.SplitParameter("parameter1|parameter2|parameter3", '|');
+            var result = IrtKernel.SplitParameter("parameter1|parameter2|parameter3", '|');
             CollectionAssert.AreEqual(new List<string> { "parameter1", "parameter2", "parameter3" }, result);
         }
 
@@ -323,7 +323,7 @@ namespace InterpreteTests
         [TestMethod]
         public void SampleSplitter()
         {
-            var result = Irt.SplitParameter("help;;;", ';');
+            var result = IrtKernel.SplitParameter("help;;;", ';');
             CollectionAssert.AreEqual(new List<string> { "help" }, result);
         }
 
@@ -339,7 +339,7 @@ namespace InterpreteTests
             var ext = new IrtExtension();
 
             // Act
-            var result = Irt.WellFormedParenthesis(input);
+            var result = IrtKernel.WellFormedParenthesis(input);
 
             // Assert
             Assert.AreEqual(expected, result);
@@ -355,7 +355,7 @@ namespace InterpreteTests
             input = "   test().    use(     ) ";
 
             // Act
-            result = Irt.WellFormedParenthesis(input);
+            result = IrtKernel.WellFormedParenthesis(input);
             extensions = ext.CheckForExtension(result, IrtConst.InternalNameSpace, IrtConst.InternalExtensionCommands);
 
             // Assert
@@ -365,7 +365,7 @@ namespace InterpreteTests
             input = "   test().use(test) ";
 
             // Act
-            result = Irt.WellFormedParenthesis(input);
+            result = IrtKernel.WellFormedParenthesis(input);
             extensions = ext.CheckForExtension(result, IrtConst.InternalNameSpace, IrtConst.InternalExtensionCommands);
 
             // Assert
@@ -377,7 +377,7 @@ namespace InterpreteTests
             input = "   test(.).use(test) ";
 
             // Act
-            result = Irt.WellFormedParenthesis(input);
+            result = IrtKernel.WellFormedParenthesis(input);
             extensions = ext.CheckForExtension(result, IrtConst.InternalNameSpace, IrtConst.InternalExtensionCommands);
 
             // Assert
@@ -388,7 +388,7 @@ namespace InterpreteTests
             input = "   test( /...) . use(test)  ";
 
             // Act
-            result = Irt.WellFormedParenthesis(input);
+            result = IrtKernel.WellFormedParenthesis(input);
             extensions = ext.CheckForExtension(result, IrtConst.InternalNameSpace, IrtConst.InternalExtensionCommands);
 
             // Assert
@@ -471,7 +471,7 @@ namespace InterpreteTests
             var commands = GetSampleCommands();
 
             // Act
-            var (status, parameter) = Irt.GetParameters(input, key, commands);
+            var (status, parameter) = IrtKernel.GetParameters(input, key, commands);
 
             // Assert
             Assert.AreEqual(IrtConst.BatchCommand, status);
@@ -490,7 +490,7 @@ namespace InterpreteTests
             var commands = GetSampleCommands();
 
             // Act
-            var (status, parameter) = Irt.GetParameters(input, key, commands);
+            var (status, parameter) = IrtKernel.GetParameters(input, key, commands);
 
             // Assert
             Assert.AreEqual(IrtConst.ParameterCommand, status);
@@ -509,7 +509,7 @@ namespace InterpreteTests
             var commands = GetSampleCommands();
 
             // Act
-            var (status, parameter) = Irt.GetParameters(input, key, commands);
+            var (status, parameter) = IrtKernel.GetParameters(input, key, commands);
 
             // Assert
             Assert.AreEqual(IrtConst.ParameterCommand, status);
@@ -528,7 +528,7 @@ namespace InterpreteTests
             const string label = "label";
 
             // Act
-            var result = Irt.CheckFormat(input, command, label);
+            var result = IrtKernel.CheckFormat(input, command, label);
 
             // Assert
             Assert.IsTrue(result);
@@ -546,7 +546,7 @@ namespace InterpreteTests
             const string label = "label";
 
             // Act
-            var result = Irt.CheckFormat(input, command, label);
+            var result = IrtKernel.CheckFormat(input, command, label);
 
             // Assert
             Assert.IsFalse(result);
@@ -564,7 +564,7 @@ namespace InterpreteTests
             const string label = "label";
 
             // Act
-            var result = Irt.CheckFormat(input, command, label);
+            var result = IrtKernel.CheckFormat(input, command, label);
 
             // Assert
             Assert.IsFalse(result);
@@ -581,7 +581,7 @@ namespace InterpreteTests
             const string label = "label";
 
             // Act
-            var result = Irt.CheckFormat(null, command, label);
+            var result = IrtKernel.CheckFormat(null, command, label);
 
             // Assert
             Assert.IsFalse(result);
@@ -599,7 +599,7 @@ namespace InterpreteTests
             const string label = "label";
 
             // Act
-            var result = Irt.CheckFormat(input, command, label);
+            var result = IrtKernel.CheckFormat(input, command, label);
 
             // Assert
             Assert.IsFalse(result);
@@ -613,7 +613,7 @@ namespace InterpreteTests
         {
             var input = "if(condition) {com1; com2;com3;} else {com1; com1; com1;} com1; com1; com1;";
             var expected = 56; // Position of the last '}'
-            var (block, elsePosition) = IrtIfElseParser.ExtractFirstIfElse(input);
+            var (block, elsePosition) = IrtParserCommand.ExtractFirstIfElse(input);
             Assert.AreEqual(expected + 1, block.Length);
             Assert.AreEqual(33, elsePosition);
         }
@@ -627,7 +627,7 @@ namespace InterpreteTests
             var input =
                 "if(condition) {com1; com2;com3;} else {if(condition) {com1; com2;com3;} else {com1; com1; com1;} com1; com1; } com1;";
             var expected = 109; // Position of the last '}'
-            var (block, elsePosition) = IrtIfElseParser.ExtractFirstIfElse(input);
+            var (block, elsePosition) = IrtParserCommand.ExtractFirstIfElse(input);
             Assert.AreEqual(expected + 1, block.Length);
             Assert.AreEqual(33, elsePosition);
         }
@@ -641,65 +641,9 @@ namespace InterpreteTests
             var input =
                 "if(condition) {com1; com2;com3;} else {com1; com1; com1;} com1; com1; com1; if(condition) {com1; com2;com3;} else {com1; com1; com1;}";
             var expected = 57; // Position of the last '}'
-            var (block, elsePosition) = IrtIfElseParser.ExtractFirstIfElse(input);
+            var (block, elsePosition) = IrtParserCommand.ExtractFirstIfElse(input);
             Assert.AreEqual(expected, block.Length);
             Assert.AreEqual(33, elsePosition);
-        }
-
-        /// <summary>
-        ///     Parses the most simple if else statement returns correct if else block.
-        /// </summary>
-        [TestMethod]
-        public void ParseMostSimpleIfElseStatementReturnsCorrectIfElseBlock()
-        {
-            var inputParts = new List<string> { "if(condition){com1", "}else {com2", "}" };
-            var result = IrtIfElseParser.Parse(inputParts);
-            Assert.IsNotNull(result);
-            Assert.AreEqual("condition", result.Condition);
-            Assert.AreEqual("com1", result.IfClause);
-            Assert.AreEqual("com2", result.ElseClause);
-        }
-
-        /// <summary>
-        ///     Parses the most if else check corner cases.
-        /// </summary>
-        [TestMethod]
-        public void ParseMostIfElseCheckCornerCases()
-        {
-            var inputParts = new List<string> { "if(condition){com1", "}else {com2", "} com3", "com4" };
-            var result = IrtIfElseParser.Parse(inputParts);
-            Assert.IsNotNull(result);
-            Assert.AreEqual("condition", result.Condition);
-            Assert.AreEqual("com1", result.IfClause);
-            Assert.AreEqual("com2", result.ElseClause);
-        }
-
-        /// <summary>
-        ///     Parses the simple if else statement returns correct if else block.
-        /// </summary>
-        [TestMethod]
-        public void ParseSimpleIfElseStatementReturnsCorrectIfElseBlock()
-        {
-            var inputParts = new List<string> { "if(condition){com1", "com2", "com3}", "else {com4}" };
-            var result = IrtIfElseParser.Parse(inputParts);
-            Assert.IsNotNull(result);
-            Assert.AreEqual("condition", result.Condition);
-            Assert.AreEqual("com1 com2 com3", result.IfClause);
-            Assert.AreEqual("com4", result.ElseClause);
-        }
-
-        /// <summary>
-        ///     Parses the nested if else statement returns correct if else block.
-        /// </summary>
-        [TestMethod]
-        public void ParseNestedIfElseStatementReturnsCorrectIfElseBlock()
-        {
-            var inputParts = new List<string> { "if(cond1){com1", "if(cond2){com2", "} else {com3}", "} else {com4}" };
-            var result = IrtIfElseParser.Parse(inputParts);
-            Assert.IsNotNull(result);
-            Assert.AreEqual("cond1", result.Condition);
-            Assert.AreEqual("com1 if(cond2) { com2 } else { com3 }", result.IfClause);
-            Assert.AreEqual("com4", result.ElseClause);
         }
 
         /// <summary>
@@ -710,7 +654,7 @@ namespace InterpreteTests
         {
             var input = "if(condition) { if(innerCondition) { com1; } else { com2; } } else { com3; }";
             var expected = "if(condition) { if(innerCondition) { com1; } else { com2; } } else { com3; }";
-            var (block, elsePosition) = IrtIfElseParser.ExtractFirstIfElse(input);
+            var (block, elsePosition) = IrtParserCommand.ExtractFirstIfElse(input);
             Assert.AreEqual(expected, block);
             Assert.AreEqual(62, elsePosition);
         }
@@ -723,7 +667,7 @@ namespace InterpreteTests
         {
             var input = "if(condition) { com1; } com2; com3;";
             var expected = "if(condition) { com1; }";
-            var (block, elsePosition) = IrtIfElseParser.ExtractFirstIfElse(input);
+            var (block, elsePosition) = IrtParserCommand.ExtractFirstIfElse(input);
             Assert.AreEqual(expected, block);
             Assert.AreEqual(-1, elsePosition);
         }
@@ -736,7 +680,7 @@ namespace InterpreteTests
         {
             var input = "if(condition1) { com1; } else { com2; } if(condition2) { com3; } else { com4; }";
             var expected = "if(condition1) { com1; } else { com2; }";
-            var (block, elsePosition) = IrtIfElseParser.ExtractFirstIfElse(input);
+            var (block, elsePosition) = IrtParserCommand.ExtractFirstIfElse(input);
             Assert.AreEqual(expected, block);
             Assert.AreEqual(25, elsePosition);
         }
@@ -748,7 +692,7 @@ namespace InterpreteTests
         public void ExtractFirstIfElseNoIfReturnsNull()
         {
             var input = "com1; com2; com3;";
-            var result = IrtIfElseParser.ExtractFirstIfElse(input);
+            var result = IrtParserCommand.ExtractFirstIfElse(input);
             Assert.IsNull(result.block);
         }
 
@@ -762,7 +706,7 @@ namespace InterpreteTests
                 "if(condition) { if(innerCondition1) { com1; } else { if(innerCondition2) { com2; } else { com3; } } } else { com4; }";
             var expected =
                 "if(condition) { if(innerCondition1) { com1; } else { if(innerCondition2) { com2; } else { com3; } } } else { com4; }";
-            var (block, elsePosition) = IrtIfElseParser.ExtractFirstIfElse(input);
+            var (block, elsePosition) = IrtParserCommand.ExtractFirstIfElse(input);
             Assert.AreEqual(expected, block);
             Assert.AreEqual(102, elsePosition);
         }
@@ -775,7 +719,7 @@ namespace InterpreteTests
         {
             var input = "if(condition) { /* comment */ com1; } else { // comment \n com2; } com3;";
             var expected = "if(condition) { /* comment */ com1; } else { // comment \n com2; }";
-            var (block, elsePosition) = IrtIfElseParser.ExtractFirstIfElse(input);
+            var (block, elsePosition) = IrtParserCommand.ExtractFirstIfElse(input);
             Assert.AreEqual(expected, block);
             Assert.AreEqual(38, elsePosition);
         }
@@ -788,7 +732,7 @@ namespace InterpreteTests
         {
             var input = "if(condition) { com1; } else";
             var expected = "if(condition) { com1; } else";
-            var (block, elsePosition) = IrtIfElseParser.ExtractFirstIfElse(input);
+            var (block, elsePosition) = IrtParserCommand.ExtractFirstIfElse(input);
             Assert.AreEqual(expected, block);
             Assert.AreEqual(24, elsePosition);
         }
@@ -801,20 +745,9 @@ namespace InterpreteTests
         {
             var input = "if(condition) { com1; } else com2;";
             var expected = "if(condition) { com1; } else com2;";
-            var (block, elsePosition) = IrtIfElseParser.ExtractFirstIfElse(input);
+            var (block, elsePosition) = IrtParserCommand.ExtractFirstIfElse(input);
             Assert.AreEqual(expected, block);
             Assert.AreEqual(24, elsePosition);
-        }
-
-        /// <summary>
-        ///     Parses the invalid input throws exception.
-        /// </summary>
-        [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
-        public void ParseInvalidInputThrowsException()
-        {
-            var inputParts = new List<string> { "if(condition){com1", "com2", "com3", "else {com4" };
-            IrtIfElseParser.Parse(inputParts);
         }
 
         /// <summary>
@@ -825,7 +758,7 @@ namespace InterpreteTests
         {
             var input = "If(condition) { com1; } eLsE { com2; }";
             var expected = "If(condition) { com1; } eLsE { com2; }";
-            var (block, elsePosition) = IrtIfElseParser.ExtractFirstIfElse(input);
+            var (block, elsePosition) = IrtParserCommand.ExtractFirstIfElse(input);
             Assert.AreEqual(expected, block);
             Assert.AreEqual(24, elsePosition);
         }
@@ -838,92 +771,34 @@ namespace InterpreteTests
         {
             var input = "IF(condition) { com1; } ELSE { com2; }";
             var expected = "IF(condition) { com1; } ELSE { com2; }";
-            var (block, elsePosition) = IrtIfElseParser.ExtractFirstIfElse(input);
+            var (block, elsePosition) = IrtParserCommand.ExtractFirstIfElse(input);
             Assert.AreEqual(expected, block);
             Assert.AreEqual(24, elsePosition);
         }
 
+        /// <summary>
+        /// Extracts the first if else no else.
+        /// </summary>
+        [TestMethod]
+        public void ExtractFirstIfElseNoElse()
+        {
+            var input = "if(condition) { com1; } com4;"; // Adjusted input string
+            var expected = "if(condition) { com1; }"; // Expected output with no `else`
+            var (block, elsePosition) = IrtParserCommand.ExtractFirstIfElse(input);
+            Assert.AreEqual(expected, block);
+            Assert.AreEqual(-1, elsePosition); // Since there's no `else`, the position should be -1
+        }
+
+
+        /// <summary>
+        /// Extracts the first if else empty input returns null.
+        /// </summary>
         [TestMethod]
         public void ExtractFirstIfElseEmptyInputReturnsNull()
         {
             var input = "";
-            var result = IrtIfElseParser.ExtractFirstIfElse(input);
+            var result = IrtParserCommand.ExtractFirstIfElse(input);
             Assert.IsNull(result.block);
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
-        public void ParseSingleClosingBraceThrowsException()
-        {
-            var inputParts = new List<string> { "if(condition){com1", "com2}", "else" };
-            IrtIfElseParser.Parse(inputParts);
-        }
-
-        [TestMethod]
-        public void ParseMultipleElseKeywordsReturnsCorrectBlock()
-        {
-            var inputParts = new List<string> { "if(condition1){com1", "}else{if(condition2){com2", "}else{com3", "}}}" };
-            var result = IrtIfElseParser.Parse(inputParts);
-            Assert.IsNotNull(result);
-            Assert.AreEqual("condition1", result.Condition);
-            Assert.AreEqual("com1", result.IfClause);
-            Assert.AreEqual("if(condition2) { com2 } else { com3 }", result.ElseClause);
-        }
-
-        [TestMethod]
-        public void ParseAdjacentIfElseBlocksReturnsCorrectBlock()
-        {
-            var inputParts = new List<string> { "if(cond1){com1", "}else{if(cond2){com2", "}else{com3", "}}}" };
-            var result = IrtIfElseParser.Parse(inputParts);
-            Assert.IsNotNull(result);
-            Assert.AreEqual("cond1", result.Condition);
-            Assert.AreEqual("com1", result.IfClause);
-            Assert.AreEqual("if(cond2) { com2 } else { com3 }", result.ElseClause);
-        }
-
-        [TestMethod]
-        public void ParseIfWithoutElseReturnsCorrectBlock()
-        {
-            var inputParts = new List<string> { "if(condition){com1", "com2", "com3}" };
-            var result = IrtIfElseParser.Parse(inputParts);
-            Assert.IsNotNull(result);
-            Assert.AreEqual("condition", result.Condition);
-            Assert.AreEqual("com1 com2 com3", result.IfClause);
-            Assert.AreEqual(null, result.ElseClause);
-        }
-
-
-        [TestMethod]
-        public void ParseExtraWhitespacesReturnsCorrectBlock()
-        {
-            var inputParts = new List<string> { "  if ( condition ) {  com1;  ", "com2; } else {  com3; }  " };
-            var result = IrtIfElseParser.Parse(inputParts);
-            Assert.IsNotNull(result);
-            Assert.AreEqual("condition", result.Condition);
-            Assert.AreEqual("com1; com2;", result.IfClause);
-            Assert.AreEqual("com3;", result.ElseClause);
-        }
-
-
-        [TestMethod]
-        public void ParseIfElseWithCommentsReturnsCorrectBlock()
-        {
-            var inputParts = new List<string> { "if(condition) { /* comment */ com1", "com2", "} else { // comment", "com3 }" };
-            var result = IrtIfElseParser.Parse(inputParts);
-            Assert.IsNotNull(result);
-            Assert.AreEqual("condition", result.Condition);
-            Assert.AreEqual("/* comment */ com1 com2", result.IfClause);
-            Assert.AreEqual("// comment com3", result.ElseClause);
-        }
-
-        [TestMethod]
-        public void MoreAdvancedTest()
-        {
-            var input = "if(condition) {if(condition2) {com2;}else{com3;} } com4; ";
-            var expected = "if(condition) { com1; }";
-            var (block, elsePosition) = IrtIfElseParser.ExtractFirstIfElse(input);
-            Assert.AreEqual(expected, block);
-            Assert.AreEqual(-1, elsePosition);
         }
 
         /// <summary>

@@ -1,8 +1,8 @@
 ﻿/*
  * COPYRIGHT:   See COPYING in the top level directory
  * PROJECT:     Interpreter
- * FILE:        Interpreter/Irt.cs
- * PURPOSE:     Checks multiple logic errors
+ * FILE:        Interpreter/IrtKernel.cs
+ * PURPOSE:     Checks multiple logic errors, handle most atomic operations for the Interpreter. If something is broken here everything is broken
  * PROGRAMER:   Peter Geinitz (Wayfarer)
  */
 
@@ -18,7 +18,7 @@ namespace Interpreter
     /// <summary>
     ///     The Irt class.
     /// </summary>
-    internal static class Irt
+    internal static class IrtKernel
     {
         /// <summary>
         ///     Validates the parameters. Parameter Count
@@ -382,6 +382,87 @@ namespace Interpreter
         private static bool StartsAndEndsWith(string input, char start, char end)
         {
             return input.Length > 1 && input[0] == start && input[^1] == end;
+        }
+
+        /// <summary>
+        /// Extracts the condition from an 'if' statement.
+        /// </summary>
+        /// <param name="input">The input string containing the 'if' statement.</param>
+        /// <param name="keyword">The keyword to remove from the start of the string.</param>
+        /// <returns>The extracted condition string.</returns>
+        internal static string ExtractCondition(string input, string keyword)
+        {
+            if (input.StartsWith(keyword, StringComparison.OrdinalIgnoreCase))
+                input = input.Substring(keyword.Length).Trim();
+
+            if (input.StartsWith("(", StringComparison.Ordinal)) input = input.Substring(1).Trim();
+            if (input.EndsWith(")", StringComparison.Ordinal)) input = input.Substring(0, input.Length - 1).Trim();
+
+            return input;
+        }
+
+        /// <summary>
+        /// Finds the index of the first occurrence of the given keyword followed by an open parenthesis.
+        /// </summary>
+        /// <param name="input">The input string to search within.</param>
+        /// <param name="keyword">The keyword to find.</param>
+        /// <returns>The index of the keyword if found, or -1 if not found.</returns>
+        internal static int FindFirstIfIndex(string input, string keyword)
+        {
+            var position = input.IndexOf(keyword, StringComparison.OrdinalIgnoreCase);
+
+            while (position != -1)
+            {
+                var openParenIndex = position + keyword.Length;
+                while (openParenIndex < input.Length && char.IsWhiteSpace(input[openParenIndex])) openParenIndex++;
+
+                if (openParenIndex < input.Length && input[openParenIndex] == IrtConst.BaseOpen)
+                    return position;
+
+                position = input.IndexOf(keyword, position + 1, StringComparison.OrdinalIgnoreCase);
+            }
+
+            return -1;
+        }
+
+        /// <summary>
+        /// Checks if the input string contains a keyword followed by an open parenthesis.
+        /// </summary>
+        /// <param name="input">The input string to check.</param>
+        /// <param name="keyword">The keyword to look for.</param>
+        /// <returns>True if the keyword followed by an open parenthesis is found, otherwise false.</returns>
+        internal static bool ContainsKeywordWithOpenParen(string input, string keyword)
+        {
+            return FindFirstIfIndex(input, keyword) != -1;
+        }
+
+        /// <summary>
+        /// Determines the command index based on the input string and a dictionary of commands.
+        /// </summary>
+        /// <param name="input">The input string to check against commands.</param>
+        /// <param name="commands">A dictionary of commands to match against.</param>
+        /// <returns>The index of the matching command, or an error code if no match is found.</returns>
+        internal static int GetCommandIndex(string input, Dictionary<int, InCommand> commands)
+        {
+            input = input.ToUpperInvariant();
+
+            if (input.Contains(IrtConst.BaseOpen))
+            {
+                var index = input.IndexOf(IrtConst.BaseOpen);
+                if (index >= 0) input = input.Substring(0, index).Trim();
+            }
+
+            if (input.Contains(IrtConst.AdvancedOpen))
+            {
+                var index = input.IndexOf(IrtConst.AdvancedOpen);
+                if (index >= 0) input = input.Substring(0, index).Trim();
+            }
+
+            foreach (var (key, command) in commands)
+                if (string.Equals(input, command.Command, StringComparison.OrdinalIgnoreCase))
+                    return key;
+
+            return IrtConst.Error;
         }
     }
 }

@@ -31,7 +31,7 @@ namespace Interpreter
         /// <summary>
         ///     Used to interpret Commands
         /// </summary>
-        private static IrtParser _interpret;
+        private static IrtParserInput _interpret;
 
         /// <summary>
         ///     The count
@@ -136,7 +136,7 @@ namespace Interpreter
             //feedback stuff
             _userFeedback = userFeedback;
 
-            _interpret = new IrtParser(this, _userFeedback);
+            _interpret = new IrtParserInput(this, _userFeedback);
             _interpret.Initiate(use);
             _interpret.SendInternalLog += SendLog;
         }
@@ -207,7 +207,7 @@ namespace Interpreter
         {
             space = space.ToUpper(CultureInfo.InvariantCulture);
             var use = CollectedSpaces[space];
-            IrtParser.SwitchUserSpace(use);
+            IrtParserInput.SwitchUserSpace(use);
         }
 
         /// <summary>

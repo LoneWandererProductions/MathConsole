@@ -66,7 +66,7 @@ namespace Interpreter
             string nameSpace, Dictionary<int, InCommand> extensionCommands, ExtensionCommands exCommand)
         {
             // Check if the extension command exists in the provided extensionCommands
-            var commandKey = Irt.CheckForKeyWord(extension, extensionCommands);
+            var commandKey = IrtKernel.CheckForKeyWord(extension, extensionCommands);
             if (commandKey == IrtConst.Error) return (null, IrtConst.Error);
 
             // Extract the command string and parameters
@@ -75,13 +75,13 @@ namespace Interpreter
             if (status == IrtConst.Error) return (null, IrtConst.Error);
 
             // Validate the Parenthesis logic
-            if (!Irt.ValidateParameters(extension)) return (null, IrtConst.ParenthesisMismatch);
+            if (!IrtKernel.ValidateParameters(extension)) return (null, IrtConst.ParenthesisMismatch);
 
             // Validate the parameter count of the extension command
-            if (!Irt.ValidateParameters(commandKey, parameters.Count, extensionCommands))
+            if (!IrtKernel.ValidateParameters(commandKey, parameters.Count, extensionCommands))
             {
                 // Check for parameter overload
-                var overloadCheck = Irt.CheckOverload(extensionCommands[commandKey].Command, parameters.Count,
+                var overloadCheck = IrtKernel.CheckOverload(extensionCommands[commandKey].Command, parameters.Count,
                     extensionCommands);
                 if (overloadCheck == null) return (null, IrtConst.ParameterMismatch);
 
@@ -106,14 +106,14 @@ namespace Interpreter
         private static (int Status, List<string> Parameter) ExtractParameters(string command, string extension)
         {
             // Remove the command part from the extension to get the parameter part
-            var parameterPart = Irt.RemoveWord(command, extension);
+            var parameterPart = IrtKernel.RemoveWord(command, extension);
 
             // Remove parentheses from the parameter part
-            parameterPart = Irt.RemoveParenthesis(parameterPart, IrtConst.BaseOpen, IrtConst.BaseClose);
+            parameterPart = IrtKernel.RemoveParenthesis(parameterPart, IrtConst.BaseOpen, IrtConst.BaseClose);
             if (parameterPart == IrtConst.ParenthesisError) return (IrtConst.Error, null);
 
             // Split the parameter part into individual parameters if multiple exist
-            var parameterList = Irt.SplitParameter(parameterPart, IrtConst.Splitter);
+            var parameterList = IrtKernel.SplitParameter(parameterPart, IrtConst.Splitter);
 
             return (IrtConst.ExtensionFound, parameterList);
         }

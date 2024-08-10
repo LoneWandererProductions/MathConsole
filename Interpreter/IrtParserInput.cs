@@ -1,7 +1,7 @@
 ﻿/*
  * COPYRIGHT:   See COPYING in the top level directory
  * PROJECT:     Interpreter
- * FILE:        Interpreter/IrtParser.cs
+ * FILE:        Interpreter/IrtParserInput.cs
  * PURPOSE:     Handle the Input for prompt and connect to the other modules
  * PROGRAMMER:  Peter Geinitz (Wayfarer)
  */
@@ -18,7 +18,7 @@ namespace Interpreter
     /// <summary>
     ///     Basic command Line Interpreter, bare bones for now
     /// </summary>
-    internal sealed class IrtParser : IDisposable
+    internal sealed class IrtParserInput : IDisposable
     {
         /// <summary>
         /// My request identifier
@@ -76,18 +76,18 @@ namespace Interpreter
         private readonly Dictionary<int, UserFeedback> _userFeedback;
 
         /// <summary>
-        ///     Prevents a default instance of the <see cref="IrtParser" /> class from being created.
+        ///     Prevents a default instance of the <see cref="IrtParserInput" /> class from being created.
         /// </summary>
-        private IrtParser()
+        private IrtParserInput()
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="IrtParser" /> class.
+        /// Initializes a new instance of the <see cref="IrtParserInput" /> class.
         /// </summary>
         /// <param name="prompt">The prompt.</param>
         /// <param name="userFeedback">The optional user feedback.</param>
-        public IrtParser(Prompt prompt, Dictionary<int, UserFeedback> userFeedback = null)
+        public IrtParserInput(Prompt prompt, Dictionary<int, UserFeedback> userFeedback = null)
         {
             _prompt = prompt;
             _myRequestId = Guid.NewGuid().ToString();
@@ -178,7 +178,7 @@ namespace Interpreter
             }
 
             // Check if the parentheses are correct
-            if (!Irt.ValidateParameters(inputString))
+            if (!IrtKernel.ValidateParameters(inputString))
             {
                 SetErrorWithLog(IrtConst.ParenthesisError);
                 return;
@@ -235,26 +235,26 @@ namespace Interpreter
                 return null;
             }
 
-            var key = Irt.CheckForKeyWord(inputString, IrtConst.InternCommands);
+            var key = IrtKernel.CheckForKeyWord(inputString, IrtConst.InternCommands);
             if (key != IrtConst.Error)
             {
                 _irtHandleInternal.ProcessInput(key, inputString);
                 return null;
             }
 
-            key = Irt.CheckForKeyWord(inputString, _com);
+            key = IrtKernel.CheckForKeyWord(inputString, _com);
             if (key == IrtConst.Error)
             {
                 SetErrorWithLog(IrtConst.KeyWordNotFoundError, _inputString);
                 return null;
             }
 
-            var (status, splitParameter) = Irt.GetParameters(inputString, key, _com);
+            var (status, splitParameter) = IrtKernel.GetParameters(inputString, key, _com);
             var parameter = status == IrtConst.ParameterCommand
-                ? Irt.SplitParameter(splitParameter, IrtConst.Splitter)
+                ? IrtKernel.SplitParameter(splitParameter, IrtConst.Splitter)
                 : new List<string> { splitParameter };
 
-            var check = Irt.CheckOverload(_com[key].Command, parameter.Count, _com);
+            var check = IrtKernel.CheckOverload(_com[key].Command, parameter.Count, _com);
 
             if (check != null)
                 return new OutCommand
@@ -277,11 +277,11 @@ namespace Interpreter
         /// <returns>True if input string is cleaned and valid; otherwise false.</returns>
         private static bool CleanInputString(ref string input)
         {
-            input = Irt.WellFormedParenthesis(input);
+            input = IrtKernel.WellFormedParenthesis(input);
             var openParenthesis = new[] { IrtConst.BaseOpen, IrtConst.AdvancedOpen };
             var closeParenthesis = new[] { IrtConst.BaseClose, IrtConst.AdvancedClose };
 
-            return Irt.CheckMultiple(input, openParenthesis, closeParenthesis);
+            return IrtKernel.CheckMultiple(input, openParenthesis, closeParenthesis);
         }
 
         /// <summary>
@@ -420,7 +420,7 @@ namespace Interpreter
         /// <summary>
         ///     Destructor to ensure the resources are released.
         /// </summary>
-        ~IrtParser()
+        ~IrtParserInput()
         {
             Dispose(false);
         }
