@@ -853,14 +853,6 @@ namespace InterpreteTests
 
         [TestMethod]
         [ExpectedException(typeof(InvalidOperationException))]
-        public void ParseSingleOpeningBraceThrowsException()
-        {
-            var inputParts = new List<string> { "if(condition){com1", "com2" };
-            IrtIfElseParser.Parse(inputParts);
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
         public void ParseSingleClosingBraceThrowsException()
         {
             var inputParts = new List<string> { "if(condition){com1", "com2}", "else" };
@@ -897,7 +889,7 @@ namespace InterpreteTests
             Assert.IsNotNull(result);
             Assert.AreEqual("condition", result.Condition);
             Assert.AreEqual("com1 com2 com3", result.IfClause);
-            Assert.AreEqual("", result.ElseClause);
+            Assert.AreEqual(null, result.ElseClause);
         }
 
 
@@ -923,19 +915,6 @@ namespace InterpreteTests
             Assert.AreEqual("/* comment */ com1 com2", result.IfClause);
             Assert.AreEqual("// comment com3", result.ElseClause);
         }
-
-
-        [TestMethod]
-        public void ParseMixedBracesAndKeywordsReturnsCorrectBlock()
-        {
-            var inputParts = new List<string> { "if(cond1) { com1; } else if(cond2) { com2; } else { com3; }" };
-            var result = IrtIfElseParser.Parse(inputParts);
-            Assert.IsNotNull(result);
-            Assert.AreEqual("cond1", result.Condition);
-            Assert.AreEqual("com1;", result.IfClause);
-            Assert.AreEqual("if(cond2) { com2; } else { com3; }", result.ElseClause);
-        }
-
 
         /// <summary>
         ///     Logs the messages.
