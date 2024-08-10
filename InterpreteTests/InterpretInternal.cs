@@ -916,6 +916,16 @@ namespace InterpreteTests
             Assert.AreEqual("// comment com3", result.ElseClause);
         }
 
+        [TestMethod]
+        public void MoreAdvancedTest()
+        {
+            var input = "if(condition) {if(condition2) {com2;}else{com3;} } com4; ";
+            var expected = "if(condition) { com1; }";
+            var (block, elsePosition) = IrtIfElseParser.ExtractFirstIfElse(input);
+            Assert.AreEqual(expected, block);
+            Assert.AreEqual(-1, elsePosition);
+        }
+
         /// <summary>
         ///     Logs the messages.
         /// </summary>
