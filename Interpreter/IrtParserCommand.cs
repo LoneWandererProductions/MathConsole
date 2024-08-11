@@ -7,20 +7,45 @@ namespace Interpreter
 {
     internal static class IrtParserCommand
     {
-        public static CategorizedDictionary<int, IfElseClause> CategorizeIfElseClauses(IEnumerable<IfElseClause> clauses)
+        private static int _idCounter;
+
+        public static List<(string Category, string Clause, string ParentCategory)> CategorizeIfElseClauses(List<IfElseClause> clauses)
         {
-            var categorizedDictionary = new CategorizedDictionary<int, IfElseClause>();
+            var tupleList = new List<(string Category, string Clause, string ParentCategory)>();
+            var idToCategory = new Dictionary<string, string>();
+            var idToParent = new Dictionary<string, string>();
 
-            foreach (var clause in clauses)
+            // Process the outermost layer (Layer 0)
+            foreach (var clause in clauses.Where(c => c.Layer == 0).ToList())
             {
-                // Add the If clause with the category "if_layer_X"
-                categorizedDictionary.Add($"if_layer_{clause.Layer}", categorizedDictionary.Count, clause);
+                var categoryIf = $"if_layer_{clause.Id}";
+                var categoryElse = $"else_layer_{clause.Id}";
 
-                // Add the Else clause with the category "else_layer_X"
-                categorizedDictionary.Add($"else_layer_{clause.Layer}", categorizedDictionary.Count, clause);
+                idToCategory[clause.Id] = categoryIf;
+
+                tupleList.Add((categoryIf, clause.IfClause, null));
+                tupleList.Add((categoryElse, clause.ElseClause, null));
             }
 
-            return categorizedDictionary;
+            // Process deeper layers (Layer > 0)
+            foreach (var layer in clauses.Where(c => c.Layer > 0).OrderBy(c => c.Layer))
+            {
+                var parent = clauses.FirstOrDefault(c => c.Layer == layer.Layer - 1);
+                var parentCategory = idToCategory.ContainsKey(parent.Id) ? idToCategory[parent.Id] : null;
+
+                var categoryIf = $"if_layer_{layer.Id}";
+                var categoryElse = $"else_layer_{layer.Id}";
+
+                // Add the deeper layer clauses to the tuple list
+                tupleList.Add((categoryIf, layer.IfClause, parentCategory));
+                tupleList.Add((categoryElse, layer.ElseClause, parentCategory));
+
+                // Update parent relationship tracking
+                idToCategory[layer.Id] = categoryIf;
+                idToParent[layer.Id] = parentCategory;
+            }
+
+            return tupleList;
         }
 
         /// <summary>
@@ -58,10 +83,12 @@ namespace Interpreter
                 clauses.Add(ifElseClause);
 
                 var innerIfClause = ExtractInnerIfElse(ifElseClause.IfClause);
-                if (innerIfClause.Length > 0) ParseIfElseClausesRecursively(innerIfClause, clauses, layer + 1);
+                if (innerIfClause.Length > 0)
+                    ParseIfElseClausesRecursively(innerIfClause, clauses, layer + 1);
 
                 var innerElseClause = ExtractInnerIfElse(ifElseClause.ElseClause);
-                if (innerElseClause.Length > 0) ParseIfElseClausesRecursively(innerElseClause, clauses, layer + 1);
+                if (innerElseClause.Length > 0)
+                    ParseIfElseClausesRecursively(innerElseClause, clauses, layer + 1);
 
                 break;
             }
@@ -79,9 +106,12 @@ namespace Interpreter
         {
             var ifClause = block.Substring(0, elsePosition).Trim();
             var elseClause = elsePosition == -1 ? null : block.Substring(elsePosition).Trim();
+            // Generate a unique ID for each clause
+            var uniqueId = GenerateUniqueId();
 
             return new IfElseClause
             {
+                Id = uniqueId,
                 Parent = code,
                 IfClause = ifClause,
                 ElseClause = elseClause,
@@ -302,6 +332,16 @@ namespace Interpreter
             }
 
             return -1;
+        }
+
+        /// <summary>
+        /// Generates the unique identifier.
+        /// </summary>
+        /// <returns>Count ups</returns>
+        private static string GenerateUniqueId()
+        {
+            // Use a static counter to generate unique IDs
+            return (++_idCounter).ToString();
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using Interpreter;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -126,16 +127,12 @@ namespace InterpreteTests
             Assert.AreEqual(1, clauses[1].Layer, "Layer of the second clause should be 1.");
             Assert.AreEqual("else { /* nested else code */ }", clauses[1].ElseClause);
 
-            var result = IrtParserCommand.CategorizeIfElseClauses(clauses);
 
-            // Output the categorized dictionary
-            foreach (var category in result.GetCategories())
+            var clause = IrtParserCommand.CategorizeIfElseClauses(clauses);
+
+            foreach (var item in clause)
             {
-                Trace.WriteLine($"Category: {category}");
-                foreach (var clause in result.GetCategory(category))
-                {
-                    Trace.WriteLine($"Layer: {clause.Layer}, If Clause: {clause.IfClause}, Else Clause: {clause.ElseClause}");
-                }
+                Console.WriteLine($"Category: {item.Category}, Clause: {item.Clause}, Parent: {item.ParentCategory}");
             }
         }
     }
