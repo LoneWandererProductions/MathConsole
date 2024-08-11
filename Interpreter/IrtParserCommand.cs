@@ -9,11 +9,15 @@ namespace Interpreter
     {
         private static int _idCounter;
 
+        /// <summary>
+        /// Categorizes if else clauses.
+        /// </summary>
+        /// <param name="clauses">The clauses.</param>
+        /// <returns>Converted List of parameters we will use to create a parameter list</returns>
         public static List<(string Category, string Clause, string ParentCategory)> CategorizeIfElseClauses(List<IfElseClause> clauses)
         {
             var tupleList = new List<(string Category, string Clause, string ParentCategory)>();
             var idToCategory = new Dictionary<string, string>();
-            var idToParent = new Dictionary<string, string>();
 
             // Process the outermost layer (Layer 0)
             foreach (var clause in clauses.Where(c => c.Layer == 0).ToList())
@@ -40,9 +44,8 @@ namespace Interpreter
                 tupleList.Add((categoryIf, layer.IfClause, parentCategory));
                 tupleList.Add((categoryElse, layer.ElseClause, parentCategory));
 
-                // Update parent relationship tracking
+                // Update category mapping
                 idToCategory[layer.Id] = categoryIf;
-                idToParent[layer.Id] = parentCategory;
             }
 
             return tupleList;

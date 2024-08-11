@@ -134,6 +134,43 @@ namespace InterpreteTests
             {
                 Console.WriteLine($"Category: {item.Category}, Clause: {item.Clause}, Parent: {item.ParentCategory}");
             }
+
+            clauses = new List<IfElseClause>
+            {
+                new IfElseClause
+                {
+                    Id = "1",
+                    Parent = "if(condition1) { /* code for condition1 */ } else { /* else for condition1 */ }",
+                    IfClause = "if(condition1) { /* code for condition1 */ }",
+                    ElseClause = "else { /* else for condition1 */ }",
+                    Layer = 0
+                },
+                new IfElseClause
+                {
+                    Id = "2",
+                    Parent = "if(condition2) { /* code for condition2 */ } else { /* else for condition2 */ }",
+                    IfClause = "if(condition2) { /* code for condition2 */ }",
+                    ElseClause = "else { /* else for condition2 */ }",
+                    Layer = 0
+                },
+                new IfElseClause
+                {
+                    Id = "3",
+                    Parent = "if(condition3) { /* code for condition3 */ } else { /* else for condition3 */ }",
+                    IfClause = "if(condition3) { /* code for condition3 */ }",
+                    ElseClause = "else { /* else for condition3 */ }",
+                    Layer = 1
+                }
+            };
+
+            Trace.WriteLine(Environment.NewLine);
+
+            clause = IrtParserCommand.CategorizeIfElseClauses(clauses);
+
+            foreach (var item in clause)
+            {
+                Trace.WriteLine($"Category: {item.Category}, Clause: {item.Clause}, Parent: {item.ParentCategory}");
+            }
         }
     }
 }
