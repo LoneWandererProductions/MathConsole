@@ -125,6 +125,18 @@ namespace InterpreteTests
             // Check the second clause (Layer 1)
             Assert.AreEqual(1, clauses[1].Layer, "Layer of the second clause should be 1.");
             Assert.AreEqual("else { /* nested else code */ }", clauses[1].ElseClause);
+
+            var result = IrtParserCommand.CategorizeIfElseClauses(clauses);
+
+            // Output the categorized dictionary
+            foreach (var category in result.GetCategories())
+            {
+                Trace.WriteLine($"Category: {category}");
+                foreach (var clause in result.GetCategory(category))
+                {
+                    Trace.WriteLine($"Layer: {clause.Layer}, If Clause: {clause.IfClause}, Else Clause: {clause.ElseClause}");
+                }
+            }
         }
     }
 }

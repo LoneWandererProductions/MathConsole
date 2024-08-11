@@ -31,6 +31,11 @@ namespace ExtendedSystemObjects
         private readonly Dictionary<TK, (string Category, TV Value)> _data = new();
 
         /// <summary>
+        ///     Gets the number of elements contained in the CategorizedDictionary.
+        /// </summary>
+        public int Count => _data.Count;
+
+        /// <summary>
         ///     Adds a value to the dictionary under the specified category.
         /// </summary>
         /// <param name="category">The category under which to add the key-value pair. Can be null.</param>

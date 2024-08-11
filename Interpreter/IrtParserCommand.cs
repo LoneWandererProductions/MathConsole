@@ -1,13 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using ExtendedSystemObjects;
 
 namespace Interpreter
 {
     internal static class IrtParserCommand
     {
+        public static CategorizedDictionary<int, IfElseClause> CategorizeIfElseClauses(IEnumerable<IfElseClause> clauses)
+        {
+            var categorizedDictionary = new CategorizedDictionary<int, IfElseClause>();
+
+            foreach (var clause in clauses)
+            {
+                // Add the If clause with the category "if_layer_X"
+                categorizedDictionary.Add($"if_layer_{clause.Layer}", categorizedDictionary.Count, clause);
+
+                // Add the Else clause with the category "else_layer_X"
+                categorizedDictionary.Add($"else_layer_{clause.Layer}", categorizedDictionary.Count, clause);
+            }
+
+            return categorizedDictionary;
+        }
+
         /// <summary>
         /// Parses the given code string to extract all If-Else clauses.
         /// </summary>
@@ -26,7 +41,7 @@ namespace Interpreter
         /// <param name="code">The code string containing If-Else clauses.</param>
         /// <param name="clauses">The list to which found If-Else clauses are added.</param>
         /// <param name="layer">The current nesting layer of the If-Else clauses.</param>
-        private static void ParseIfElseClausesRecursively(string code, List<IfElseClause> clauses, int layer)
+        private static void ParseIfElseClausesRecursively(string code, ICollection<IfElseClause> clauses, int layer)
         {
             while (true)
             {
