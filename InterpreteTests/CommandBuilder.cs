@@ -174,7 +174,7 @@ namespace InterpreteTests
 
             Trace.WriteLine(Environment.NewLine);
 
-            var result = IrtParserCommand.ConvertClausesToCategoryValues(clauses);
+            var result = IrtParserCommand.GenerateFormattedOutput(clause);
 
             foreach (var item in result)
             {

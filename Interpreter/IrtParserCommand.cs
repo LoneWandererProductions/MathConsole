@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Text;
 using ExtendedSystemObjects;
 
 namespace Interpreter
@@ -10,58 +11,48 @@ namespace Interpreter
     {
         private static int _idCounter;
 
-        public static List<string> ConvertClausesToCategoryValues(List<IfElseClause> clauses)
+        public static string GenerateFormattedOutput(List<(string Category, string Clause, string ParentCategory)> categorizedClauses)
         {
-            var result = new List<string>();
+            var output = new StringBuilder();
+            var openBlocks = new Dictionary<string, string>();
 
-            // A helper method to process each clause and its nested clauses
-            void ProcessClause(IfElseClause clause, int currentLayer)
+            foreach (var clause in categorizedClauses)
             {
-                // Begin If block
-                result.Add($"If_layer_{currentLayer}_begin: {clause.IfClause}");
+                var layer = clause.Category.Split('_')[2];  // Extract the layer number from the Category
 
-                // Find and process nested If-Else clauses within the current If block
-                var nestedClauses = clauses.Where(c => c.Parent == clause.IfClause).ToList();
-                foreach (var nestedClause in nestedClauses)
+                // If it's an "if" clause
+                if (clause.Category.StartsWith("if"))
                 {
-                    ProcessClause(nestedClause, currentLayer + 1); // Increase layer for nested clauses
+                    output.AppendLine($"If_layer_{layer}_begin: {clause.Clause}");
+                    output.AppendLine("// Content of If block goes here");
+
+                    openBlocks[clause.Category] = $"If_layer_{layer}_end";
+                }
+                // If it's an "else" clause
+                else if (clause.Category.StartsWith("else"))
+                {
+                    output.AppendLine($"Else_layer_{layer}_begin: {clause.Clause}");
+                    output.AppendLine("// Content of Else block goes here");
+
+                    openBlocks[clause.Category] = $"Else_layer_{layer}_end";
                 }
 
-                // Placeholder for content inside the If block
-                result.Add($"// Content of If block goes here");
-
-                // End If block
-                result.Add($"If_layer_{currentLayer}_end");
-
-                // Begin Else block
-                result.Add($"Else_layer_{currentLayer}_begin: {clause.ElseClause}");
-
-                // Find and process nested If-Else clauses within the current Else block
-                nestedClauses = clauses.Where(c => c.Parent == clause.ElseClause).ToList();
-                foreach (var nestedClause in nestedClauses)
+                // Check if there's a parent block that needs to be closed
+                if (!string.IsNullOrEmpty(clause.ParentCategory) && openBlocks.TryGetValue(clause.ParentCategory, out var closingTag))
                 {
-                    ProcessClause(nestedClause, currentLayer + 1); // Increase layer for nested clauses
+                    output.AppendLine(closingTag);
+                    openBlocks.Remove(clause.ParentCategory);
                 }
-
-                // Placeholder for content inside the Else block
-                result.Add($"// Content of Else block goes here");
-
-                // End Else block
-                result.Add($"Else_layer_{currentLayer}_end");
             }
 
-            // Start with the outermost If-Else clauses (Layer 0)
-            foreach (var clause in clauses.Where(c => c.Layer == 0))
+            // Close any remaining open blocks
+            foreach (var closingTag in openBlocks.Values)
             {
-                ProcessClause(clause, 0);
+                output.AppendLine(closingTag);
             }
 
-            return result;
+            return output.ToString();
         }
-
-
-
-
 
         /// <summary>
         /// Categorizes if else clauses.
