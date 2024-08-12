@@ -416,7 +416,7 @@ namespace Interpreter
                 var openParenIndex = position + keyword.Length;
                 while (openParenIndex < input.Length && char.IsWhiteSpace(input[openParenIndex])) openParenIndex++;
 
-                if (openParenIndex < input.Length && input[openParenIndex] == IrtConst.BaseOpen)
+                if (openParenIndex < input.Length && input[openParenIndex] == IrtConst.BaseOpen || openParenIndex < input.Length && input[openParenIndex] == IrtConst.AdvancedOpen)
                     return position;
 
                 position = input.IndexOf(keyword, position + 1, StringComparison.OrdinalIgnoreCase);
@@ -435,6 +435,86 @@ namespace Interpreter
         {
             return FindFirstIfIndex(input, keyword) != -1;
         }
+
+        /// <summary>
+        /// Extracts the first If-Else block and the position of the 'else' keyword from the input string.
+        /// </summary>
+        /// <param name="input">The input string containing the If-Else structure.</param>
+        /// <returns>A tuple containing the extracted If-Else block and the position of the 'else' keyword.</returns>
+        internal static (string block, int elsePosition) ExtractFirstIfElse(string input)
+        {
+            var start = FindFirstIfIndex(input, "if");
+            if (start == -1) return (null, -1);
+
+            var end = start;
+            var braceCount = 0;
+            var elseFound = false;
+            var elsePosition = -1;
+            //todo overhaul
+            var containsElse = input.IndexOf("else", StringComparison.OrdinalIgnoreCase) != -1;
+
+            for (var i = start; i < input.Length; i++)
+            {
+                var cursor = input[i];
+
+                if (cursor == '{')
+                {
+                    braceCount++;
+                }
+                else if (cursor == '}')
+                {
+                    braceCount--;
+                    if (braceCount != 0) continue;
+                    if (containsElse) continue;
+
+                    end = i;
+                    break;
+                }
+                else if (i + 4 <= input.Length &&
+                         input.Substring(i, 4).Equals("else", StringComparison.OrdinalIgnoreCase) && braceCount == 0)
+                {
+                    elseFound = true;
+                    elsePosition = i;
+                    var index = input.IndexOf("else", i, StringComparison.OrdinalIgnoreCase);
+                    end = index + 4;
+                    break;
+                }
+            }
+
+            if (elseFound)
+            {
+                if (end == input.Length) return (input.Substring(start, input.Length), elsePosition);
+
+                for (var i = end; i < input.Length; i++)
+                {
+                    var cursor = input[i];
+
+                    if (cursor == '{')
+                    {
+                        braceCount++;
+                    }
+                    else if (cursor == '}')
+                    {
+                        braceCount--;
+
+                        if (braceCount != 0) continue;
+
+                        end = i;
+                        break;
+                    }
+                    else if (cursor == ';')
+                    {
+                        if (braceCount != 0) continue;
+
+                        end = i;
+                        break;
+                    }
+                }
+            }
+
+            return (input.Substring(start, end - start + 1).Trim(), elsePosition);
+        }
+
 
         /// <summary>
         /// Determines the command index based on the input string and a dictionary of commands.

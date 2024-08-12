@@ -613,7 +613,7 @@ namespace InterpreteTests
         {
             var input = "if(condition) {com1; com2;com3;} else {com1; com1; com1;} com1; com1; com1;";
             var expected = 56; // Position of the last '}'
-            var (block, elsePosition) = IrtParserCommand.ExtractFirstIfElse(input);
+            var (block, elsePosition) = IrtKernel.ExtractFirstIfElse(input);
             Assert.AreEqual(expected + 1, block.Length);
             Assert.AreEqual(33, elsePosition);
         }
@@ -627,7 +627,7 @@ namespace InterpreteTests
             var input =
                 "if(condition) {com1; com2;com3;} else {if(condition) {com1; com2;com3;} else {com1; com1; com1;} com1; com1; } com1;";
             var expected = 109; // Position of the last '}'
-            var (block, elsePosition) = IrtParserCommand.ExtractFirstIfElse(input);
+            var (block, elsePosition) = IrtKernel.ExtractFirstIfElse(input);
             Assert.AreEqual(expected + 1, block.Length);
             Assert.AreEqual(33, elsePosition);
         }
@@ -641,7 +641,7 @@ namespace InterpreteTests
             var input =
                 "if(condition) {com1; com2;com3;} else {com1; com1; com1;} com1; com1; com1; if(condition) {com1; com2;com3;} else {com1; com1; com1;}";
             var expected = 57; // Position of the last '}'
-            var (block, elsePosition) = IrtParserCommand.ExtractFirstIfElse(input);
+            var (block, elsePosition) = IrtKernel.ExtractFirstIfElse(input);
             Assert.AreEqual(expected, block.Length);
             Assert.AreEqual(33, elsePosition);
         }
@@ -654,7 +654,7 @@ namespace InterpreteTests
         {
             var input = "if(condition) { if(innerCondition) { com1; } else { com2; } } else { com3; }";
             var expected = "if(condition) { if(innerCondition) { com1; } else { com2; } } else { com3; }";
-            var (block, elsePosition) = IrtParserCommand.ExtractFirstIfElse(input);
+            var (block, elsePosition) = IrtKernel.ExtractFirstIfElse(input);
             Assert.AreEqual(expected, block);
             Assert.AreEqual(62, elsePosition);
         }
@@ -667,7 +667,7 @@ namespace InterpreteTests
         {
             var input = "if(condition) { com1; } com2; com3;";
             var expected = "if(condition) { com1; }";
-            var (block, elsePosition) = IrtParserCommand.ExtractFirstIfElse(input);
+            var (block, elsePosition) = IrtKernel.ExtractFirstIfElse(input);
             Assert.AreEqual(expected, block);
             Assert.AreEqual(-1, elsePosition);
         }
@@ -680,7 +680,7 @@ namespace InterpreteTests
         {
             var input = "if(condition1) { com1; } else { com2; } if(condition2) { com3; } else { com4; }";
             var expected = "if(condition1) { com1; } else { com2; }";
-            var (block, elsePosition) = IrtParserCommand.ExtractFirstIfElse(input);
+            var (block, elsePosition) = IrtKernel.ExtractFirstIfElse(input);
             Assert.AreEqual(expected, block);
             Assert.AreEqual(25, elsePosition);
         }
@@ -692,7 +692,7 @@ namespace InterpreteTests
         public void ExtractFirstIfElseNoIfReturnsNull()
         {
             var input = "com1; com2; com3;";
-            var result = IrtParserCommand.ExtractFirstIfElse(input);
+            var result = IrtKernel.ExtractFirstIfElse(input);
             Assert.IsNull(result.block);
         }
 
@@ -706,7 +706,7 @@ namespace InterpreteTests
                 "if(condition) { if(innerCondition1) { com1; } else { if(innerCondition2) { com2; } else { com3; } } } else { com4; }";
             var expected =
                 "if(condition) { if(innerCondition1) { com1; } else { if(innerCondition2) { com2; } else { com3; } } } else { com4; }";
-            var (block, elsePosition) = IrtParserCommand.ExtractFirstIfElse(input);
+            var (block, elsePosition) = IrtKernel.ExtractFirstIfElse(input);
             Assert.AreEqual(expected, block);
             Assert.AreEqual(102, elsePosition);
         }
@@ -719,7 +719,7 @@ namespace InterpreteTests
         {
             var input = "if(condition) { /* comment */ com1; } else { // comment \n com2; } com3;";
             var expected = "if(condition) { /* comment */ com1; } else { // comment \n com2; }";
-            var (block, elsePosition) = IrtParserCommand.ExtractFirstIfElse(input);
+            var (block, elsePosition) = IrtKernel.ExtractFirstIfElse(input);
             Assert.AreEqual(expected, block);
             Assert.AreEqual(38, elsePosition);
         }
@@ -732,7 +732,7 @@ namespace InterpreteTests
         {
             var input = "if(condition) { com1; } else";
             var expected = "if(condition) { com1; } else";
-            var (block, elsePosition) = IrtParserCommand.ExtractFirstIfElse(input);
+            var (block, elsePosition) = IrtKernel.ExtractFirstIfElse(input);
             Assert.AreEqual(expected, block);
             Assert.AreEqual(24, elsePosition);
         }
@@ -745,7 +745,7 @@ namespace InterpreteTests
         {
             var input = "if(condition) { com1; } else com2;";
             var expected = "if(condition) { com1; } else com2;";
-            var (block, elsePosition) = IrtParserCommand.ExtractFirstIfElse(input);
+            var (block, elsePosition) = IrtKernel.ExtractFirstIfElse(input);
             Assert.AreEqual(expected, block);
             Assert.AreEqual(24, elsePosition);
         }
@@ -758,7 +758,7 @@ namespace InterpreteTests
         {
             var input = "If(condition) { com1; } eLsE { com2; }";
             var expected = "If(condition) { com1; } eLsE { com2; }";
-            var (block, elsePosition) = IrtParserCommand.ExtractFirstIfElse(input);
+            var (block, elsePosition) = IrtKernel.ExtractFirstIfElse(input);
             Assert.AreEqual(expected, block);
             Assert.AreEqual(24, elsePosition);
         }
@@ -771,7 +771,7 @@ namespace InterpreteTests
         {
             var input = "IF(condition) { com1; } ELSE { com2; }";
             var expected = "IF(condition) { com1; } ELSE { com2; }";
-            var (block, elsePosition) = IrtParserCommand.ExtractFirstIfElse(input);
+            var (block, elsePosition) = IrtKernel.ExtractFirstIfElse(input);
             Assert.AreEqual(expected, block);
             Assert.AreEqual(24, elsePosition);
         }
@@ -784,7 +784,7 @@ namespace InterpreteTests
         {
             var input = "if(condition) { com1; } com4;"; // Adjusted input string
             var expected = "if(condition) { com1; }"; // Expected output with no `else`
-            var (block, elsePosition) = IrtParserCommand.ExtractFirstIfElse(input);
+            var (block, elsePosition) = IrtKernel.ExtractFirstIfElse(input);
             Assert.AreEqual(expected, block);
             Assert.AreEqual(-1, elsePosition); // Since there's no `else`, the position should be -1
         }
@@ -797,7 +797,7 @@ namespace InterpreteTests
         public void ExtractFirstIfElseEmptyInputReturnsNull()
         {
             var input = "";
-            var result = IrtParserCommand.ExtractFirstIfElse(input);
+            var result = IrtKernel.ExtractFirstIfElse(input);
             Assert.IsNull(result.block);
         }
 

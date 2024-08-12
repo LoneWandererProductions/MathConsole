@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using ExtendedSystemObjects;
 
@@ -8,6 +9,59 @@ namespace Interpreter
     internal static class IrtParserCommand
     {
         private static int _idCounter;
+
+        public static List<string> ConvertClausesToCategoryValues(List<IfElseClause> clauses)
+        {
+            var result = new List<string>();
+
+            // A helper method to process each clause and its nested clauses
+            void ProcessClause(IfElseClause clause, int currentLayer)
+            {
+                // Begin If block
+                result.Add($"If_layer_{currentLayer}_begin: {clause.IfClause}");
+
+                // Find and process nested If-Else clauses within the current If block
+                var nestedClauses = clauses.Where(c => c.Parent == clause.IfClause).ToList();
+                foreach (var nestedClause in nestedClauses)
+                {
+                    ProcessClause(nestedClause, currentLayer + 1); // Increase layer for nested clauses
+                }
+
+                // Placeholder for content inside the If block
+                result.Add($"// Content of If block goes here");
+
+                // End If block
+                result.Add($"If_layer_{currentLayer}_end");
+
+                // Begin Else block
+                result.Add($"Else_layer_{currentLayer}_begin: {clause.ElseClause}");
+
+                // Find and process nested If-Else clauses within the current Else block
+                nestedClauses = clauses.Where(c => c.Parent == clause.ElseClause).ToList();
+                foreach (var nestedClause in nestedClauses)
+                {
+                    ProcessClause(nestedClause, currentLayer + 1); // Increase layer for nested clauses
+                }
+
+                // Placeholder for content inside the Else block
+                result.Add($"// Content of Else block goes here");
+
+                // End Else block
+                result.Add($"Else_layer_{currentLayer}_end");
+            }
+
+            // Start with the outermost If-Else clauses (Layer 0)
+            foreach (var clause in clauses.Where(c => c.Layer == 0))
+            {
+                ProcessClause(clause, 0);
+            }
+
+            return result;
+        }
+
+
+
+
 
         /// <summary>
         /// Categorizes if else clauses.
@@ -78,7 +132,7 @@ namespace Interpreter
                     break;
 
                 var codeFromIfIndex = code.Substring(ifIndex);
-                var (block, elsePosition) = ExtractFirstIfElse(codeFromIfIndex);
+                var (block, elsePosition) = IrtKernel.ExtractFirstIfElse(codeFromIfIndex);
 
                 if (string.IsNullOrWhiteSpace(block)) break;
 
@@ -152,7 +206,7 @@ namespace Interpreter
                     if (!string.IsNullOrWhiteSpace(beforeIf)) formattedBlocks.Add(beforeIf);
 
                     input = input.Substring(ifIndex);
-                    var (ifElseBlock, elsePosition) = ExtractFirstIfElse(input);
+                    var (ifElseBlock, elsePosition) = IrtKernel.ExtractFirstIfElse(input);
 
                     if (elsePosition == -1)
                     {
@@ -212,84 +266,6 @@ namespace Interpreter
             }
 
             return commandRegister;
-        }
-
-        /// <summary>
-        /// Extracts the first If-Else block and the position of the 'else' keyword from the input string.
-        /// </summary>
-        /// <param name="input">The input string containing the If-Else structure.</param>
-        /// <returns>A tuple containing the extracted If-Else block and the position of the 'else' keyword.</returns>
-        internal static (string block, int elsePosition) ExtractFirstIfElse(string input)
-        {
-            var start = input.IndexOf("if(", StringComparison.OrdinalIgnoreCase);
-            if (start == -1) return (null, -1);
-
-            var end = start;
-            var braceCount = 0;
-            var elseFound = false;
-            var elsePosition = -1;
-            var containsElse = input.IndexOf("else", StringComparison.OrdinalIgnoreCase) != -1;
-
-            for (var i = start; i < input.Length; i++)
-            {
-                var cursor = input[i];
-
-                if (cursor == '{')
-                {
-                    braceCount++;
-                }
-                else if (cursor == '}')
-                {
-                    braceCount--;
-                    if (braceCount != 0) continue;
-                    if (containsElse) continue;
-
-                    end = i;
-                    break;
-                }
-                else if (i + 4 <= input.Length &&
-                         input.Substring(i, 4).Equals("else", StringComparison.OrdinalIgnoreCase) && braceCount == 0)
-                {
-                    elseFound = true;
-                    elsePosition = i;
-                    var index = input.IndexOf("else", i, StringComparison.OrdinalIgnoreCase);
-                    end = index + 4;
-                    break;
-                }
-            }
-
-            if (elseFound)
-            {
-                if (end == input.Length) return (input.Substring(start, input.Length), elsePosition);
-
-                for (var i = end; i < input.Length; i++)
-                {
-                    var cursor = input[i];
-
-                    if (cursor == '{')
-                    {
-                        braceCount++;
-                    }
-                    else if (cursor == '}')
-                    {
-                        braceCount--;
-
-                        if (braceCount != 0) continue;
-
-                        end = i;
-                        break;
-                    }
-                    else if (cursor == ';')
-                    {
-                        if (braceCount != 0) continue;
-
-                        end = i;
-                        break;
-                    }
-                }
-            }
-
-            return (input.Substring(start, end - start + 1).Trim(), elsePosition);
         }
 
         /// <summary>

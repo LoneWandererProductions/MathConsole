@@ -171,6 +171,15 @@ namespace InterpreteTests
             {
                 Trace.WriteLine($"Category: {item.Category}, Clause: {item.Clause}, Parent: {item.ParentCategory}");
             }
+
+            Trace.WriteLine(Environment.NewLine);
+
+            var result = IrtParserCommand.ConvertClausesToCategoryValues(clauses);
+
+            foreach (var item in result)
+            {
+                Trace.WriteLine(item);
+            }
         }
     }
 }
