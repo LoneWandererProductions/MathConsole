@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using ExtendedSystemObjects;
@@ -14,45 +13,61 @@ namespace Interpreter
         public static string GenerateFormattedOutput(List<(string Category, string Clause, string ParentCategory)> categorizedClauses)
         {
             var output = new StringBuilder();
-            var openBlocks = new Dictionary<string, string>();
+            var openBlocks = new Stack<string>();
+            var clauseDict = categorizedClauses.ToDictionary(clause => clause.Category);
 
-            foreach (var clause in categorizedClauses)
+            void ProcessClause((string Category, string Clause, string ParentCategory) clause)
             {
-                var layer = clause.Category.Split('_')[2];  // Extract the layer number from the Category
+                var categoryParts = clause.Category?.Split('_');
+                var layer = categoryParts?.Length > 2 ? categoryParts[2] : "unknown";
 
-                // If it's an "if" clause
+                // Process the 'if' block
                 if (clause.Category.StartsWith("if"))
                 {
                     output.AppendLine($"If_layer_{layer}_begin: {clause.Clause}");
                     output.AppendLine("// Content of If block goes here");
+                    openBlocks.Push(clause.Category);
 
-                    openBlocks[clause.Category] = $"If_layer_{layer}_end";
+                    // Process nested clauses
+                    var nestedClauses = categorizedClauses.Where(c => c.ParentCategory == clause.Category).ToList();
+                    foreach (var nestedClause in nestedClauses)
+                    {
+                        ProcessClause(nestedClause);
+                    }
+
+                    output.AppendLine($"If_layer_{layer}_end");
+                    openBlocks.Pop();
                 }
-                // If it's an "else" clause
+                // Process the 'else' block
                 else if (clause.Category.StartsWith("else"))
                 {
                     output.AppendLine($"Else_layer_{layer}_begin: {clause.Clause}");
                     output.AppendLine("// Content of Else block goes here");
+                    openBlocks.Push(clause.Category);
 
-                    openBlocks[clause.Category] = $"Else_layer_{layer}_end";
-                }
+                    // Process nested clauses
+                    var nestedClauses = categorizedClauses.Where(c => c.ParentCategory == clause.Category).ToList();
+                    foreach (var nestedClause in nestedClauses)
+                    {
+                        ProcessClause(nestedClause);
+                    }
 
-                // Check if there's a parent block that needs to be closed
-                if (!string.IsNullOrEmpty(clause.ParentCategory) && openBlocks.TryGetValue(clause.ParentCategory, out var closingTag))
-                {
-                    output.AppendLine(closingTag);
-                    openBlocks.Remove(clause.ParentCategory);
+                    output.AppendLine($"Else_layer_{layer}_end");
+                    openBlocks.Pop();
                 }
             }
 
-            // Close any remaining open blocks
-            foreach (var closingTag in openBlocks.Values)
+            // Process only root elements (those without a parent)
+            var rootClauses = categorizedClauses.Where(c => string.IsNullOrEmpty(c.ParentCategory)).ToList();
+            foreach (var rootClause in rootClauses)
             {
-                output.AppendLine(closingTag);
+                ProcessClause(rootClause);
             }
 
             return output.ToString();
         }
+
+
 
         /// <summary>
         /// Categorizes if else clauses.
