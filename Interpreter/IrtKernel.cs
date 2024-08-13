@@ -515,7 +515,6 @@ namespace Interpreter
             return (input.Substring(start, end - start + 1).Trim(), elsePosition);
         }
 
-
         /// <summary>
         /// Determines the command index based on the input string and a dictionary of commands.
         /// </summary>

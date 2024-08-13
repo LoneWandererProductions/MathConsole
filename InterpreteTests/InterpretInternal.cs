@@ -789,6 +789,18 @@ namespace InterpreteTests
             Assert.AreEqual(-1, elsePosition); // Since there's no `else`, the position should be -1
         }
 
+        /// <summary>
+        /// Extracts the nested if with no else.
+        /// </summary>
+        [TestMethod]
+        public void ExtractNestedIfNoElse()
+        {
+            var input = "if (condition1){command1; if (condition2){command2;}}";
+            var expected = "if (condition1){command1; if (condition2){command2;}}"; // Expected output with no `else`
+            var (block, elsePosition) = IrtKernel.ExtractFirstIfElse(input);
+            Assert.AreEqual(expected, block);
+            Assert.AreEqual(-1, elsePosition); // Since there's no `else`, the position should be -1
+        }
 
         /// <summary>
         /// Extracts the first if else empty input returns null.
