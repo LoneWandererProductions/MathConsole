@@ -4,6 +4,9 @@ using System.Linq;
 
 namespace Interpreter
 {
+    /// <summary>
+    /// Basic if else Parser
+    /// </summary>
     internal static class IrtParserIfElse
     {
         private static int _idCounter;
@@ -147,7 +150,7 @@ namespace Interpreter
         {
             while (true)
             {
-                var ifIndex = IrtKernel.FindFirstIfIndex(code, "if");
+                var ifIndex = IrtKernel.FindFirstKeywordIndex(code, "if");
                 if (ifIndex == -1)
                     break;
 

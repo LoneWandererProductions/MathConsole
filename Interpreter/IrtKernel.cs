@@ -35,17 +35,6 @@ namespace Interpreter
         }
 
         /// <summary>
-        ///     Validates the parameters. Parenthesis.
-        /// </summary>
-        /// <param name="input">The input.</param>
-        /// <returns>if the input has correctly formatted parenthesis</returns>
-        internal static bool ValidateParameters(string input)
-        {
-            // if the input has correctly formatted parenthesis
-            return SingleCheck(input);
-        }
-
-        /// <summary>
         ///     Checks if the input string has balanced parentheses of a single type.
         /// </summary>
         /// <param name="input">Input string to check.</param>
@@ -176,12 +165,12 @@ namespace Interpreter
         }
 
         /// <summary>
-        ///     Removes the last symbol.
+        ///     Removes at the last machted symbol.
         /// </summary>
         /// <param name="input">The input.</param>
         /// <param name="symbol">The symbol.</param>
         /// <returns>The modified string.</returns>
-        internal static string RemoveLastOccurrence(string input, char symbol)
+        internal static string CutLastOccurrence(string input, char symbol)
         {
             return input.Substring(0, input.LastIndexOf(symbol.ToString(), StringComparison.Ordinal));
         }
@@ -392,11 +381,18 @@ namespace Interpreter
         /// <returns>The extracted condition string.</returns>
         internal static string ExtractCondition(string input, string keyword)
         {
+            // Trim leading and trailing whitespace from the input
+            input = input.Trim();
+
+            // Remove the keyword if it appears at the start of the input
             if (input.StartsWith(keyword, StringComparison.OrdinalIgnoreCase))
                 input = input.Substring(keyword.Length).Trim();
 
-            if (input.StartsWith("(", StringComparison.Ordinal)) input = input.Substring(1).Trim();
-            if (input.EndsWith(")", StringComparison.Ordinal)) input = input.Substring(0, input.Length - 1).Trim();
+            // Remove the opening parenthesis if present
+            if (input.StartsWith(IrtConst.BaseOpen.ToString(), StringComparison.Ordinal)) input = RemoveFirstOccurrence(input, IrtConst.BaseOpen).Trim();
+
+            // Remove the closing parenthesis if present, and everything after
+            if (input.Contains(IrtConst.BaseClose, StringComparison.Ordinal)) input = CutLastOccurrence(input, IrtConst.BaseClose).Trim();
 
             return input;
         }
@@ -407,7 +403,7 @@ namespace Interpreter
         /// <param name="input">The input string to search within.</param>
         /// <param name="keyword">The keyword to find.</param>
         /// <returns>The index of the keyword if found, or -1 if not found.</returns>
-        internal static int FindFirstIfIndex(string input, string keyword)
+        internal static int FindFirstKeywordIndex(string input, string keyword)
         {
             if (string.IsNullOrEmpty(input)) return IrtConst.Error;
 
@@ -435,7 +431,7 @@ namespace Interpreter
         /// <returns>True if the keyword followed by an open parenthesis is found, otherwise false.</returns>
         internal static bool ContainsKeywordWithOpenParen(string input, string keyword)
         {
-            return FindFirstIfIndex(input, keyword) != -1;
+            return FindFirstKeywordIndex(input, keyword) != -1;
         }
 
         /// <summary>
@@ -445,7 +441,7 @@ namespace Interpreter
         /// <returns>A tuple containing the extracted If-Else block and the position of the 'else' keyword.</returns>
         internal static (string block, int elsePosition) ExtractFirstIfElse(string input)
         {
-            var start = FindFirstIfIndex(input, "if");
+            var start = FindFirstKeywordIndex(input, "if");
             if (start == -1) return (null, -1);
 
             var end = start;

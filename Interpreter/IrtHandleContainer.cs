@@ -73,7 +73,7 @@ namespace Interpreter
         /// <param name="parameterPart">Parameter Part.</param>
         internal void CommandContainer(string parameterPart)
         {
-            parameterPart = IrtKernel.RemoveLastOccurrence(parameterPart, IrtConst.AdvancedClose);
+            parameterPart = IrtKernel.CutLastOccurrence(parameterPart, IrtConst.AdvancedClose);
             parameterPart = IrtKernel.RemoveFirstOccurrence(parameterPart, IrtConst.AdvancedOpen);
 
             GenerateCommands(parameterPart);

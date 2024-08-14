@@ -13,7 +13,7 @@ namespace Interpreter
         internal static CategorizedDictionary<int, string> BuildCommand(string input)
         {
             // Remove unnecessary characters from the input string
-            input = IrtKernel.RemoveLastOccurrence(input, IrtConst.AdvancedClose);
+            input = IrtKernel.CutLastOccurrence(input, IrtConst.AdvancedClose);
             input = IrtKernel.RemoveFirstOccurrence(input, IrtConst.AdvancedOpen);
             input = input.Trim();
 
@@ -22,7 +22,7 @@ namespace Interpreter
 
             while (keepParsing)
             {
-                var ifIndex = IrtKernel.FindFirstIfIndex(input, "if");
+                var ifIndex = IrtKernel.FindFirstKeywordIndex(input, "if");
                 if (ifIndex == -1)
                 {
                     // No more if-else blocks; add the remaining input as a command block

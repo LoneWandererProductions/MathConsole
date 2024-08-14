@@ -1,14 +1,12 @@
 ﻿/*
  * COPYRIGHT:   See COPYING in the top level directory
- * PROJECT:     CommonLibraryTests
- * FILE:        CommonLibraryTests/InterpretInternal.cs
+ * PROJECT:     Interpreter
+ * FILE:        InterpreteTests/InterpretInternal.cs
  * PURPOSE:     Tests for the internals of the Interpreter
  * PROGRAMMER:  Peter Geinitz (Wayfarer)
  */
 
-using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using Interpreter;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -20,16 +18,6 @@ namespace InterpreteTests
     [TestClass]
     public sealed class InterpretInternal
     {
-        /// <summary>
-        ///     The out command object for capturing command outputs.
-        /// </summary>
-        private static OutCommand _outCommand;
-
-        /// <summary>
-        ///     The log
-        /// </summary>
-        private static string _log;
-
         /// <summary>
         ///     Gets the sample commands.
         /// </summary>
@@ -397,69 +385,6 @@ namespace InterpreteTests
         }
 
         /// <summary>
-        ///     Tests the namespace switching functionality of the interpreter.
-        /// </summary>
-        [TestMethod]
-        public void ConsoleNameSpaceSwitch()
-        {
-            var dctCommandOne = new Dictionary<int, InCommand>
-            {
-                { 0, new InCommand { Command = "com1", ParameterCount = 2, Description = "Help com1" } },
-                {
-                    1,
-                    new InCommand { Command = "com2", ParameterCount = 0, Description = "com2 Command Namespace 1" }
-                },
-                {
-                    2,
-                    new InCommand { Command = "com3", ParameterCount = 0, Description = "Special case no Parameter" }
-                }
-            };
-
-            var dctCommandTwo = new Dictionary<int, InCommand>
-            {
-                {
-                    1,
-                    new InCommand { Command = "com2", ParameterCount = 0, Description = "com2 Command Namespace 2" }
-                },
-                { 4, new InCommand { Command = "Test", ParameterCount = 0, Description = "Here we go" } }
-            };
-
-            var prompt = new Prompt();
-            prompt.SendLogs += SendLogs;
-            prompt.SendCommands += SendCommands;
-            prompt.Initiate(dctCommandOne, "UserSpace 1");
-            prompt.ConsoleInput("coM1(1,2)");
-
-            Assert.AreEqual(0, _outCommand.Command, "Wrong Id: " + _outCommand.Command);
-
-            prompt.AddCommands(dctCommandTwo, "UserSpace 2");
-
-            Assert.AreEqual(2, prompt.CollectedSpaces.Count, "Wrong Number of Namespaces");
-
-            prompt.ConsoleInput("use (UserSpace 2)");
-            prompt.ConsoleInput("test");
-
-            Assert.AreEqual(4, _outCommand.Command, "Wrong Id: " + _outCommand.Command);
-
-            prompt.ConsoleInput("com2().use(UserSpace 1)");
-            Assert.AreEqual(1, _outCommand.Command, "Wrong Id: " + _outCommand.Command);
-            Assert.AreEqual("UserSpace 1", _outCommand.UsedNameSpace, "Wrong Userspace");
-
-            var extension = new Dictionary<int, InCommand>
-            {
-                { 1, new InCommand { Command = "Ext", ParameterCount = 0, Description = "Null" } },
-                { 4, new InCommand { Command = "Ext", ParameterCount = 1, Description = "Overload" } }
-            };
-
-            // Reboot this time with user extension, check if we support overloads
-            prompt.Initiate(dctCommandOne, "UserSpace 1", extension);
-            prompt.ConsoleInput("com1(1,2).ext()");
-            Assert.AreEqual(1, _outCommand.ExtensionCommand.ExtensionCommand, "Wrong Id: ");
-            prompt.ConsoleInput("com1(1,2).ext(3)");
-            Assert.AreEqual(4, _outCommand.ExtensionCommand.ExtensionCommand, "Wrong Id: ");
-        }
-
-        /// <summary>
         ///     Gets the parameters with advanced open returns batch command.
         /// </summary>
         [TestMethod]
@@ -814,26 +739,163 @@ namespace InterpreteTests
         }
 
         /// <summary>
-        ///     Logs the messages.
+        /// Validates the parameters with correct parameters returns true.
         /// </summary>
-        /// <param name="sender">Sender object</param>
-        /// <param name="e">Message string</param>
-        private static void SendLogs(object sender, string e)
+        [TestMethod]
+        public void ValidateParametersWithCorrectParametersReturnsTrue()
         {
-            Trace.WriteLine(e);
-            _log = e;
+            // Arrange
+            var commands = new Dictionary<int, InCommand>
+            {
+                { 1, new InCommand { ParameterCount = 2 } }
+            };
+
+            // Act
+            var result = IrtKernel.ValidateParameters(1, 2, commands);
+
+            // Assert
+            Assert.IsTrue(result);
         }
 
         /// <summary>
-        ///     Captures the commands.
+        /// Validates the parameters with incorrect parameters returns false.
         /// </summary>
-        /// <param name="sender">Sender object</param>
-        /// <param name="e">OutCommand object</param>
-        private static void SendCommands(object sender, OutCommand e)
+        [TestMethod]
+        public void ValidateParametersWithIncorrectParametersReturnsFalse()
         {
-            if (e.Command == -1) return;
+            // Arrange
+            var commands = new Dictionary<int, InCommand>
+            {
+                { 1, new InCommand { ParameterCount = 2 } }
+            };
 
-            _outCommand = e;
+            // Act
+            var result = IrtKernel.ValidateParameters(1, 3, commands);
+
+            // Assert
+            Assert.IsFalse(result);
+        }
+
+        /// <summary>
+        /// Removes the first occurrence removes symbol.
+        /// </summary>
+        [TestMethod]
+        public void RemoveFirstOccurrence_RemovesSymbol()
+        {
+            // Act
+            var result = IrtKernel.RemoveFirstOccurrence("hello world", 'o');
+
+            // Assert
+            Assert.AreEqual("hell world", result);
+        }
+
+        /// <summary>
+        /// Cuts the last occurrence removes last symbols.
+        /// </summary>
+        [TestMethod]
+        public void CutLastOccurrenceRemovesLastSymbol()
+        {
+            // Act
+            var result = IrtKernel.CutLastOccurrence("hello world", 'o');
+
+            // Assert
+            Assert.AreEqual("hello w", result);
+        }
+
+        /// <summary>
+        /// Removes the word removes keyword.
+        /// </summary>
+        [TestMethod]
+        public void RemoveWordRemovesKeyword()
+        {
+            // Act
+            var result = IrtKernel.RemoveWord("keyword", "This is a keyword example.");
+
+            // Assert
+            Assert.AreEqual("This is a  example.", result);
+        }
+
+        /// <summary>
+        /// Extracts the condition removes keyword and parentheses.
+        /// </summary>
+        [TestMethod]
+        public void ExtractConditionRemovesKeywordAndParentheses()
+        {
+            // Act
+            var result = IrtKernel.ExtractCondition("if (condition) something", "if");
+
+            // Assert
+            Assert.AreEqual("condition", result);
+        }
+
+        /// <summary>
+        /// Finds the first if index finds keyword.
+        /// </summary>
+        [TestMethod]
+        public void FindFirstIfIndexFindsKeyword()
+        {
+            // Act
+            var result = IrtKernel.FindFirstKeywordIndex("some text if (condition)", "if");
+
+            // Assert
+            Assert.AreEqual(10, result);
+
+            // Act
+            result = IrtKernel.FindFirstKeywordIndex("some text if (condition)", "else");
+
+            // Assert
+            Assert.AreEqual(-1, result);
+        }
+
+        /// <summary>
+        /// Determines whether [contains keyword with open paren finds keyword with paren].
+        /// </summary>
+        [TestMethod]
+        public void ContainsKeywordWithOpenParenFindsKeywordWithParen()
+        {
+            // Act
+            var result = IrtKernel.ContainsKeywordWithOpenParen("some text if (condition)", "if");
+
+            // Assert
+            Assert.IsTrue(result);
+        }
+
+        /// <summary>
+        /// Gets the command index finds matching command.
+        /// </summary>
+        [TestMethod]
+        public void GetCommandIndexFindsMatchingCommand()
+        {
+            // Arrange
+            var commands = new Dictionary<int, InCommand>
+            {
+                { 1, new InCommand { Command = "COMMAND" } }
+            };
+
+            // Act
+            var result = IrtKernel.GetCommandIndex("COMMAND", commands);
+
+            // Assert
+            Assert.AreEqual(1, result);
+        }
+
+        /// <summary>
+        /// Gets the command index does not find matching command.
+        /// </summary>
+        [TestMethod]
+        public void GetCommandIndexDoesNotFindMatchingCommand()
+        {
+            // Arrange
+            var commands = new Dictionary<int, InCommand>
+            {
+                { 1, new InCommand { Command = "COMMAND" } }
+            };
+
+            // Act
+            var result = IrtKernel.GetCommandIndex("UNKNOWN", commands);
+
+            // Assert
+            Assert.AreEqual(IrtConst.Error, result);
         }
     }
 }

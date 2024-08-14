@@ -75,7 +75,7 @@ namespace Interpreter
             if (status == IrtConst.Error) return (null, IrtConst.Error);
 
             // Validate the Parenthesis logic
-            if (!IrtKernel.ValidateParameters(extension)) return (null, IrtConst.ParenthesisMismatch);
+            if (!IrtKernel.SingleCheck(extension)) return (null, IrtConst.ParenthesisMismatch);
 
             // Validate the parameter count of the extension command
             if (!IrtKernel.ValidateParameters(commandKey, parameters.Count, extensionCommands))

@@ -178,7 +178,7 @@ namespace Interpreter
             }
 
             // Check if the parentheses are correct
-            if (!IrtKernel.ValidateParameters(inputString))
+            if (!IrtKernel.SingleCheck(inputString))
             {
                 SetErrorWithLog(IrtConst.ParenthesisError);
                 return;
