@@ -165,8 +165,10 @@ namespace InterpreteTests
 
             // Assert
             Assert.AreEqual(2, clauses.Count, "Expected 2 if-else clauses.");
+            //TODO error here:
+			Assert.AreEqual(1, clauses[1].Layer, "Layer of the second clause should be 1.");
 
-            var clause = IrtParserIfElse.CategorizeIfElseClauses(clauses);
+			var clause = IrtParserIfElse.CategorizeIfElseClauses(clauses);
 
             foreach (var item in clause)
             {
