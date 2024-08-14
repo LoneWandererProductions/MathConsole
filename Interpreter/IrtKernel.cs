@@ -409,9 +409,11 @@ namespace Interpreter
         /// <returns>The index of the keyword if found, or -1 if not found.</returns>
         internal static int FindFirstIfIndex(string input, string keyword)
         {
+            if (string.IsNullOrEmpty(input)) return IrtConst.Error;
+
             var position = input.IndexOf(keyword, StringComparison.OrdinalIgnoreCase);
 
-            while (position != -1)
+            while (position != IrtConst.Error)
             {
                 var openParenIndex = position + keyword.Length;
                 while (openParenIndex < input.Length && char.IsWhiteSpace(input[openParenIndex])) openParenIndex++;
@@ -422,7 +424,7 @@ namespace Interpreter
                 position = input.IndexOf(keyword, position + 1, StringComparison.OrdinalIgnoreCase);
             }
 
-            return -1;
+            return IrtConst.Error;
         }
 
         /// <summary>

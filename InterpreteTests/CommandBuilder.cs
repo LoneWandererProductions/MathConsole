@@ -152,17 +152,21 @@ namespace InterpreteTests
             {
                 Console.WriteLine($"Category: {item.Category}, Clause: {item.Clause}, Parent: {item.ParentCategory}");
             }
+        }
 
+        [TestMethod]
+        public void TestParseIfClausesNestedIf()
+        {
             // Arrange
-            code = "if (condition1){command1; if (condition2){command2;}}";
+            var code = "if (condition1){command1; if (condition2){command2;}}";
 
             // Act
-            clauses = IrtParserIfElse.ParseIfElseClauses(code);
+            var clauses = IrtParserIfElse.ParseIfElseClauses(code);
 
             // Assert
             Assert.AreEqual(2, clauses.Count, "Expected 2 if-else clauses.");
 
-            clause = IrtParserIfElse.CategorizeIfElseClauses(clauses);
+            var clause = IrtParserIfElse.CategorizeIfElseClauses(clauses);
 
             foreach (var item in clause)
             {
