@@ -40,7 +40,7 @@ namespace Interpreter
             {
                 var token = tokens[i].Trim();
 
-                if (IrtKernel.ContainsKeywordWithOpenParen(token, "if"))
+                if (IrtKernel.ContainsKeywordWithOpenParenthesis(token, "if"))
                 {
                     var condition = IrtKernel.ExtractCondition(token, "if");
                     stack.Push((currentCondition, currentIfClause, currentElseClause, inElse));

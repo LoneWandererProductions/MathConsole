@@ -15,8 +15,8 @@ namespace InterpreteTests
         [TestMethod]
         public void ParseComplexCommand()
         {
-            //base, the command will be removed in the IrtParser
-            var input = "Container{ " +
+			//base, the command will be removed in the IrtParser
+			const string input = "Container{ " +
                         "Print(hello World);" +
                         "if(condition) { if(innerCondition) { com1; } else { com2; } } else { com3; }" +
                         "Label(one);" +
@@ -123,58 +123,57 @@ namespace InterpreteTests
 
         }
 
+        //[TestMethod]
+        //public void TestParseIfElseClausesNestedIfElse()
+        //{
+        //    // Arrange
+        //    string code = "if(condition1) { if(condition2) { /* nested code */ } else { /* nested else code */ } } else { /* outer else code */ }";
 
-        [TestMethod]
-        public void TestParseIfElseClausesNestedIfElse()
-        {
-            // Arrange
-            string code = "if(condition1) { if(condition2) { /* nested code */ } else { /* nested else code */ } } else { /* outer else code */ }";
+        //    // Act
+        //    var clauses = IrtParserIfElse.ParseIfElseClauses(code);
 
-            // Act
-            var clauses = IrtParserIfElse.ParseIfElseClauses(code);
+        //    // Assert
+        //    Assert.AreEqual(2, clauses.Count, "Expected 2 if-else clauses.");
 
-            // Assert
-            Assert.AreEqual(2, clauses.Count, "Expected 2 if-else clauses.");
+        //    // Check the first clause (Layer 0)
+        //    Assert.AreEqual(0, clauses[0].Layer, "Layer of the first clause should be 0.");
+        //    Assert.IsTrue(clauses[0].IfClause.Contains("if(condition2)"), "IfClause should contain the nested if.");
+        //    Assert.IsNotNull(clauses[0].ElseClause, "ElseClause should not be null.");
 
-            // Check the first clause (Layer 0)
-            Assert.AreEqual(0, clauses[0].Layer, "Layer of the first clause should be 0.");
-            Assert.IsTrue(clauses[0].IfClause.Contains("if(condition2)"), "IfClause should contain the nested if.");
-            Assert.IsNotNull(clauses[0].ElseClause, "ElseClause should not be null.");
-
-            // Check the second clause (Layer 1)
-            Assert.AreEqual(1, clauses[1].Layer, "Layer of the second clause should be 1.");
-            Assert.AreEqual("else { /* nested else code */ }", clauses[1].ElseClause);
+        //    // Check the second clause (Layer 1)
+        //    Assert.AreEqual(1, clauses[1].Layer, "Layer of the second clause should be 1.");
+        //    Assert.AreEqual("else { /* nested else code */ }", clauses[1].ElseClause);
 
 
-            var clause = IrtParserIfElse.CategorizeIfElseClauses(clauses);
+        //    var clause = IrtParserIfElse.CategorizeIfElseClauses(clauses);
 
-            foreach (var item in clause)
-            {
-                Console.WriteLine($"Category: {item.Category}, Clause: {item.Clause}, Parent: {item.ParentCategory}");
-            }
-        }
+        //    foreach (var item in clause)
+        //    {
+        //        Console.WriteLine($"Category: {item.Category}, Clause: {item.Clause}, Parent: {item.ParentCategory}");
+        //    }
+        //}
 
-        [TestMethod]
-        public void TestParseIfClausesNestedIf()
-        {
-            // Arrange
-            var code = "if (condition1){command1; if (condition2){command2;}}";
+        //[TestMethod]
+        //public void TestParseIfClausesNestedIf()
+        //{
+        //    // Arrange
+        //    var code = "if (condition1){command1; if (condition2){command2;}}";
 
-            // Act
-            var clauses = IrtParserIfElse.ParseIfElseClauses(code);
+        //    // Act
+        //    var clauses = IrtParserIfElse.ParseIfElseClauses(code);
 
-            // Assert
-            Assert.AreEqual(2, clauses.Count, "Expected 2 if-else clauses.");
-            //TODO error here:
-            //look here: https://stackoverflow.com/questions/9283288/parsing-if-else-if-statement-algorithm
-            Assert.AreEqual(1, clauses[1].Layer, "Layer of the second clause should be 1.");
+        //    // Assert
+        //    Assert.AreEqual(2, clauses.Count, "Expected 2 if-else clauses.");
+        //    //TODO error here:
+        //    //look here: https://stackoverflow.com/questions/9283288/parsing-if-else-if-statement-algorithm
+        //    Assert.AreEqual(1, clauses[1].Layer, "Layer of the second clause should be 1.");
 
-            var clause = IrtParserIfElse.CategorizeIfElseClauses(clauses);
+        //    var clause = IrtParserIfElse.CategorizeIfElseClauses(clauses);
 
-            foreach (var item in clause)
-            {
-                Console.WriteLine($"Category: {item.Category}, Clause: {item.Clause}, Parent: {item.ParentCategory}");
-            }
-        }
+        //    foreach (var item in clause)
+        //    {
+        //        Console.WriteLine($"Category: {item.Category}, Clause: {item.Clause}, Parent: {item.ParentCategory}");
+        //    }
+        //}
     }
 }

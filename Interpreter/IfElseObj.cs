@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using ExtendedSystemObjects;
+using System.Collections.Generic;
 
 namespace Interpreter
 {
@@ -17,7 +18,7 @@ namespace Interpreter
 
         public bool Nested { get; set; }
 
-        public Dictionary<int, (string, string)> Commands { get; set; }
+        public CategorizedDictionary<int, string> Commands { get; set; }
         public string Input { get; set; }
     }
 }

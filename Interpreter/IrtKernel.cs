@@ -8,6 +8,7 @@
 
 // ReSharper disable ArrangeBraces_foreach
 
+using ExtendedSystemObjects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -89,7 +90,7 @@ namespace Interpreter
         /// <param name="openParenthesis">Array of opening parentheses characters.</param>
         /// <param name="closeParenthesis">Array of closing parentheses characters.</param>
         /// <returns>True if parentheses are balanced, false otherwise.</returns>
-        internal static bool CheckMultiple(string input, char[] openParenthesis, char[] closeParenthesis)
+        internal static bool CheckMultipleParenthesis(string input, char[] openParenthesis, char[] closeParenthesis)
         {
             //Open and close parentheses arrays are not the same length.
             if (openParenthesis.Length != closeParenthesis.Length)
@@ -362,18 +363,6 @@ namespace Interpreter
         }
 
         /// <summary>
-        ///     Checks if the string starts and ends with the specified characters.
-        /// </summary>
-        /// <param name="input">Input string to check.</param>
-        /// <param name="start">Expected starting character.</param>
-        /// <param name="end">Expected ending character.</param>
-        /// <returns>True if the string starts with 'start' and ends with 'end', false otherwise.</returns>
-        private static bool StartsAndEndsWith(string input, char start, char end)
-        {
-            return input.Length > 1 && input[0] == start && input[^1] == end;
-        }
-
-        /// <summary>
         /// Extracts the condition from an 'if' statement.
         /// </summary>
         /// <param name="input">The input string containing the 'if' statement.</param>
@@ -429,7 +418,7 @@ namespace Interpreter
         /// <param name="input">The input string to check.</param>
         /// <param name="keyword">The keyword to look for.</param>
         /// <returns>True if the keyword followed by an open parenthesis is found, otherwise false.</returns>
-        internal static bool ContainsKeywordWithOpenParen(string input, string keyword)
+        internal static bool ContainsKeywordWithOpenParenthesis(string input, string keyword)
         {
             return FindFirstKeywordIndex(input, keyword) != -1;
         }
@@ -444,12 +433,15 @@ namespace Interpreter
             var start = FindFirstKeywordIndex(input, "if");
             if (start == -1) return (null, -1);
 
-            var end = start;
+			bool isMatch = IsValidIfStatement(input);
+            if(!isMatch) return (null, -1);
+
+			var end = start;
             var braceCount = 0;
             var elseFound = false;
             var elsePosition = -1;
             //todo overhaul
-            var containsElse = input.IndexOf("else", StringComparison.OrdinalIgnoreCase) != -1;
+            var containsElse = input.Contains("else", StringComparison.OrdinalIgnoreCase);
 
             for (var i = start; i < input.Length; i++)
             {
@@ -513,13 +505,81 @@ namespace Interpreter
             return (input.Substring(start, end - start + 1).Trim(), elsePosition);
         }
 
-        /// <summary>
-        /// Determines the command index based on the input string and a dictionary of commands.
-        /// </summary>
-        /// <param name="input">The input string to check against commands.</param>
-        /// <param name="commands">A dictionary of commands to match against.</param>
-        /// <returns>The index of the matching command, or an error code if no match is found.</returns>
-        internal static int GetCommandIndex(string input, Dictionary<int, InCommand> commands)
+		/// <summary>
+		/// Gets the blocks.
+		/// </summary>
+		/// <param name="input">The input.</param>
+		/// <returns>CategorizedDictionary with commands and if blocks</returns>
+		internal static CategorizedDictionary<int, string> GetBlocks(string input)
+		{
+			var formattedBlocks = new CategorizedDictionary<int, string>();
+			var keepParsing = true;
+
+			while (keepParsing)
+			{
+				var ifIndex = FindFirstKeywordIndex(input, "if");
+
+				if (ifIndex == -1)
+				{
+					if (!string.IsNullOrWhiteSpace(input))
+					{
+                        GenerateCommandBlock(input, ref formattedBlocks);
+					}
+
+					keepParsing = false;
+				}
+				else
+				{
+					//tODO make a switch for if and else
+					var beforeIf = input.Substring(0, ifIndex).Trim();
+
+					if (!string.IsNullOrWhiteSpace(beforeIf))
+					{
+						GenerateCommandBlock(beforeIf, ref formattedBlocks);
+						//remove the beginning:
+						input = input.Substring(ifIndex);
+					}
+
+					var (ifElseBlock, elsePosition) = ExtractFirstIfElse(input);
+
+                    if (ifElseBlock != null)
+                    {
+                        // Add the current if block
+                        formattedBlocks.Add("If", formattedBlocks.Count, ifElseBlock);
+
+                        // Remove the processed block from the input string
+                        input = input.Substring(ifElseBlock.Length).Trim();
+                        //continue the loop with an reduced Input
+                    }
+                    else
+                    {
+						formattedBlocks.Add("Error", formattedBlocks.Count, input);
+						input = string.Empty;
+					}
+				}
+			}
+			return formattedBlocks;
+		}
+
+		/// <summary>
+		/// Gets the type of the command.
+		/// </summary>
+		/// <param name="command">The command.</param>
+		/// <returns>The Command Type</returns>
+		internal static string GetCommandType(string command)
+		{
+			command = command.Trim();
+			var keywordIndex = GetCommandIndex(command, IrtConst.InternContainerCommands);
+			return keywordIndex == -1 ? "Command" : IrtConst.InternContainerCommands[keywordIndex].Command;
+		}
+
+		/// <summary>
+		/// Determines the command index based on the input string and a dictionary of commands.
+		/// </summary>
+		/// <param name="input">The input string to check against commands.</param>
+		/// <param name="commands">A dictionary of commands to match against.</param>
+		/// <returns>The index of the matching command, or an error code if no match is found.</returns>
+		internal static int GetCommandIndex(string input, Dictionary<int, InCommand> commands)
         {
             input = input.ToUpperInvariant();
 
@@ -541,5 +601,62 @@ namespace Interpreter
 
             return IrtConst.Error;
         }
-    }
+
+		/// <summary>
+		/// Generates the command block.
+		/// </summary>
+		/// <param name="input">The input.</param>
+		/// <param name="formattedBlocks">The formatted blocks.</param>
+		private static void GenerateCommandBlock(string input, ref CategorizedDictionary<int, string> formattedBlocks)
+		{
+			foreach (var command in SplitParameter(input, IrtConst.NewCommand).ToList())
+			{
+				var type = GetCommandType(command);
+				formattedBlocks.Add(type, formattedBlocks.Count, command);
+			}
+		}
+
+		/// <summary>
+		/// Determines whether [is valid if statement] [the specified input].
+		/// </summary>
+		/// <param name="input">The input.</param>
+		/// <returns>
+		///   <c>true</c> if [is valid if statement] [the specified input]; otherwise, <c>false</c>.
+		/// </returns>
+		private static bool IsValidIfStatement(string input)
+		{
+			var openParenthesis = new[] { IrtConst.BaseOpen, IrtConst.AdvancedOpen };
+			var closeParenthesis = new[] { IrtConst.BaseClose, IrtConst.AdvancedClose };
+
+			// Ensure parentheses are balanced
+			if (!CheckMultipleParenthesis(input, openParenthesis, closeParenthesis))
+			{
+				return false;
+			}
+
+			// Check if the string starts with "if(" and ends with ")"
+			if (input.StartsWith("if",StringComparison.CurrentCultureIgnoreCase) && !input.EndsWith(")"))
+			{
+                // Extract the content between "if(" and ")"
+                string condition = ExtractCondition(input, "if");
+
+				// Check if the extracted content is not empty
+				return !string.IsNullOrEmpty(condition);
+			}
+
+			return false;
+		}
+
+		/// <summary>
+		///     Checks if the string starts and ends with the specified characters.
+		/// </summary>
+		/// <param name="input">Input string to check.</param>
+		/// <param name="start">Expected starting character.</param>
+		/// <param name="end">Expected ending character.</param>
+		/// <returns>True if the string starts with 'start' and ends with 'end', false otherwise.</returns>
+		private static bool StartsAndEndsWith(string input, char start, char end)
+		{
+			return input.Length > 1 && input[0] == start && input[^1] == end;
+		}
+	}
 }

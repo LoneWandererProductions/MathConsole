@@ -222,7 +222,7 @@ namespace Interpreter
         private static string ExtractInnerIfElse(string code)
         {
             // Check if the code contains an "if" keyword with an opening parenthesis
-            if (!IrtKernel.ContainsKeywordWithOpenParen(code, "if")) return code;
+            if (!IrtKernel.ContainsKeywordWithOpenParenthesis(code, "if")) return code;
 
             // Find the first "if" keyword and the corresponding opening brace '{'
             var ifIndex = code.IndexOf("if", StringComparison.OrdinalIgnoreCase);

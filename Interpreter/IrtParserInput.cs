@@ -157,7 +157,7 @@ namespace Interpreter
             }
 
             // Validate the input string
-            if (!CleanInputString(ref inputString))
+            if (!CleanAndCheckInputString(ref inputString))
             {
                 SetError(Logging.SetLastError(IrtConst.ParenthesisError, 0));
                 return;
@@ -275,13 +275,13 @@ namespace Interpreter
         /// </summary>
         /// <param name="input">The input.</param>
         /// <returns>True if input string is cleaned and valid; otherwise false.</returns>
-        private static bool CleanInputString(ref string input)
+        private static bool CleanAndCheckInputString(ref string input)
         {
             input = IrtKernel.WellFormedParenthesis(input);
             var openParenthesis = new[] { IrtConst.BaseOpen, IrtConst.AdvancedOpen };
             var closeParenthesis = new[] { IrtConst.BaseClose, IrtConst.AdvancedClose };
 
-            return IrtKernel.CheckMultiple(input, openParenthesis, closeParenthesis);
+            return IrtKernel.CheckMultipleParenthesis(input, openParenthesis, closeParenthesis);
         }
 
         /// <summary>
