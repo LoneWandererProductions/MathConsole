@@ -172,7 +172,7 @@ namespace Interpreter
         internal const string ErrorFeedbackOptions = "Input was not valid.";
 
         /// <summary>
-        /// The error no feedback options (const). Value: "No Feedback Options were provided."
+        ///     The error no feedback options (const). Value: "No Feedback Options were provided."
         /// </summary>
         internal const string ErrorNoFeedbackOptions = "No Feedback Options were provided.";
 
@@ -557,7 +557,8 @@ namespace Interpreter
                 new InCommand
                 {
                     Command = InternalIf,
-                    Description = $"If: Used for batch commands and containers. It requires a condition and executes all subsequent commands within the braces '{{' '}}'. Currently, only the '{InternalAwaitFeedback}' command is supported as a condition. Example usage: `If {InternalAwaitFeedback} {{ DoSomething() }}`.",
+                    Description =
+                        $"If: Used for batch commands and containers. It requires a condition and executes all subsequent commands within the braces '{{' '}}'. Currently, only the '{InternalAwaitFeedback}' command is supported as a condition. Example usage: `If {InternalAwaitFeedback} {{ DoSomething() }}`.",
                     ParameterCount = 1
                 }
             },
@@ -595,7 +596,8 @@ namespace Interpreter
                 new InCommand
                 {
                     Command = InternalAwaitFeedback,
-                    Description = "awaitfeedback : intended for batch commands and Container, requests user Feedback, based on the input the batch/container can proceed.",
+                    Description =
+                        "awaitfeedback : intended for batch commands and Container, requests user Feedback, based on the input the batch/container can proceed.",
                     ParameterCount = 1
                 }
             }

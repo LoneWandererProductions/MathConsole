@@ -85,7 +85,7 @@ namespace Interpreter
                     extensionCommands);
                 if (overloadCheck == null) return (null, IrtConst.ParameterMismatch);
 
-                commandKey = (int)overloadCheck;
+                commandKey = (int) overloadCheck;
             }
 
             // Set the extension command details

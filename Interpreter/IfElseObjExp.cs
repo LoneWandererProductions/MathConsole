@@ -6,16 +6,27 @@ namespace Interpreter
 {
     internal static class IfElseObjExp
     {
-        private static Dictionary<int, IfElseObj> Master = new Dictionary<int, IfElseObj>();
+        /// <summary>
+        /// Parses the given code string to extract all If-Else clauses.
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns>A list of IfElseClause objects representing each If-Else clause found.</returns>
+        internal static Dictionary<int, IfElseObj> ParseIfElseClauses(string input)
+        {
+            var master = new Dictionary<int, IfElseObj>();
+            ProcessInput(input, false, -1, -1, 0, master);
+            return master;
+        }
 
-        internal static void ProcessInput(string input, bool isElse, int parentId, int layer, int position)
+        internal static void ProcessInput(string input, bool isElse, int parentId, int layer, int position,
+            Dictionary<int, IfElseObj> master)
         {
             var obj = new IfElseObj
             {
                 Input = input,
                 Else = isElse,
                 ParentId = parentId,
-                Id = Master.Count,
+                Id = master.Count,
                 Layer = layer + 1,
                 Position = position
             };
@@ -26,14 +37,14 @@ namespace Interpreter
                 obj.Nested = false;
                 obj.Commands = IrtKernel.GetBlocks(input);
 
-				Master.Add(obj.Id, obj);
+                master.Add(obj.Id, obj);
                 return;
             }
 
             obj.Nested = true;
 
             obj.Commands = IrtKernel.GetBlocks(input);
-			Master.Add(obj.Id, obj);
+            master.Add(obj.Id, obj);
         }
-	}
+    }
 }

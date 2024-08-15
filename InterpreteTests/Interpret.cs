@@ -16,60 +16,61 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace InterpreteTests
 {
     /// <summary>
-    /// Mostly complete batch Tests
+    ///     Mostly complete batch Tests
     /// </summary>
     [TestClass]
     public sealed class InterpreterCompleteTests
     {
         /// <summary>
-        /// The user space one
+        ///     The user space one
         /// </summary>
         private const string UserSpaceOne = "NameSpaceOne";
 
         /// <summary>
-        /// The user space two
+        ///     The user space two
         /// </summary>
         private const string UserSpaceTwo = "NameSpaceTwo";
 
         /// <summary>
-        /// The prompt
+        ///     The prompt
         /// </summary>
         private static Prompt _prompt;
 
         /// <summary>
-        /// The out command
+        ///     The out command
         /// </summary>
         private static OutCommand _outCommand;
+
         /// <summary>
-        /// The log
+        ///     The log
         /// </summary>
         private static string _log;
 
         /// <summary>
-        /// The batch
+        ///     The batch
         /// </summary>
         private static readonly string Batch = Path.Combine(Directory.GetCurrentDirectory(), "MyTest.txt");
 
         /// <summary>
-        /// The DCT command one
+        ///     The DCT command one
         /// </summary>
         private static readonly Dictionary<int, InCommand> DctCommandOne = new()
         {
-            { 0, new InCommand { Command = "com1", ParameterCount = 2, Description = "Help com1" } },
-            { 1, new InCommand { Command = "com2", ParameterCount = 3, Description = "Help com2" } },
-            { 2, new InCommand { Command = "com3", ParameterCount = 0, Description = "Special case no Parameter" } }
+            {0, new InCommand {Command = "com1", ParameterCount = 2, Description = "Help com1"}},
+            {1, new InCommand {Command = "com2", ParameterCount = 3, Description = "Help com2"}},
+            {2, new InCommand {Command = "com3", ParameterCount = 0, Description = "Special case no Parameter"}}
         };
 
         /// <summary>
-        /// The DCT command two
+        ///     The DCT command two
         /// </summary>
         private static readonly Dictionary<int, InCommand> DctCommandTwo = new()
         {
-            { 4, new InCommand { Command = "Test", ParameterCount = 0, Description = "Here we go" } }
+            {4, new InCommand {Command = "Test", ParameterCount = 0, Description = "Here we go"}}
         };
 
         /// <summary>
-        /// Sets up.
+        ///     Sets up.
         /// </summary>
         [TestInitialize]
         public void SetUp()
@@ -81,7 +82,7 @@ namespace InterpreteTests
         }
 
         /// <summary>
-        /// Tears down.
+        ///     Tears down.
         /// </summary>
         [TestCleanup]
         public void TearDown()
@@ -91,7 +92,7 @@ namespace InterpreteTests
         }
 
         /// <summary>
-        /// Consoles the interpreter should execute commands.
+        ///     Consoles the interpreter should execute commands.
         /// </summary>
         [TestMethod]
         public void ConsoleInterpreterShouldExecuteCommands()
@@ -112,14 +113,16 @@ namespace InterpreteTests
             Assert.IsTrue(_log.Contains("Basic Syntax"), "Help output mismatch.");
 
             _prompt.ConsoleInput("helP()");
-            Assert.IsTrue(_log.Contains("Basic prompt, Version : 0.3. Author: Peter Geinitz (Wayfarer), not context sensitive"), "Help output mismatch.");
+            Assert.IsTrue(
+                _log.Contains("Basic prompt, Version : 0.3. Author: Peter Geinitz (Wayfarer), not context sensitive"),
+                "Help output mismatch.");
 
             _prompt.ConsoleInput("helP(CoM1)");
             Assert.IsTrue(_log.Contains("com1 Description"), "Help output mismatch.");
         }
 
         /// <summary>
-        /// Consoles the interpreter should handle syntax errors.
+        ///     Consoles the interpreter should handle syntax errors.
         /// </summary>
         [TestMethod]
         public void ConsoleInterpreterShouldHandleSyntaxErrors()
@@ -150,11 +153,13 @@ namespace InterpreteTests
             Assert.AreNotEqual("Error in the Syntax", _log, "Unexpected syntax error message.");
 
             _prompt.ConsoleInput("help()");
-            Assert.IsTrue(_log.Contains("Basic prompt, Version : 0.3. Author: Peter Geinitz (Wayfarer), not context sensitive"), "Help output mismatch.");
+            Assert.IsTrue(
+                _log.Contains("Basic prompt, Version : 0.3. Author: Peter Geinitz (Wayfarer), not context sensitive"),
+                "Help output mismatch.");
         }
 
         /// <summary>
-        /// Consoles the interpreter should handle command overloading.
+        ///     Consoles the interpreter should handle command overloading.
         /// </summary>
         [TestMethod]
         public void ConsoleInterpreterShouldHandleCommandOverloading()
@@ -162,8 +167,8 @@ namespace InterpreteTests
             // Arrange
             var commands = new Dictionary<int, InCommand>
             {
-                { 0, new InCommand { Command = "com1", ParameterCount = 0, Description = "Help com1" } },
-                { 1, new InCommand { Command = "com1", ParameterCount = 1, Description = "Help com2" } }
+                {0, new InCommand {Command = "com1", ParameterCount = 0, Description = "Help com1"}},
+                {1, new InCommand {Command = "com1", ParameterCount = 1, Description = "Help com2"}}
             };
 
             _prompt.Initiate(commands, UserSpaceOne);
@@ -182,7 +187,7 @@ namespace InterpreteTests
         }
 
         /// <summary>
-        /// Consoles the interpreter should switch namespaces.
+        ///     Consoles the interpreter should switch namespaces.
         /// </summary>
         [TestMethod]
         public void ConsoleInterpreterShouldSwitchNamespaces()
@@ -199,11 +204,12 @@ namespace InterpreteTests
             Assert.AreEqual(4, _outCommand.Command, "Command ID mismatch.");
 
             _prompt.ConsoleInput("using");
-            Assert.IsTrue(_log.StartsWith(UserSpaceTwo.ToUpper(), StringComparison.Ordinal), "Namespace switch mismatch.");
+            Assert.IsTrue(_log.StartsWith(UserSpaceTwo.ToUpper(), StringComparison.Ordinal),
+                "Namespace switch mismatch.");
         }
 
         /// <summary>
-        /// Consoles the interpreter should handle namespace switch full test.
+        ///     Consoles the interpreter should handle namespace switch full test.
         /// </summary>
         [TestMethod]
         public void ConsoleInterpreterShouldHandleNamespaceSwitchFullTest()
@@ -211,21 +217,21 @@ namespace InterpreteTests
             // Arrange
             var dctCommandOne = new Dictionary<int, InCommand>
             {
-                { 0, new InCommand { Command = "com1", ParameterCount = 2, Description = "Help com1" } },
-                { 1, new InCommand { Command = "com2", ParameterCount = 0, Description = "com2 Command Namespace 1" } },
-                { 2, new InCommand { Command = "com3", ParameterCount = 0, Description = "Special case no Parameter" } }
+                {0, new InCommand {Command = "com1", ParameterCount = 2, Description = "Help com1"}},
+                {1, new InCommand {Command = "com2", ParameterCount = 0, Description = "com2 Command Namespace 1"}},
+                {2, new InCommand {Command = "com3", ParameterCount = 0, Description = "Special case no Parameter"}}
             };
 
             var dctCommandTwo = new Dictionary<int, InCommand>
             {
-                { 1, new InCommand { Command = "com2", ParameterCount = 0, Description = "com2 Command Namespace 2" } },
-                { 4, new InCommand { Command = "Test", ParameterCount = 0, Description = "Here we go" } }
+                {1, new InCommand {Command = "com2", ParameterCount = 0, Description = "com2 Command Namespace 2"}},
+                {4, new InCommand {Command = "Test", ParameterCount = 0, Description = "Here we go"}}
             };
 
             var extension = new Dictionary<int, InCommand>
             {
-                { 1, new InCommand { Command = "Ext", ParameterCount = 0, Description = "Null" } },
-                { 4, new InCommand { Command = "Ext", ParameterCount = 1, Description = "Overload" } }
+                {1, new InCommand {Command = "Ext", ParameterCount = 0, Description = "Null"}},
+                {4, new InCommand {Command = "Ext", ParameterCount = 1, Description = "Overload"}}
             };
 
             _prompt.Initiate(dctCommandOne, "UserSpace 1");
@@ -251,7 +257,7 @@ namespace InterpreteTests
         }
 
         /// <summary>
-        /// Consoles the interpreter should handle container commands.
+        ///     Consoles the interpreter should handle container commands.
         /// </summary>
         [TestMethod]
         public void ConsoleInterpreterShouldHandleContainerCommands()
@@ -260,10 +266,13 @@ namespace InterpreteTests
             _prompt.ConsoleInput("Container{ Help() };");
 
             // Act & Assert
-            Assert.IsTrue(_log.Contains("Basic prompt, Version : 0.3. Author: Peter Geinitz (Wayfarer)"), "Help output mismatch.");
+            Assert.IsTrue(_log.Contains("Basic prompt, Version : 0.3. Author: Peter Geinitz (Wayfarer)"),
+                "Help output mismatch.");
 
             _prompt.ConsoleInput("Container{ coM1(1,2); com3(); ; ; --test comment; Help() };;;;");
-            Assert.IsTrue(_log.Contains("Basic prompt, Version : 0.3. Author: Peter Geinitz (Wayfarer), not context sensitive"), "Help output mismatch.");
+            Assert.IsTrue(
+                _log.Contains("Basic prompt, Version : 0.3. Author: Peter Geinitz (Wayfarer), not context sensitive"),
+                "Help output mismatch.");
             Assert.AreEqual("0", _prompt.Log[3], "Command result mismatch.");
         }
 

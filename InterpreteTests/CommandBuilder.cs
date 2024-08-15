@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using Interpreter;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -15,17 +14,17 @@ namespace InterpreteTests
         [TestMethod]
         public void ParseComplexCommand()
         {
-			//base, the command will be removed in the IrtParser
-			const string input = "Container{ " +
-                        "Print(hello World);" +
-                        "if(condition) { if(innerCondition) { com1; } else { com2; } } else { com3; }" +
-                        "Label(one);" +
-                        "Print(passed label one);" +
-                        "goto(two);" +
-                        "Print(Should not be printed);" +
-                        "Label(two);" +
-                        "Print(Finish);" +
-                        "}";
+            //base, the command will be removed in the IrtParser
+            const string input = "Container{ " +
+                                 "Print(hello World);" +
+                                 "if(condition) { if(innerCondition) { com1; } else { com2; } } else { com3; }" +
+                                 "Label(one);" +
+                                 "Print(passed label one);" +
+                                 "goto(two);" +
+                                 "Print(Should not be printed);" +
+                                 "Label(two);" +
+                                 "Print(Finish);" +
+                                 "}";
 
             var inputcleaned = "{ " +
                                "Print(hello World);" +
@@ -119,8 +118,6 @@ namespace InterpreteTests
             //}
 
             Trace.WriteLine(result.ToString());
-
-
         }
 
         //[TestMethod]
