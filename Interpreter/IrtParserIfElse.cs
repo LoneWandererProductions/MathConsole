@@ -5,14 +5,14 @@ using System.Linq;
 namespace Interpreter
 {
     /// <summary>
-    /// Basic if else Parser
+    ///     Basic if else Parser
     /// </summary>
     internal static class IrtParserIfElse
     {
         private static int _idCounter;
 
         /// <summary>
-        /// Generates if else commands.
+        ///     Generates if else commands.
         /// </summary>
         /// <param name="block">The block.</param>
         /// <returns>Our if clause ready to be added to Command Register</returns>
@@ -23,7 +23,8 @@ namespace Interpreter
             return GenerateFormattedOutput(categorizeIfElse);
         }
 
-        internal static List<(string Category, string Value)> GenerateFormattedOutput(List<(string Category, string Clause, string ParentCategory)> categorizedClauses)
+        internal static List<(string Category, string Value)> GenerateFormattedOutput(
+            List<(string Category, string Clause, string ParentCategory)> categorizedClauses)
         {
             var output = new List<(string Category, string Value)>();
             var openBlocks = new Stack<string>();
@@ -51,10 +52,8 @@ namespace Interpreter
                     openBlocks.Push(clause.Category);
 
                     // Process nested clauses
-                    foreach (var nestedClause in categorizedClauses.Where(c => c.ParentCategory == clause.Category).ToList())
-                    {
-                        ProcessClause(nestedClause);
-                    }
+                    foreach (var nestedClause in categorizedClauses.Where(c => c.ParentCategory == clause.Category)
+                                 .ToList()) ProcessClause(nestedClause);
 
                     output.Add(($"IF_LAYER_{layer}_END", ""));
                     openBlocks.Pop();
@@ -67,10 +66,8 @@ namespace Interpreter
                     openBlocks.Push(clause.Category);
 
                     // Process nested clauses
-                    foreach (var nestedClause in categorizedClauses.Where(c => c.ParentCategory == clause.Category).ToList())
-                    {
-                        ProcessClause(nestedClause);
-                    }
+                    foreach (var nestedClause in categorizedClauses.Where(c => c.ParentCategory == clause.Category)
+                                 .ToList()) ProcessClause(nestedClause);
 
                     output.Add(($"ELSE_LAYER_{layer}_END", ""));
                     openBlocks.Pop();
@@ -79,19 +76,18 @@ namespace Interpreter
 
             // Process only root elements (those without a parent)
             foreach (var rootClause in categorizedClauses.Where(c => string.IsNullOrEmpty(c.ParentCategory)).ToList())
-            {
                 ProcessClause(rootClause);
-            }
 
             return output;
         }
 
         /// <summary>
-        /// Categorizes if else clauses.
+        ///     Categorizes if else clauses.
         /// </summary>
         /// <param name="clauses">The clauses.</param>
         /// <returns>Converted List of parameters we will use to create a parameter list</returns>
-        internal static List<(string Category, string Clause, string ParentCategory)> CategorizeIfElseClauses(List<IfElseClause> clauses)
+        internal static List<(string Category, string Clause, string ParentCategory)> CategorizeIfElseClauses(
+            List<IfElseClause> clauses)
         {
             var tupleList = new List<(string Category, string Clause, string ParentCategory)>();
             var idToCategory = new Dictionary<string, string>();
@@ -129,7 +125,7 @@ namespace Interpreter
         }
 
         /// <summary>
-        /// Parses the given code string to extract all If-Else clauses.
+        ///     Parses the given code string to extract all If-Else clauses.
         /// </summary>
         /// <param name="code">The code string containing If-Else clauses.</param>
         /// <returns>A list of IfElseClause objects representing each If-Else clause found.</returns>
@@ -141,7 +137,7 @@ namespace Interpreter
         }
 
         /// <summary>
-        /// Recursively parses If-Else clauses from the code string.
+        ///     Recursively parses If-Else clauses from the code string.
         /// </summary>
         /// <param name="code">The code string containing If-Else clauses.</param>
         /// <param name="clauses">The list to which found If-Else clauses are added.</param>
@@ -177,7 +173,7 @@ namespace Interpreter
 
 
         /// <summary>
-        /// Creates an IfElseClause object from the extracted If-Else block.
+        ///     Creates an IfElseClause object from the extracted If-Else block.
         /// </summary>
         /// <param name="code">The original code string.</param>
         /// <param name="block">The extracted block containing If-Else code.</param>
@@ -215,7 +211,7 @@ namespace Interpreter
         }
 
         /// <summary>
-        /// Removes the outermost If-Else structure from the given code string.
+        ///     Removes the outermost If-Else structure from the given code string.
         /// </summary>
         /// <param name="code">The code string containing an If-Else structure.</param>
         /// <returns>The code string with the outer If-Else structure removed.</returns>
@@ -234,20 +230,19 @@ namespace Interpreter
             if (closeBraceIndex == -1) return code; // No closing brace found, return original code
 
             // Look for the next "if" keyword within this block
-            var nextIfIndex = code.IndexOf("if", openBraceIndex + 1, closeBraceIndex - (openBraceIndex + 1), StringComparison.OrdinalIgnoreCase);
+            var nextIfIndex = code.IndexOf("if", openBraceIndex + 1, closeBraceIndex - (openBraceIndex + 1),
+                StringComparison.OrdinalIgnoreCase);
 
             if (nextIfIndex == -1)
-            {
                 // No nested "if" found, return the entire block
                 return code.Substring(openBraceIndex + 1, closeBraceIndex - openBraceIndex - 1).Trim();
-            }
 
             // Otherwise, return the code from the nested "if" onward
             return code.Substring(nextIfIndex, closeBraceIndex - nextIfIndex + 1).Trim();
         }
 
         /// <summary>
-        /// Finds the index of the closing brace that matches the opening brace starting at the given index.
+        ///     Finds the index of the closing brace that matches the opening brace starting at the given index.
         /// </summary>
         /// <param name="code">The code string.</param>
         /// <param name="start">The index of the opening brace.</param>
@@ -257,7 +252,6 @@ namespace Interpreter
             var braceCount = 0;
 
             for (var i = start; i < code.Length; i++)
-            {
                 switch (code[i])
                 {
                     case '{':
@@ -269,13 +263,12 @@ namespace Interpreter
 
                         break;
                 }
-            }
 
             return -1;
         }
 
         /// <summary>
-        /// Generates the unique identifier.
+        ///     Generates the unique identifier.
         /// </summary>
         /// <returns>Count ups</returns>
         private static string GenerateUniqueId()

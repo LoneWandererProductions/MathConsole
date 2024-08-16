@@ -20,7 +20,7 @@ namespace Interpreter
     internal sealed class IrtHandleExtensionInternal : IDisposable
     {
         /// <summary>
-        /// My request identifier
+        ///     My request identifier
         /// </summary>
         private readonly string _myRequestId;
 
@@ -133,7 +133,7 @@ namespace Interpreter
             var command = IrtConst.InternCommands[key];
 
             using (var irtInternal =
-                new IrtHandleInternal(IrtConst.InternCommands, IrtConst.InternalNameSpace, _prompt))
+                   new IrtHandleInternal(IrtConst.InternCommands, IrtConst.InternalNameSpace, _prompt))
             {
                 irtInternal.ProcessInput(IrtConst.InternalHelpWithParameter, command.Command);
             }

@@ -25,7 +25,7 @@ namespace InterpreteTests
         [TestMethod]
         public void ParseMostSimpleIfElseStatementReturnsCorrectIfElseBlock()
         {
-            var inputParts = new List<string> {"if(condition){com1", "}else {com2", "}"};
+            var inputParts = new List<string> { "if(condition){com1", "}else {com2", "}" };
             var result = Experimental.Parse(inputParts);
             Assert.IsNotNull(result);
             Assert.AreEqual("condition", result.Condition);
@@ -39,7 +39,7 @@ namespace InterpreteTests
         [TestMethod]
         public void ParseMostIfElseCheckCornerCases()
         {
-            var inputParts = new List<string> {"if(condition){com1", "}else {com2", "} com3", "com4"};
+            var inputParts = new List<string> { "if(condition){com1", "}else {com2", "} com3", "com4" };
             var result = Experimental.Parse(inputParts);
             Assert.IsNotNull(result);
             Assert.AreEqual("condition", result.Condition);
@@ -53,7 +53,7 @@ namespace InterpreteTests
         [TestMethod]
         public void ParseSimpleIfElseStatementReturnsCorrectIfElseBlock()
         {
-            var inputParts = new List<string> {"if(condition){com1", "com2", "com3}", "else {com4}"};
+            var inputParts = new List<string> { "if(condition){com1", "com2", "com3}", "else {com4}" };
             var result = Experimental.Parse(inputParts);
             Assert.IsNotNull(result);
             Assert.AreEqual("condition", result.Condition);
@@ -67,7 +67,7 @@ namespace InterpreteTests
         [TestMethod]
         public void ParseNestedIfElseStatementReturnsCorrectIfElseBlock()
         {
-            var inputParts = new List<string> {"if(cond1){com1", "if(cond2){com2", "} else {com3}", "} else {com4}"};
+            var inputParts = new List<string> { "if(cond1){com1", "if(cond2){com2", "} else {com3}", "} else {com4}" };
             var result = Experimental.Parse(inputParts);
             Assert.IsNotNull(result);
             Assert.AreEqual("cond1", result.Condition);
@@ -82,7 +82,7 @@ namespace InterpreteTests
         [ExpectedException(typeof(InvalidOperationException))]
         public void ParseInvalidInputThrowsException()
         {
-            var inputParts = new List<string> {"if(condition){com1", "com2", "com3", "else {com4"};
+            var inputParts = new List<string> { "if(condition){com1", "com2", "com3", "else {com4" };
             Experimental.Parse(inputParts);
         }
 
@@ -93,7 +93,7 @@ namespace InterpreteTests
         [ExpectedException(typeof(InvalidOperationException))]
         public void ParseSingleClosingBraceThrowsException()
         {
-            var inputParts = new List<string> {"if(condition){com1", "com2}", "else"};
+            var inputParts = new List<string> { "if(condition){com1", "com2}", "else" };
             Experimental.Parse(inputParts);
         }
 
@@ -103,7 +103,8 @@ namespace InterpreteTests
         [TestMethod]
         public void ParseMultipleElseKeywordsReturnsCorrectBlock()
         {
-            var inputParts = new List<string> {"if(condition1){com1", "}else{if(condition2){com2", "}else{com3", "}}}"};
+            var inputParts = new List<string>
+                { "if(condition1){com1", "}else{if(condition2){com2", "}else{com3", "}}}" };
             var result = Experimental.Parse(inputParts);
             Assert.IsNotNull(result);
             Assert.AreEqual("condition1", result.Condition);
@@ -117,7 +118,7 @@ namespace InterpreteTests
         [TestMethod]
         public void ParseAdjacentIfElseBlocksReturnsCorrectBlock()
         {
-            var inputParts = new List<string> {"if(cond1){com1", "}else{if(cond2){com2", "}else{com3", "}}}"};
+            var inputParts = new List<string> { "if(cond1){com1", "}else{if(cond2){com2", "}else{com3", "}}}" };
             var result = Experimental.Parse(inputParts);
             Assert.IsNotNull(result);
             Assert.AreEqual("cond1", result.Condition);
@@ -131,7 +132,7 @@ namespace InterpreteTests
         [TestMethod]
         public void ParseIfWithoutElseReturnsCorrectBlock()
         {
-            var inputParts = new List<string> {"if(condition){com1", "com2", "com3}"};
+            var inputParts = new List<string> { "if(condition){com1", "com2", "com3}" };
             var result = Experimental.Parse(inputParts);
             Assert.IsNotNull(result);
             Assert.AreEqual("condition", result.Condition);
@@ -146,7 +147,7 @@ namespace InterpreteTests
         [TestMethod]
         public void ParseExtraWhitespacesReturnsCorrectBlock()
         {
-            var inputParts = new List<string> {"  if ( condition ) {  com1;  ", "com2; } else {  com3; }  "};
+            var inputParts = new List<string> { "  if ( condition ) {  com1;  ", "com2; } else {  com3; }  " };
             var result = Experimental.Parse(inputParts);
             Assert.IsNotNull(result);
             Assert.AreEqual("condition", result.Condition);
@@ -162,7 +163,7 @@ namespace InterpreteTests
         public void ParseIfElseWithCommentsReturnsCorrectBlock()
         {
             var inputParts = new List<string>
-                {"if(condition) { /* comment */ com1", "com2", "} else { // comment", "com3 }"};
+                { "if(condition) { /* comment */ com1", "com2", "} else { // comment", "com3 }" };
             var result = Experimental.Parse(inputParts);
             Assert.IsNotNull(result);
             Assert.AreEqual("condition", result.Condition);

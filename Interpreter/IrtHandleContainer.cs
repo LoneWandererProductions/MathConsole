@@ -219,11 +219,12 @@ namespace Interpreter
         }
 
         /// <summary>
-        /// Parses the line.
-        ///  I want to make a CategorizedDictionary out of a huge batch file. the id is just the line count, line separator is ;
-        /// the category is the actual key labels will get the Category LABEL goto GOTO and the value is just the code.
-        /// the more interesting part will be the nested if else the outer if and else will get the Category IF_1 and ELSE_1 this category will start at the if and end at the end of the else branch,
-        /// the nested ifs will be Called IF_n and ELSE_n +1 etc the idea is to generate a linked list with commands 
+        ///     Parses the line.
+        ///     I want to make a CategorizedDictionary out of a huge batch file. the id is just the line count, line separator is ;
+        ///     the category is the actual key labels will get the Category LABEL goto GOTO and the value is just the code.
+        ///     the more interesting part will be the nested if else the outer if and else will get the Category IF_1 and ELSE_1
+        ///     this category will start at the if and end at the end of the else branch,
+        ///     the nested ifs will be Called IF_n and ELSE_n +1 etc the idea is to generate a linked list with commands
         /// </summary>
         /// <param name="line">The line.</param>
         /// <param name="lineCount">The line count.</param>

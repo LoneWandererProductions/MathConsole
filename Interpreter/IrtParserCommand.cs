@@ -6,7 +6,7 @@ namespace Interpreter
     internal static class IrtParserCommand
     {
         /// <summary>
-        /// Builds a categorized dictionary of commands from the given input string.
+        ///     Builds a categorized dictionary of commands from the given input string.
         /// </summary>
         /// <param name="input">The input string containing command definitions.</param>
         /// <returns>A CategorizedDictionary containing the parsed commands.</returns>
@@ -36,10 +36,7 @@ namespace Interpreter
                 {
                     // Extract the command block before the if-statement
                     var beforeIf = input.Substring(0, ifIndex).Trim();
-                    if (!string.IsNullOrWhiteSpace(beforeIf))
-                    {
-                        formattedBlocks.Add(beforeIf);
-                    }
+                    if (!string.IsNullOrWhiteSpace(beforeIf)) formattedBlocks.Add(beforeIf);
 
                     // Isolate the if-else block and the remaining input
                     input = input.Substring(ifIndex);
@@ -78,7 +75,7 @@ namespace Interpreter
         }
 
         /// <summary>
-        /// Gets the type of the command.
+        ///     Gets the type of the command.
         /// </summary>
         /// <param name="command">The command.</param>
         /// <returns>The Command Type</returns>

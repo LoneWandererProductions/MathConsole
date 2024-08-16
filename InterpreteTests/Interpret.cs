@@ -56,9 +56,9 @@ namespace InterpreteTests
         /// </summary>
         private static readonly Dictionary<int, InCommand> DctCommandOne = new()
         {
-            {0, new InCommand {Command = "com1", ParameterCount = 2, Description = "Help com1"}},
-            {1, new InCommand {Command = "com2", ParameterCount = 3, Description = "Help com2"}},
-            {2, new InCommand {Command = "com3", ParameterCount = 0, Description = "Special case no Parameter"}}
+            { 0, new InCommand { Command = "com1", ParameterCount = 2, Description = "Help com1" } },
+            { 1, new InCommand { Command = "com2", ParameterCount = 3, Description = "Help com2" } },
+            { 2, new InCommand { Command = "com3", ParameterCount = 0, Description = "Special case no Parameter" } }
         };
 
         /// <summary>
@@ -66,7 +66,7 @@ namespace InterpreteTests
         /// </summary>
         private static readonly Dictionary<int, InCommand> DctCommandTwo = new()
         {
-            {4, new InCommand {Command = "Test", ParameterCount = 0, Description = "Here we go"}}
+            { 4, new InCommand { Command = "Test", ParameterCount = 0, Description = "Here we go" } }
         };
 
         /// <summary>
@@ -167,8 +167,8 @@ namespace InterpreteTests
             // Arrange
             var commands = new Dictionary<int, InCommand>
             {
-                {0, new InCommand {Command = "com1", ParameterCount = 0, Description = "Help com1"}},
-                {1, new InCommand {Command = "com1", ParameterCount = 1, Description = "Help com2"}}
+                { 0, new InCommand { Command = "com1", ParameterCount = 0, Description = "Help com1" } },
+                { 1, new InCommand { Command = "com1", ParameterCount = 1, Description = "Help com2" } }
             };
 
             _prompt.Initiate(commands, UserSpaceOne);
@@ -217,21 +217,21 @@ namespace InterpreteTests
             // Arrange
             var dctCommandOne = new Dictionary<int, InCommand>
             {
-                {0, new InCommand {Command = "com1", ParameterCount = 2, Description = "Help com1"}},
-                {1, new InCommand {Command = "com2", ParameterCount = 0, Description = "com2 Command Namespace 1"}},
-                {2, new InCommand {Command = "com3", ParameterCount = 0, Description = "Special case no Parameter"}}
+                { 0, new InCommand { Command = "com1", ParameterCount = 2, Description = "Help com1" } },
+                { 1, new InCommand { Command = "com2", ParameterCount = 0, Description = "com2 Command Namespace 1" } },
+                { 2, new InCommand { Command = "com3", ParameterCount = 0, Description = "Special case no Parameter" } }
             };
 
             var dctCommandTwo = new Dictionary<int, InCommand>
             {
-                {1, new InCommand {Command = "com2", ParameterCount = 0, Description = "com2 Command Namespace 2"}},
-                {4, new InCommand {Command = "Test", ParameterCount = 0, Description = "Here we go"}}
+                { 1, new InCommand { Command = "com2", ParameterCount = 0, Description = "com2 Command Namespace 2" } },
+                { 4, new InCommand { Command = "Test", ParameterCount = 0, Description = "Here we go" } }
             };
 
             var extension = new Dictionary<int, InCommand>
             {
-                {1, new InCommand {Command = "Ext", ParameterCount = 0, Description = "Null"}},
-                {4, new InCommand {Command = "Ext", ParameterCount = 1, Description = "Overload"}}
+                { 1, new InCommand { Command = "Ext", ParameterCount = 0, Description = "Null" } },
+                { 4, new InCommand { Command = "Ext", ParameterCount = 1, Description = "Overload" } }
             };
 
             _prompt.Initiate(dctCommandOne, "UserSpace 1");

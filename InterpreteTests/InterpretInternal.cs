@@ -27,8 +27,8 @@ namespace InterpreteTests
         {
             return new Dictionary<int, InCommand>
             {
-                {1, new InCommand {Command = "CMD1"}},
-                {2, new InCommand {Command = "CMD2"}}
+                { 1, new InCommand { Command = "CMD1" } },
+                { 2, new InCommand { Command = "CMD2" } }
             };
         }
 
@@ -95,7 +95,7 @@ namespace InterpreteTests
         {
             var commands = new Dictionary<int, InCommand>
             {
-                {1, new InCommand {Command = "command", ParameterCount = 2}}
+                { 1, new InCommand { Command = "command", ParameterCount = 2 } }
             };
 
             var result = IrtKernel.CheckOverload("command", 2, commands);
@@ -110,7 +110,7 @@ namespace InterpreteTests
         {
             var commands = new Dictionary<int, InCommand>
             {
-                {1, new InCommand {Command = "command", ParameterCount = 2}}
+                { 1, new InCommand { Command = "command", ParameterCount = 2 } }
             };
 
             var result = IrtKernel.CheckOverload("command", 3, commands);
@@ -163,7 +163,7 @@ namespace InterpreteTests
         {
             var commands = new Dictionary<int, InCommand>
             {
-                {1, new InCommand {Command = "TEST"}}
+                { 1, new InCommand { Command = "TEST" } }
             };
 
             var result = IrtKernel.CheckForKeyWord("INVALID", commands);
@@ -200,8 +200,8 @@ namespace InterpreteTests
         public void CheckMultipleShouldReturnTrueForBalancedMultipleParentheses()
         {
             const string input = "{(a + b) * [c - d]}";
-            var openParenthesis = new[] {'(', '{', '['};
-            var closeParenthesis = new[] {')', '}', ']'};
+            var openParenthesis = new[] { '(', '{', '[' };
+            var closeParenthesis = new[] { ')', '}', ']' };
             var result = IrtKernel.CheckMultipleParenthesis(input, openParenthesis, closeParenthesis);
             Assert.IsTrue(result);
         }
@@ -213,8 +213,8 @@ namespace InterpreteTests
         public void CheckMultipleShouldReturnFalseForUnbalancedMultipleParentheses()
         {
             const string input = "{(a + b) * [c - d}";
-            var openParenthesis = new[] {'(', '{', '['};
-            var closeParenthesis = new[] {')', '}', ']'};
+            var openParenthesis = new[] { '(', '{', '[' };
+            var closeParenthesis = new[] { ')', '}', ']' };
             var result = IrtKernel.CheckMultipleParenthesis(input, openParenthesis, closeParenthesis);
             Assert.IsFalse(result);
         }
@@ -238,8 +238,8 @@ namespace InterpreteTests
         {
             var commands = new Dictionary<int, InCommand>
             {
-                {1, new InCommand {Command = "TEST"}},
-                {2, new InCommand {Command = "VALID"}}
+                { 1, new InCommand { Command = "TEST" } },
+                { 2, new InCommand { Command = "VALID" } }
             };
 
             var result = IrtKernel.CheckForKeyWord("VALID", commands);
@@ -253,7 +253,7 @@ namespace InterpreteTests
         public void SplitParameterSingleParameterShouldReturnSingleParameter()
         {
             var result = IrtKernel.SplitParameter("parameter1", ',');
-            CollectionAssert.AreEqual(new List<string> {"parameter1"}, result);
+            CollectionAssert.AreEqual(new List<string> { "parameter1" }, result);
         }
 
         /// <summary>
@@ -263,7 +263,7 @@ namespace InterpreteTests
         public void SplitParameterMultipleParametersShouldReturnAllParameters()
         {
             var result = IrtKernel.SplitParameter("parameter1,parameter2,parameter3", ',');
-            CollectionAssert.AreEqual(new List<string> {"parameter1", "parameter2", "parameter3"}, result);
+            CollectionAssert.AreEqual(new List<string> { "parameter1", "parameter2", "parameter3" }, result);
         }
 
         /// <summary>
@@ -273,7 +273,7 @@ namespace InterpreteTests
         public void SplitParameterWithSpacesShouldTrimSpaces()
         {
             var result = IrtKernel.SplitParameter(" parameter1 , parameter2 , parameter3 ", ',');
-            CollectionAssert.AreEqual(new List<string> {"parameter1", "parameter2", "parameter3"}, result);
+            CollectionAssert.AreEqual(new List<string> { "parameter1", "parameter2", "parameter3" }, result);
         }
 
         /// <summary>
@@ -283,7 +283,7 @@ namespace InterpreteTests
         public void SplitParameterEmptyParametersShouldRemoveEmptyParameters()
         {
             var result = IrtKernel.SplitParameter("parameter1,,parameter3", ',');
-            CollectionAssert.AreEqual(new List<string> {"parameter1", "parameter3"}, result);
+            CollectionAssert.AreEqual(new List<string> { "parameter1", "parameter3" }, result);
         }
 
         /// <summary>
@@ -293,7 +293,7 @@ namespace InterpreteTests
         public void SplitParameterEmptyAndWhitespaceParametersShouldRemoveEmptyAndWhitespaceParameters()
         {
             var result = IrtKernel.SplitParameter("parameter1, ,parameter3", ',');
-            CollectionAssert.AreEqual(new List<string> {"parameter1", "parameter3"}, result);
+            CollectionAssert.AreEqual(new List<string> { "parameter1", "parameter3" }, result);
         }
 
         /// <summary>
@@ -303,7 +303,7 @@ namespace InterpreteTests
         public void SplitParameterCustomSplitterShouldSplitByCustomSplitter()
         {
             var result = IrtKernel.SplitParameter("parameter1|parameter2|parameter3", '|');
-            CollectionAssert.AreEqual(new List<string> {"parameter1", "parameter2", "parameter3"}, result);
+            CollectionAssert.AreEqual(new List<string> { "parameter1", "parameter2", "parameter3" }, result);
         }
 
         /// <summary>
@@ -313,7 +313,7 @@ namespace InterpreteTests
         public void SampleSplitter()
         {
             var result = IrtKernel.SplitParameter("help;;;", ';');
-            CollectionAssert.AreEqual(new List<string> {"help"}, result);
+            CollectionAssert.AreEqual(new List<string> { "help" }, result);
         }
 
         /// <summary>
@@ -764,7 +764,7 @@ namespace InterpreteTests
             // Arrange
             var commands = new Dictionary<int, InCommand>
             {
-                {1, new InCommand {ParameterCount = 2}}
+                { 1, new InCommand { ParameterCount = 2 } }
             };
 
             // Act
@@ -783,7 +783,7 @@ namespace InterpreteTests
             // Arrange
             var commands = new Dictionary<int, InCommand>
             {
-                {1, new InCommand {ParameterCount = 2}}
+                { 1, new InCommand { ParameterCount = 2 } }
             };
 
             // Act
@@ -886,7 +886,7 @@ namespace InterpreteTests
             // Arrange
             var commands = new Dictionary<int, InCommand>
             {
-                {1, new InCommand {Command = "COMMAND"}}
+                { 1, new InCommand { Command = "COMMAND" } }
             };
 
             // Act
@@ -905,7 +905,7 @@ namespace InterpreteTests
             // Arrange
             var commands = new Dictionary<int, InCommand>
             {
-                {1, new InCommand {Command = "COMMAND"}}
+                { 1, new InCommand { Command = "COMMAND" } }
             };
 
             // Act
@@ -925,9 +925,9 @@ namespace InterpreteTests
             const string input = "Command1; Command2; Command3";
             var expected = new CategorizedDictionary<int, string>
             {
-                {"Command", 0, "Command1"},
-                {"Command", 1, "Command2"},
-                {"Command", 2, "Command3"}
+                { "Command", 0, "Command1" },
+                { "Command", 1, "Command2" },
+                { "Command", 2, "Command3" }
             };
 
             // Act
@@ -948,9 +948,9 @@ namespace InterpreteTests
             const string input = "Command1; if (condition) { Command2; } Command3";
             var expected = new CategorizedDictionary<int, string>
             {
-                {"Command", 0, "Command1"},
-                {"If", 1, "if (condition) { Command2; }"},
-                {"Command", 2, "Command3"}
+                { "Command", 0, "Command1" },
+                { "If", 1, "if (condition) { Command2; }" },
+                { "Command", 2, "Command3" }
             };
 
             // Act
@@ -972,10 +972,10 @@ namespace InterpreteTests
                 "Command1; if( condition1) { Command2; } else { Command3; } if (condition2 ) { Command4; }";
             var expected = new CategorizedDictionary<int, string>
             {
-                {"Command", 0, "Command1"},
-                {"If", 1, "if( condition1) { Command2; }"},
-                {"Else", 2, "else { Command3; }"},
-                {"If", 3, "if (condition2 ) { Command4; }"}
+                { "Command", 0, "Command1" },
+                { "If", 1, "if( condition1) { Command2; }" },
+                { "Else", 2, "else { Command3; }" },
+                { "If", 3, "if (condition2 ) { Command4; }" }
             };
 
             // Act
@@ -1014,7 +1014,7 @@ namespace InterpreteTests
             const string input = "if(condition)";
             var expected = new CategorizedDictionary<int, string>
             {
-                {"Error", 0, "if(condition)"}
+                { "Error", 0, "if(condition)" }
             };
 
             // Act
@@ -1035,9 +1035,9 @@ namespace InterpreteTests
             const string input = "Command1; Command2; Command1";
             var expected = new CategorizedDictionary<int, string>
             {
-                {"Command", 0, "Command1"},
-                {"Command", 1, "Command2"},
-                {"Command", 2, "Command1"} // Ensure the last Command1 is present
+                { "Command", 0, "Command1" },
+                { "Command", 1, "Command2" },
+                { "Command", 2, "Command1" } // Ensure the last Command1 is present
             };
 
             // Act
@@ -1058,8 +1058,8 @@ namespace InterpreteTests
             const string input = "  Command1 ;  if (condition) { Command2; }  ";
             var expected = new CategorizedDictionary<int, string>
             {
-                {"Command", 0, "Command1"},
-                {"If", 1, "if (condition) { Command2; }"}
+                { "Command", 0, "Command1" },
+                { "If", 1, "if (condition) { Command2; }" }
             };
 
             // Act
@@ -1080,7 +1080,9 @@ namespace InterpreteTests
             const string input = "if(condition { Command1; }";
             var expected = new CategorizedDictionary<int, string>
             {
-                {"Error", 0, "if(condition { Command1; }"} // Expecting the whole input to be treated as an error block
+                {
+                    "Error", 0, "if(condition { Command1; }"
+                } // Expecting the whole input to be treated as an error block
             };
 
             // Act
@@ -1099,8 +1101,8 @@ namespace InterpreteTests
         {
             // Arrange
             const string input = "(([]))";
-            var openParenthesis = new[] {'(', '['};
-            var closeParenthesis = new[] {')', ']'};
+            var openParenthesis = new[] { '(', '[' };
+            var closeParenthesis = new[] { ')', ']' };
 
             // Act
             var result = IrtKernel.CheckMultipleParenthesis(input, openParenthesis, closeParenthesis);
@@ -1117,8 +1119,8 @@ namespace InterpreteTests
         {
             // Arrange
             const string input = "{[()]}";
-            var openParenthesis = new[] {'{', '[', '('};
-            var closeParenthesis = new[] {'}', ']', ')'};
+            var openParenthesis = new[] { '{', '[', '(' };
+            var closeParenthesis = new[] { '}', ']', ')' };
 
             // Act
             var result = IrtKernel.CheckMultipleParenthesis(input, openParenthesis, closeParenthesis);
@@ -1135,8 +1137,8 @@ namespace InterpreteTests
         {
             // Arrange
             const string input = "([";
-            var openParenthesis = new[] {'(', '['};
-            var closeParenthesis = new[] {')', ']'};
+            var openParenthesis = new[] { '(', '[' };
+            var closeParenthesis = new[] { ')', ']' };
 
             // Act
             var result = IrtKernel.CheckMultipleParenthesis(input, openParenthesis, closeParenthesis);
@@ -1153,8 +1155,8 @@ namespace InterpreteTests
         {
             // Arrange
             const string input = "())";
-            var openParenthesis = new[] {'('};
-            var closeParenthesis = new[] {')'};
+            var openParenthesis = new[] { '(' };
+            var closeParenthesis = new[] { ')' };
 
             // Act
             var result = IrtKernel.CheckMultipleParenthesis(input, openParenthesis, closeParenthesis);
@@ -1171,8 +1173,8 @@ namespace InterpreteTests
         {
             // Arrange
             const string input = "({[)]}";
-            var openParenthesis = new[] {'{', '[', '('};
-            var closeParenthesis = new[] {'}', ']', ')'};
+            var openParenthesis = new[] { '{', '[', '(' };
+            var closeParenthesis = new[] { '}', ']', ')' };
 
             // Act
             var result = IrtKernel.CheckMultipleParenthesis(input, openParenthesis, closeParenthesis);
@@ -1189,8 +1191,8 @@ namespace InterpreteTests
         {
             // Arrange
             const string input = "";
-            var openParenthesis = new[] {'(', '['};
-            var closeParenthesis = new[] {')', ']'};
+            var openParenthesis = new[] { '(', '[' };
+            var closeParenthesis = new[] { ')', ']' };
 
             // Act
             var result = IrtKernel.CheckMultipleParenthesis(input, openParenthesis, closeParenthesis);
@@ -1207,8 +1209,8 @@ namespace InterpreteTests
         {
             // Arrange
             const string input = "[";
-            var openParenthesis = new[] {'['};
-            var closeParenthesis = new[] {']'};
+            var openParenthesis = new[] { '[' };
+            var closeParenthesis = new[] { ']' };
 
             // Act
             var result = IrtKernel.CheckMultipleParenthesis(input, openParenthesis, closeParenthesis);
@@ -1225,8 +1227,8 @@ namespace InterpreteTests
         {
             // Arrange
             const string input = "({[]})";
-            var openParenthesis = new[] {'{', '[', '('};
-            var closeParenthesis = new[] {'}', ']', ')'};
+            var openParenthesis = new[] { '{', '[', '(' };
+            var closeParenthesis = new[] { '}', ']', ')' };
 
             // Act
             var result = IrtKernel.CheckMultipleParenthesis(input, openParenthesis, closeParenthesis);

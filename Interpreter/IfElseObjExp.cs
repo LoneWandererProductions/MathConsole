@@ -5,7 +5,7 @@ namespace Interpreter
     internal static class IfElseObjExp
     {
         /// <summary>
-        /// Parses the given code string to extract all If-Else clauses.
+        ///     Parses the given code string to extract all If-Else clauses.
         /// </summary>
         /// <param name="input"></param>
         /// <returns>A list of IfElseClause objects representing each If-Else clause found.</returns>

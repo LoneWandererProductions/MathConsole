@@ -231,7 +231,7 @@ namespace Interpreter
             foreach (var (key, inCommand) in com)
             {
                 if (string.Equals(input.ToUpperInvariant(), inCommand.Command.ToUpperInvariant(),
-                    StringComparison.Ordinal))
+                        StringComparison.Ordinal))
                 {
                     return
                         key;
@@ -405,8 +405,8 @@ namespace Interpreter
                 var openParenIndex = position + keyword.Length;
                 while (openParenIndex < input.Length && char.IsWhiteSpace(input[openParenIndex])) openParenIndex++;
 
-                if (openParenIndex < input.Length && input[openParenIndex] == IrtConst.BaseOpen ||
-                    openParenIndex < input.Length && input[openParenIndex] == IrtConst.AdvancedOpen)
+                if ((openParenIndex < input.Length && input[openParenIndex] == IrtConst.BaseOpen) ||
+                    (openParenIndex < input.Length && input[openParenIndex] == IrtConst.AdvancedOpen))
                     return position;
 
                 position = input.IndexOf(keyword, position + 1, StringComparison.OrdinalIgnoreCase);
@@ -639,8 +639,8 @@ namespace Interpreter
         /// </returns>
         private static bool IsValidIfStatement(string input)
         {
-            var openParenthesis = new[] {IrtConst.BaseOpen, IrtConst.AdvancedOpen};
-            var closeParenthesis = new[] {IrtConst.BaseClose, IrtConst.AdvancedClose};
+            var openParenthesis = new[] { IrtConst.BaseOpen, IrtConst.AdvancedOpen };
+            var closeParenthesis = new[] { IrtConst.BaseClose, IrtConst.AdvancedClose };
 
             // Ensure parentheses are balanced
             if (!CheckMultipleParenthesis(input, openParenthesis, closeParenthesis))
@@ -649,7 +649,8 @@ namespace Interpreter
             }
 
             // Check if the string starts with "if(" and ends with ")"
-            if (input.StartsWith(IrtConst.InternalIf, StringComparison.CurrentCultureIgnoreCase) && !input.EndsWith(IrtConst.BaseClose.ToString(), StringComparison.Ordinal))
+            if (input.StartsWith(IrtConst.InternalIf, StringComparison.CurrentCultureIgnoreCase) &&
+                !input.EndsWith(IrtConst.BaseClose.ToString(), StringComparison.Ordinal))
             {
                 // Extract the content between "if(" and ")"
                 var condition = ExtractCondition(input, IrtConst.InternalIf);

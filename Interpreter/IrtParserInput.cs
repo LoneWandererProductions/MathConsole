@@ -21,11 +21,6 @@ namespace Interpreter
     internal sealed class IrtParserInput : IDisposable
     {
         /// <summary>
-        /// My request identifier
-        /// </summary>
-        private readonly string _myRequestId;
-
-        /// <summary>
         ///     Command Register
         /// </summary>
         private static Dictionary<int, InCommand> _com;
@@ -41,9 +36,19 @@ namespace Interpreter
         private static Dictionary<int, InCommand> _extension;
 
         /// <summary>
+        ///     My request identifier
+        /// </summary>
+        private readonly string _myRequestId;
+
+        /// <summary>
         ///     The prompt
         /// </summary>
         private readonly Prompt _prompt;
+
+        /// <summary>
+        ///     The user feedback
+        /// </summary>
+        private readonly Dictionary<int, UserFeedback> _userFeedback;
 
         /// <summary>
         ///     The disposed
@@ -71,11 +76,6 @@ namespace Interpreter
         private IrtHandleInternal _irtHandleInternal;
 
         /// <summary>
-        /// The user feedback
-        /// </summary>
-        private readonly Dictionary<int, UserFeedback> _userFeedback;
-
-        /// <summary>
         ///     Prevents a default instance of the <see cref="IrtParserInput" /> class from being created.
         /// </summary>
         private IrtParserInput()
@@ -83,7 +83,7 @@ namespace Interpreter
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="IrtParserInput" /> class.
+        ///     Initializes a new instance of the <see cref="IrtParserInput" /> class.
         /// </summary>
         /// <param name="prompt">The prompt.</param>
         /// <param name="userFeedback">The optional user feedback.</param>
@@ -356,10 +356,10 @@ namespace Interpreter
         }
 
         /// <summary>
-        /// Handles the feedback.
+        ///     Handles the feedback.
         /// </summary>
         /// <param name="sender">The sender.</param>
-        /// <param name="e">The <see cref="IrtFeedbackInputEventArgs"/> instance containing the event data.</param>
+        /// <param name="e">The <see cref="IrtFeedbackInputEventArgs" /> instance containing the event data.</param>
         private void HandleFeedback(object? sender, IrtFeedbackInputEventArgs e)
         {
             if (e.RequestId != _myRequestId) return;

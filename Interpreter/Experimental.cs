@@ -20,7 +20,7 @@ namespace Interpreter
     public static class Experimental
     {
         /// <summary>
-        /// Parses the given input parts to create an IrtIfElseBlock.
+        ///     Parses the given input parts to create an IrtIfElseBlock.
         /// </summary>
         /// <param name="inputParts">The input parts to parse.</param>
         /// <returns>An IrtIfElseBlock representing the parsed If-Else structure.</returns>
@@ -91,41 +91,36 @@ namespace Interpreter
                     switch (token.ToUpperInvariant())
                     {
                         case "}":
-                            if (!inElse)
+                            if (!inElse) break;
+
+                            if (stack.Count == 0)
+                                throw new InvalidOperationException("Invalid input string: unmatched closing brace");
+
+                            var (parentCondition, parentIfPart, parentElsePart, parentInElse) = stack.Pop();
+
+                            innerIfElseBlock = new IrtIfElseBlock
                             {
-                                break;
-                            }
+                                Condition = currentCondition,
+                                IfClause = currentIfClause.ToString().Trim(),
+                                ElseClause = currentElseClause.ToString().Trim()
+                            };
+
+                            var nestedIfElse =
+                                $"if({innerIfElseBlock.Condition}) {{ {innerIfElseBlock.IfClause} }} else {{ {innerIfElseBlock.ElseClause} }}";
+
+                            if (parentCondition == null)
+                                return innerIfElseBlock;
+
+                            if (parentInElse)
+                                parentElsePart.Append(nestedIfElse);
                             else
-                            {
-                                if (stack.Count == 0)
-                                    throw new InvalidOperationException("Invalid input string: unmatched closing brace");
+                                parentIfPart.Append(nestedIfElse);
 
-                                var (parentCondition, parentIfPart, parentElsePart, parentInElse) = stack.Pop();
-
-                                innerIfElseBlock = new IrtIfElseBlock
-                                {
-                                    Condition = currentCondition,
-                                    IfClause = currentIfClause.ToString().Trim(),
-                                    ElseClause = currentElseClause.ToString().Trim()
-                                };
-
-                                var nestedIfElse =
-                                    $"if({innerIfElseBlock.Condition}) {{ {innerIfElseBlock.IfClause} }} else {{ {innerIfElseBlock.ElseClause} }}";
-
-                                if (parentCondition == null)
-                                    return innerIfElseBlock;
-
-                                if (parentInElse)
-                                    parentElsePart.Append(nestedIfElse);
-                                else
-                                    parentIfPart.Append(nestedIfElse);
-
-                                currentCondition = parentCondition;
-                                currentIfClause = parentIfPart;
-                                currentElseClause = parentElsePart;
-                                inElse = parentInElse;
-                                break;
-                            }
+                            currentCondition = parentCondition;
+                            currentIfClause = parentIfPart;
+                            currentElseClause = parentElsePart;
+                            inElse = parentInElse;
+                            break;
 
                         case "{":
                             break;
@@ -146,7 +141,7 @@ namespace Interpreter
         }
 
         /// <summary>
-        /// Tokenize the input string into individual tokens for parsing.
+        ///     Tokenize the input string into individual tokens for parsing.
         /// </summary>
         /// <param name="input">The input string to tokenize.</param>
         /// <returns>A collection of tokens extracted from the input string.</returns>
@@ -158,7 +153,6 @@ namespace Interpreter
             string cache;
 
             for (var i = 0; i < input.Length; i++)
-            {
                 switch (input[i])
                 {
                     case '{':
@@ -185,7 +179,8 @@ namespace Interpreter
 
                             var endIdx = input.IndexOf(')', i);
                             if (endIdx == -1)
-                                throw new InvalidOperationException("Invalid input string: missing closing parenthesis for 'if'");
+                                throw new InvalidOperationException(
+                                    "Invalid input string: missing closing parenthesis for 'if'");
 
                             tokens.Add(input.Substring(i, endIdx - i + 1));
                             i = endIdx;
@@ -209,7 +204,6 @@ namespace Interpreter
 
                         break;
                 }
-            }
 
             cache = sb.ToString();
             if (!string.IsNullOrWhiteSpace(cache)) tokens.Add(cache);

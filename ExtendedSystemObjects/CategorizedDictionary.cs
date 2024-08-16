@@ -35,19 +35,32 @@ namespace ExtendedSystemObjects
         /// </summary>
         public int Count => _data.Count;
 
-		/// <summary>
-		/// Gets the keys.
-		/// </summary>
-		/// <returns>List of Keys</returns>
-		public IEnumerable<TK> GetKeys() => _data.Keys;
+        /// <inheritdoc />
+        /// <summary>
+        ///     Returns an enumerator for iterating over the dictionary's key-value pairs.
+        /// </summary>
+        /// <returns>An enumerator for the dictionary.</returns>
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
 
-		/// <summary>
-		///     Adds a value to the dictionary under the specified category.
-		/// </summary>
-		/// <param name="category">The category under which to add the key-value pair. Can be null.</param>
-		/// <param name="key">The key of the value to add.</param>
-		/// <param name="value">The value to add.</param>
-		public void Add(string category, TK key, TV value)
+        /// <summary>
+        ///     Gets the keys.
+        /// </summary>
+        /// <returns>List of Keys</returns>
+        public IEnumerable<TK> GetKeys()
+        {
+            return _data.Keys;
+        }
+
+        /// <summary>
+        ///     Adds a value to the dictionary under the specified category.
+        /// </summary>
+        /// <param name="category">The category under which to add the key-value pair. Can be null.</param>
+        /// <param name="key">The key of the value to add.</param>
+        /// <param name="value">The value to add.</param>
+        public void Add(string category, TK key, TV value)
         {
             _data[key] = (category, value);
         }
@@ -175,16 +188,6 @@ namespace ExtendedSystemObjects
         public IEnumerator<KeyValuePair<TK, TV>> GetEnumerator()
         {
             return _data.Select(entry => new KeyValuePair<TK, TV>(entry.Key, entry.Value.Value)).GetEnumerator();
-        }
-
-        /// <inheritdoc />
-        /// <summary>
-        ///     Returns an enumerator for iterating over the dictionary's key-value pairs.
-        /// </summary>
-        /// <returns>An enumerator for the dictionary.</returns>
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
         }
     }
 }

@@ -59,7 +59,7 @@ namespace Interpreter
         private WindowPrompt _prompt;
 
         /// <summary>
-        /// The user feedback
+        ///     The user feedback
         /// </summary>
         private Dictionary<int, UserFeedback> _userFeedback;
 
@@ -77,9 +77,6 @@ namespace Interpreter
         ///     Send Message to the Subscriber
         /// </summary>
         public EventHandler<string> SendLogs { get; set; }
-
-        // Event to handle feedback, using EventHandler for proper event pattern
-        internal event EventHandler<IrtFeedbackInputEventArgs> HandleFeedback;
 
         /// <summary>
         ///     Gets the log.
@@ -201,6 +198,9 @@ namespace Interpreter
             SendLogs?.Invoke(nameof(Callback), message);
         }
 
+        // Event to handle feedback, using EventHandler for proper event pattern
+        internal event EventHandler<IrtFeedbackInputEventArgs> HandleFeedback;
+
         /// <summary>Switches the name spaces.</summary>
         /// <param name="space">The Namespace we would like to use.</param>
         internal void SwitchNameSpaces(string space)
@@ -304,7 +304,7 @@ namespace Interpreter
         }
 
         /// <summary>
-        /// Requests the feedback.
+        ///     Requests the feedback.
         /// </summary>
         /// <param name="feedbackRequest">The feedback request.</param>
         internal void RequestFeedback(IrtFeedback feedbackRequest)
