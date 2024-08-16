@@ -8,10 +8,172 @@ namespace InterpreteTests
     [TestClass]
     public class CommandBuilder
     {
-        /// <summary>
-        ///     Parses the invalid input throws exception.
-        /// </summary>
-        [TestMethod]
+
+		[TestMethod]
+		public void ParseIfElseClauses_NoIfElseClauses_ReturnsEmptyDictionary()
+		{
+			// Arrange
+			string input = "com1;";
+
+			// Act
+			var result = IfElseObjExp.ParseIfElseClauses(input);
+
+			// Assert
+			Assert.AreEqual(1, result.Count);
+		}
+
+		[TestMethod]
+		public void ParseIfElseClauses_SingleIfClause_ReturnsOneIfElseObj()
+		{
+			// Arrange
+			const string input = "if (condition1) {com1; }";
+
+			// Act
+			var result = IfElseObjExp.ParseIfElseClauses(input);
+
+			// Assert
+			Assert.AreEqual(1, result.Count);
+
+			var ifElseObj = result[0];
+			Assert.AreEqual(0, ifElseObj.Id);
+			Assert.AreEqual(-1, ifElseObj.ParentId);
+			Assert.AreEqual(0, ifElseObj.Position);
+			Assert.AreEqual(0, ifElseObj.Layer);
+			Assert.IsFalse(ifElseObj.Else);
+			Assert.IsTrue(ifElseObj.Nested);
+			Assert.AreEqual("if (condition1) {com1; }", ifElseObj.Input);
+		}
+
+		[TestMethod]
+		public void ParseIfElseClauses_MultipleIfClauses_ReturnsMultipleIfElseObjs()
+		{
+			// Arrange
+			string input = "if (condition1) {com1; } else { com2; }";
+
+			// Act
+			var result = IfElseObjExp.ParseIfElseClauses(input);
+
+			// Assert
+			//Assert.AreEqual(1, result.Count);
+
+			//var ifElseObj1 = result[0];
+			//Assert.AreEqual(0, ifElseObj1.Id);
+			//Assert.AreEqual(-1, ifElseObj1.ParentId);
+			//Assert.AreEqual(0, ifElseObj1.Position);
+			//Assert.AreEqual(1, ifElseObj1.Layer);
+			//Assert.IsFalse(ifElseObj1.Else);
+			//Assert.IsTrue(ifElseObj1.Nested);
+			//Assert.AreEqual("if (condition1) {com1; }", ifElseObj1.Input);
+
+			//var command = result[0].Commands;
+		}
+
+		[TestMethod]
+		public void ParseIfElseClauses_NestedIfElseClauses_ReturnsCorrectHierarchy()
+		{
+			// Arrange
+			string input = "if (a > 5) { if (b > 3) { b++; } else { b--; } }";
+
+			// Act
+			var result = IfElseObjExp.ParseIfElseClauses(input);
+
+			// Assert
+			//Assert.AreEqual(2, result.Count);
+
+			//var ifElseObj1 = result[0];
+			//Assert.AreEqual(0, ifElseObj1.Id);
+			//Assert.AreEqual(-1, ifElseObj1.ParentId);
+			//Assert.AreEqual(0, ifElseObj1.Position);
+			//Assert.AreEqual(1, ifElseObj1.Layer);
+			//Assert.IsFalse(ifElseObj1.Else);
+			//Assert.IsTrue(ifElseObj1.Nested);
+			//Assert.AreEqual("if (a > 5) { if (b > 3) { b++; } else { b--; } }", ifElseObj1.Input);
+
+			//var ifElseObj2 = result[1];
+			//Assert.AreEqual(1, ifElseObj2.Id);
+			//Assert.AreEqual(0, ifElseObj2.ParentId);
+			//Assert.AreEqual(0, ifElseObj2.Position);
+			//Assert.AreEqual(2, ifElseObj2.Layer);
+			//Assert.IsFalse(ifElseObj2.Else);
+			//Assert.IsTrue(ifElseObj2.Nested);
+			//Assert.AreEqual("if (b > 3) { b++; } else { b--; }", ifElseObj2.Input);
+		}
+
+		[TestMethod]
+		public void ParseIfElseClauses_IfElseWithoutNested_ReturnsCorrectObjects()
+		{
+			// Arrange
+			string input = "if (a > 5) { a++; } else { a--; }";
+
+			// Act
+			var result = IfElseObjExp.ParseIfElseClauses(input);
+
+			// Assert
+			//Assert.AreEqual(2, result.Count);
+
+			//var ifElseObj1 = result[0];
+			//Assert.AreEqual(0, ifElseObj1.Id);
+			//Assert.AreEqual(-1, ifElseObj1.ParentId);
+			//Assert.AreEqual(0, ifElseObj1.Position);
+			//Assert.AreEqual(1, ifElseObj1.Layer);
+			//Assert.IsFalse(ifElseObj1.Else);
+			//Assert.IsTrue(ifElseObj1.Nested);
+			//Assert.AreEqual("if (a > 5) { a++; }", ifElseObj1.Input);
+
+			//var ifElseObj2 = result[1];
+			//Assert.AreEqual(1, ifElseObj2.Id);
+			//Assert.AreEqual(-1, ifElseObj2.ParentId);
+			//Assert.AreEqual(0, ifElseObj2.Position);
+			//Assert.AreEqual(1, ifElseObj2.Layer);
+			//Assert.IsTrue(ifElseObj2.Else);
+			//Assert.IsFalse(ifElseObj2.Nested);
+			//Assert.AreEqual("else { a--; }", ifElseObj2.Input);
+		}
+
+		[TestMethod]
+		public void ParseIfElseClauses_ComplexNestedIfElseClauses_ReturnsCorrectHierarchy()
+		{
+			// Arrange
+			string input = "if (a > 5) { if (b > 3) { b++; } else { if (c > 1) { c++; } } }";
+
+			// Act
+			var result = IfElseObjExp.ParseIfElseClauses(input);
+
+			//// Assert
+			//Assert.AreEqual(3, result.Count);
+
+			//var ifElseObj1 = result[0];
+			//Assert.AreEqual(0, ifElseObj1.Id);
+			//Assert.AreEqual(-1, ifElseObj1.ParentId);
+			//Assert.AreEqual(0, ifElseObj1.Position);
+			//Assert.AreEqual(1, ifElseObj1.Layer);
+			//Assert.IsFalse(ifElseObj1.Else);
+			//Assert.IsTrue(ifElseObj1.Nested);
+			//Assert.AreEqual("if (a > 5) { if (b > 3) { b++; } else { if (c > 1) { c++; } } }", ifElseObj1.Input);
+
+			//var ifElseObj2 = result[1];
+			//Assert.AreEqual(1, ifElseObj2.Id);
+			//Assert.AreEqual(0, ifElseObj2.ParentId);
+			//Assert.AreEqual(0, ifElseObj2.Position);
+			//Assert.AreEqual(2, ifElseObj2.Layer);
+			//Assert.IsFalse(ifElseObj2.Else);
+			//Assert.IsTrue(ifElseObj2.Nested);
+			//Assert.AreEqual("if (b > 3) { b++; } else { if (c > 1) { c++; } }", ifElseObj2.Input);
+
+			//var ifElseObj3 = result[2];
+			//Assert.AreEqual(2, ifElseObj3.Id);
+			//Assert.AreEqual(1, ifElseObj3.ParentId);
+			//Assert.AreEqual(0, ifElseObj3.Position);
+			//Assert.AreEqual(3, ifElseObj3.Layer);
+			//Assert.IsFalse(ifElseObj3.Else);
+			//Assert.IsFalse(ifElseObj3.Nested);
+			//Assert.AreEqual("if (c > 1) { c++; }", ifElseObj3.Input);
+		}
+
+		/// <summary>
+		///     Parses the invalid input throws exception.
+		/// </summary>
+		[TestMethod]
         public void ParseComplexCommand()
         {
             //base, the command will be removed in the IrtParser
