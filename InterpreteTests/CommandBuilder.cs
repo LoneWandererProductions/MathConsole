@@ -8,10 +8,10 @@ namespace InterpreteTests
     [TestClass]
     public class CommandBuilder
     {
-		/// <summary>
-		/// Parses if else clauses no if else clauses returns empty dictionary.
-		/// </summary>
-		[TestMethod]
+        /// <summary>
+        /// Parses if else clauses no if else clauses returns empty dictionary.
+        /// </summary>
+        [TestMethod]
         public void ParseIfElseClausesNoIfElseClausesReturnsEmptyDictionary()
         {
             // Arrange
@@ -24,10 +24,10 @@ namespace InterpreteTests
             Assert.AreEqual(1, result.Count);
         }
 
-		/// <summary>
-		/// Parses if else clauses single if clause returns one if else object.
-		/// </summary>
-		[TestMethod]
+        /// <summary>
+        /// Parses if else clauses single if clause returns one if else object.
+        /// </summary>
+        [TestMethod]
         public void ParseIfElseClausesSingleIfClauseReturnsOneIfElseObj()
         {
             // Arrange
@@ -49,78 +49,78 @@ namespace InterpreteTests
             Assert.AreEqual("if (condition1) {com1; }", ifElseObj.Input);
         }
 
-		/// <summary>
-		/// Parses if else clauses single if clause returns correct object.
-		/// </summary>
-		[TestMethod]
-		public void ParseIfElseClausesSingleIfClauseReturnsCorrectObject()
-		{
-			var input = "if (condition) { doSomething(); }";
-			var result = IfElseObjExp.ParseIfElseClauses(input);
+        /// <summary>
+        /// Parses if else clauses single if clause returns correct object.
+        /// </summary>
+        [TestMethod]
+        public void ParseIfElseClausesSingleIfClauseReturnsCorrectObject()
+        {
+            var input = "if (condition) { doSomething(); }";
+            var result = IfElseObjExp.ParseIfElseClauses(input);
 
-			Assert.AreEqual(1, result.Count, "There should be one IfElseObj in the result.");
-			var obj = result[0];
-			Assert.IsFalse(obj.Else, "The 'Else' flag should be false for an 'if' clause.");
-			Assert.AreEqual(-1, obj.ParentId, "The ParentId should be -1 for a top-level 'if' clause.");
-			Assert.AreEqual(0, obj.Layer, "The Layer should be 0 for a top-level 'if' clause.");
-			Assert.AreEqual(0, obj.Position, "The Position should be 0 for a top-level 'if' clause.");
-			Assert.AreEqual("if (condition) { doSomething(); }", obj.Input, "The Input string should match.");
-		}
+            Assert.AreEqual(1, result.Count, "There should be one IfElseObj in the result.");
+            var obj = result[0];
+            Assert.IsFalse(obj.Else, "The 'Else' flag should be false for an 'if' clause.");
+            Assert.AreEqual(-1, obj.ParentId, "The ParentId should be -1 for a top-level 'if' clause.");
+            Assert.AreEqual(0, obj.Layer, "The Layer should be 0 for a top-level 'if' clause.");
+            Assert.AreEqual(0, obj.Position, "The Position should be 0 for a top-level 'if' clause.");
+            Assert.AreEqual("if (condition) { doSomething(); }", obj.Input, "The Input string should match.");
+        }
 
-		/// <summary>
-		/// Parses if else clauses if with else returns correct objects.
-		/// </summary>
-		[TestMethod]
-		public void ParseIfElseClausesIfWithElseReturnsCorrectObjects()
-		{
-			var input = "if (condition) { doSomething(); } else { doSomethingElse(); }";
-			var result = IfElseObjExp.ParseIfElseClauses(input);
+        /// <summary>
+        /// Parses if else clauses if with else returns correct objects.
+        /// </summary>
+        [TestMethod]
+        public void ParseIfElseClausesIfWithElseReturnsCorrectObjects()
+        {
+            var input = "if (condition) { doSomething(); } else { doSomethingElse(); }";
+            var result = IfElseObjExp.ParseIfElseClauses(input);
 
-			Assert.AreEqual(1, result.Count, "There should be one IfElseObj in the result.");
+            Assert.AreEqual(1, result.Count, "There should be one IfElseObj in the result.");
 
-			// Check the 'if' clause
-			var ifObj = result[0];
-			Assert.IsFalse(ifObj.Else, "The 'Else' flag should be false for the 'if' clause.");
-			Assert.AreEqual(-1, ifObj.ParentId, "The ParentId should be -1 for a top-level 'if' clause.");
-			Assert.AreEqual(0, ifObj.Layer, "The Layer should be 0 for a top-level 'if' clause.");
-			Assert.AreEqual(0, ifObj.Position, "The Position should be 0 for a top-level 'if' clause.");
-			Assert.AreEqual("if (condition) { doSomething(); } else { doSomethingElse(); }", ifObj.Input, "The Input string should match the whole clause.");
+            // Check the 'if' clause
+            var ifObj = result[0];
+            Assert.IsFalse(ifObj.Else, "The 'Else' flag should be false for the 'if' clause.");
+            Assert.AreEqual(-1, ifObj.ParentId, "The ParentId should be -1 for a top-level 'if' clause.");
+            Assert.AreEqual(0, ifObj.Layer, "The Layer should be 0 for a top-level 'if' clause.");
+            Assert.AreEqual(0, ifObj.Position, "The Position should be 0 for a top-level 'if' clause.");
+            Assert.AreEqual("if (condition) { doSomething(); } else { doSomethingElse(); }", ifObj.Input, "The Input string should match the whole clause.");
             var ifClause = ifObj.Commands.Get(0);
-			Assert.AreEqual("if (condition) { doSomething(); }", ifClause, "The Input string should match the 'if' clause.");
+            Assert.AreEqual("if (condition) { doSomething(); }", ifClause, "The Input string should match the 'if' clause.");
 
-			ifClause = ifObj.Commands.Get(1);
-			Assert.AreEqual("else { doSomethingElse(); }", ifClause, "The Input string should match for the 'else' clause.");
-		}
+            ifClause = ifObj.Commands.Get(1);
+            Assert.AreEqual("else { doSomethingElse(); }", ifClause, "The Input string should match for the 'else' clause.");
+        }
 
-		/// <summary>
-		/// Parses if else clauses empty input returns empty dictionary.
-		/// </summary>
-		[TestMethod]
-		public void ParseIfElseClausesEmptyInputReturnsEmptyDictionary()
-		{
-			var input = string.Empty;
-			var result = IfElseObjExp.ParseIfElseClauses(input);
+        /// <summary>
+        /// Parses if else clauses empty input returns empty dictionary.
+        /// </summary>
+        [TestMethod]
+        public void ParseIfElseClausesEmptyInputReturnsEmptyDictionary()
+        {
+            var input = string.Empty;
+            var result = IfElseObjExp.ParseIfElseClauses(input);
 
-			Assert.AreEqual(null, result, "The result should be an empty dictionary for empty input.");
-		}
+            Assert.AreEqual(null, result, "The result should be an empty dictionary for empty input.");
+        }
 
-		/// <summary>
-		/// Parses if else clauses malformed input returns single object.
-		/// </summary>
-		[TestMethod]
-		public void ParseIfElseClausesMalformedInputReturnsSingleObject()
-		{
-			var input = "if (condition { doSomething(); }";
-			var result = IfElseObjExp.ParseIfElseClauses(input);
+        /// <summary>
+        /// Parses if else clauses malformed input returns single object.
+        /// </summary>
+        [TestMethod]
+        public void ParseIfElseClausesMalformedInputReturnsSingleObject()
+        {
+            var input = "if (condition { doSomething(); }";
+            var result = IfElseObjExp.ParseIfElseClauses(input);
 
-			Assert.AreEqual(1, result.Count, "There should be one IfElseObj in the result for malformed input.");
-			var obj = result[0];
-			Assert.IsFalse(obj.Else, "The 'Else' flag should be false for a malformed 'if' clause.");
-			Assert.AreEqual(-1, obj.ParentId, "The ParentId should be -1 for a top-level malformed 'if' clause.");
-			Assert.AreEqual(0, obj.Layer, "The Layer should be 0 for a top-level malformed 'if' clause.");
-			Assert.AreEqual(0, obj.Position, "The Position should be 0 for a top-level malformed 'if' clause.");
-			Assert.AreEqual("if (condition { doSomething(); }", obj.Input, "The Input string should match.");
-		}
+            Assert.AreEqual(1, result.Count, "There should be one IfElseObj in the result for malformed input.");
+            var obj = result[0];
+            Assert.IsFalse(obj.Else, "The 'Else' flag should be false for a malformed 'if' clause.");
+            Assert.AreEqual(-1, obj.ParentId, "The ParentId should be -1 for a top-level malformed 'if' clause.");
+            Assert.AreEqual(0, obj.Layer, "The Layer should be 0 for a top-level malformed 'if' clause.");
+            Assert.AreEqual(0, obj.Position, "The Position should be 0 for a top-level malformed 'if' clause.");
+            Assert.AreEqual("if (condition { doSomething(); }", obj.Input, "The Input string should match.");
+        }
 
         [TestMethod]
         public void TestParseIfElseClausesNestedIfElse()

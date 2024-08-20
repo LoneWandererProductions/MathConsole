@@ -17,16 +17,16 @@ namespace Interpreter
             return master;
         }
 
-		/// <summary>
-		/// Processes the input.
-		/// </summary>
-		/// <param name="input">The input.</param>
-		/// <param name="isElse">if set to <c>true</c> [is else].</param>
-		/// <param name="parentId">The parent identifier.</param>
-		/// <param name="layer">The layer.</param>
-		/// <param name="position">The position.</param>
-		/// <param name="master">The master.</param>
-		internal static void ProcessInput(string input, bool isElse, int parentId, int layer, int position,
+        /// <summary>
+        /// Processes the input.
+        /// </summary>
+        /// <param name="input">The input.</param>
+        /// <param name="isElse">if set to <c>true</c> [is else].</param>
+        /// <param name="parentId">The parent identifier.</param>
+        /// <param name="layer">The layer.</param>
+        /// <param name="position">The position.</param>
+        /// <param name="master">The master.</param>
+        internal static void ProcessInput(string input, bool isElse, int parentId, int layer, int position,
             Dictionary<int, IfElseObj> master)
         {
             var obj = new IfElseObj
