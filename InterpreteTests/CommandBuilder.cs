@@ -8,8 +8,11 @@ namespace InterpreteTests
     [TestClass]
     public class CommandBuilder
     {
-        [TestMethod]
-        public void ParseIfElseClauses_NoIfElseClauses_ReturnsEmptyDictionary()
+		/// <summary>
+		/// Parses if else clauses no if else clauses returns empty dictionary.
+		/// </summary>
+		[TestMethod]
+        public void ParseIfElseClausesNoIfElseClausesReturnsEmptyDictionary()
         {
             // Arrange
             var input = "com1;";
@@ -21,8 +24,11 @@ namespace InterpreteTests
             Assert.AreEqual(1, result.Count);
         }
 
-        [TestMethod]
-        public void ParseIfElseClauses_SingleIfClause_ReturnsOneIfElseObj()
+		/// <summary>
+		/// Parses if else clauses single if clause returns one if else object.
+		/// </summary>
+		[TestMethod]
+        public void ParseIfElseClausesSingleIfClauseReturnsOneIfElseObj()
         {
             // Arrange
             const string input = "if (condition1) {com1; }";
@@ -43,130 +49,90 @@ namespace InterpreteTests
             Assert.AreEqual("if (condition1) {com1; }", ifElseObj.Input);
         }
 
+		/// <summary>
+		/// Parses if else clauses single if clause returns correct object.
+		/// </summary>
+		[TestMethod]
+		public void ParseIfElseClausesSingleIfClauseReturnsCorrectObject()
+		{
+			var input = "if (condition) { doSomething(); }";
+			var result = IfElseObjExp.ParseIfElseClauses(input);
+
+			Assert.AreEqual(1, result.Count, "There should be one IfElseObj in the result.");
+			var obj = result[0];
+			Assert.IsFalse(obj.Else, "The 'Else' flag should be false for an 'if' clause.");
+			Assert.AreEqual(-1, obj.ParentId, "The ParentId should be -1 for a top-level 'if' clause.");
+			Assert.AreEqual(0, obj.Layer, "The Layer should be 0 for a top-level 'if' clause.");
+			Assert.AreEqual(0, obj.Position, "The Position should be 0 for a top-level 'if' clause.");
+			Assert.AreEqual("if (condition) { doSomething(); }", obj.Input, "The Input string should match.");
+		}
+
+		/// <summary>
+		/// Parses if else clauses if with else returns correct objects.
+		/// </summary>
+		[TestMethod]
+		public void ParseIfElseClausesIfWithElseReturnsCorrectObjects()
+		{
+			var input = "if (condition) { doSomething(); } else { doSomethingElse(); }";
+			var result = IfElseObjExp.ParseIfElseClauses(input);
+
+			Assert.AreEqual(1, result.Count, "There should be one IfElseObj in the result.");
+
+			// Check the 'if' clause
+			var ifObj = result[0];
+			Assert.IsFalse(ifObj.Else, "The 'Else' flag should be false for the 'if' clause.");
+			Assert.AreEqual(-1, ifObj.ParentId, "The ParentId should be -1 for a top-level 'if' clause.");
+			Assert.AreEqual(0, ifObj.Layer, "The Layer should be 0 for a top-level 'if' clause.");
+			Assert.AreEqual(0, ifObj.Position, "The Position should be 0 for a top-level 'if' clause.");
+			Assert.AreEqual("if (condition) { doSomething(); } else { doSomethingElse(); }", ifObj.Input, "The Input string should match the whole clause.");
+            var ifClause = ifObj.Commands.Get(0);
+			Assert.AreEqual("if (condition) { doSomething(); }", ifClause, "The Input string should match the 'if' clause.");
+
+			ifClause = ifObj.Commands.Get(1);
+			Assert.AreEqual("else { doSomethingElse(); }", ifClause, "The Input string should match for the 'else' clause.");
+		}
+
+		/// <summary>
+		/// Parses if else clauses empty input returns empty dictionary.
+		/// </summary>
+		[TestMethod]
+		public void ParseIfElseClausesEmptyInputReturnsEmptyDictionary()
+		{
+			var input = string.Empty;
+			var result = IfElseObjExp.ParseIfElseClauses(input);
+
+			Assert.AreEqual(null, result, "The result should be an empty dictionary for empty input.");
+		}
+
+		/// <summary>
+		/// Parses if else clauses malformed input returns single object.
+		/// </summary>
+		[TestMethod]
+		public void ParseIfElseClausesMalformedInputReturnsSingleObject()
+		{
+			var input = "if (condition { doSomething(); }";
+			var result = IfElseObjExp.ParseIfElseClauses(input);
+
+			Assert.AreEqual(1, result.Count, "There should be one IfElseObj in the result for malformed input.");
+			var obj = result[0];
+			Assert.IsFalse(obj.Else, "The 'Else' flag should be false for a malformed 'if' clause.");
+			Assert.AreEqual(-1, obj.ParentId, "The ParentId should be -1 for a top-level malformed 'if' clause.");
+			Assert.AreEqual(0, obj.Layer, "The Layer should be 0 for a top-level malformed 'if' clause.");
+			Assert.AreEqual(0, obj.Position, "The Position should be 0 for a top-level malformed 'if' clause.");
+			Assert.AreEqual("if (condition { doSomething(); }", obj.Input, "The Input string should match.");
+		}
+
         [TestMethod]
-        public void ParseIfElseClauses_MultipleIfClauses_ReturnsMultipleIfElseObjs()
+        public void TestParseIfElseClausesNestedIfElse()
         {
             // Arrange
-            var input = "if (condition1) {com1; } else { com2; }";
+            string input = "if(condition1) { if(condition2) { /* nested code */ } else { /* nested else code */ } } else { /* outer else code */ }";
 
             // Act
-            var result = IfElseObjExp.ParseIfElseClauses(input);
+            var clauses = IfElseObjExp.ParseIfElseClauses(input);
 
             // Assert
-            //Assert.AreEqual(1, result.Count);
-
-            //var ifElseObj1 = result[0];
-            //Assert.AreEqual(0, ifElseObj1.Id);
-            //Assert.AreEqual(-1, ifElseObj1.ParentId);
-            //Assert.AreEqual(0, ifElseObj1.Position);
-            //Assert.AreEqual(1, ifElseObj1.Layer);
-            //Assert.IsFalse(ifElseObj1.Else);
-            //Assert.IsTrue(ifElseObj1.Nested);
-            //Assert.AreEqual("if (condition1) {com1; }", ifElseObj1.Input);
-
-            //var command = result[0].Commands;
-        }
-
-        [TestMethod]
-        public void ParseIfElseClauses_NestedIfElseClauses_ReturnsCorrectHierarchy()
-        {
-            // Arrange
-            var input = "if (a > 5) { if (b > 3) { b++; } else { b--; } }";
-
-            // Act
-            var result = IfElseObjExp.ParseIfElseClauses(input);
-
-            // Assert
-            //Assert.AreEqual(2, result.Count);
-
-            //var ifElseObj1 = result[0];
-            //Assert.AreEqual(0, ifElseObj1.Id);
-            //Assert.AreEqual(-1, ifElseObj1.ParentId);
-            //Assert.AreEqual(0, ifElseObj1.Position);
-            //Assert.AreEqual(1, ifElseObj1.Layer);
-            //Assert.IsFalse(ifElseObj1.Else);
-            //Assert.IsTrue(ifElseObj1.Nested);
-            //Assert.AreEqual("if (a > 5) { if (b > 3) { b++; } else { b--; } }", ifElseObj1.Input);
-
-            //var ifElseObj2 = result[1];
-            //Assert.AreEqual(1, ifElseObj2.Id);
-            //Assert.AreEqual(0, ifElseObj2.ParentId);
-            //Assert.AreEqual(0, ifElseObj2.Position);
-            //Assert.AreEqual(2, ifElseObj2.Layer);
-            //Assert.IsFalse(ifElseObj2.Else);
-            //Assert.IsTrue(ifElseObj2.Nested);
-            //Assert.AreEqual("if (b > 3) { b++; } else { b--; }", ifElseObj2.Input);
-        }
-
-        [TestMethod]
-        public void ParseIfElseClauses_IfElseWithoutNested_ReturnsCorrectObjects()
-        {
-            // Arrange
-            var input = "if (a > 5) { a++; } else { a--; }";
-
-            // Act
-            var result = IfElseObjExp.ParseIfElseClauses(input);
-
-            // Assert
-            //Assert.AreEqual(2, result.Count);
-
-            //var ifElseObj1 = result[0];
-            //Assert.AreEqual(0, ifElseObj1.Id);
-            //Assert.AreEqual(-1, ifElseObj1.ParentId);
-            //Assert.AreEqual(0, ifElseObj1.Position);
-            //Assert.AreEqual(1, ifElseObj1.Layer);
-            //Assert.IsFalse(ifElseObj1.Else);
-            //Assert.IsTrue(ifElseObj1.Nested);
-            //Assert.AreEqual("if (a > 5) { a++; }", ifElseObj1.Input);
-
-            //var ifElseObj2 = result[1];
-            //Assert.AreEqual(1, ifElseObj2.Id);
-            //Assert.AreEqual(-1, ifElseObj2.ParentId);
-            //Assert.AreEqual(0, ifElseObj2.Position);
-            //Assert.AreEqual(1, ifElseObj2.Layer);
-            //Assert.IsTrue(ifElseObj2.Else);
-            //Assert.IsFalse(ifElseObj2.Nested);
-            //Assert.AreEqual("else { a--; }", ifElseObj2.Input);
-        }
-
-        [TestMethod]
-        public void ParseIfElseClauses_ComplexNestedIfElseClauses_ReturnsCorrectHierarchy()
-        {
-            // Arrange
-            var input = "if (a > 5) { if (b > 3) { b++; } else { if (c > 1) { c++; } } }";
-
-            // Act
-            var result = IfElseObjExp.ParseIfElseClauses(input);
-
-            //// Assert
-            //Assert.AreEqual(3, result.Count);
-
-            //var ifElseObj1 = result[0];
-            //Assert.AreEqual(0, ifElseObj1.Id);
-            //Assert.AreEqual(-1, ifElseObj1.ParentId);
-            //Assert.AreEqual(0, ifElseObj1.Position);
-            //Assert.AreEqual(1, ifElseObj1.Layer);
-            //Assert.IsFalse(ifElseObj1.Else);
-            //Assert.IsTrue(ifElseObj1.Nested);
-            //Assert.AreEqual("if (a > 5) { if (b > 3) { b++; } else { if (c > 1) { c++; } } }", ifElseObj1.Input);
-
-            //var ifElseObj2 = result[1];
-            //Assert.AreEqual(1, ifElseObj2.Id);
-            //Assert.AreEqual(0, ifElseObj2.ParentId);
-            //Assert.AreEqual(0, ifElseObj2.Position);
-            //Assert.AreEqual(2, ifElseObj2.Layer);
-            //Assert.IsFalse(ifElseObj2.Else);
-            //Assert.IsTrue(ifElseObj2.Nested);
-            //Assert.AreEqual("if (b > 3) { b++; } else { if (c > 1) { c++; } }", ifElseObj2.Input);
-
-            //var ifElseObj3 = result[2];
-            //Assert.AreEqual(2, ifElseObj3.Id);
-            //Assert.AreEqual(1, ifElseObj3.ParentId);
-            //Assert.AreEqual(0, ifElseObj3.Position);
-            //Assert.AreEqual(3, ifElseObj3.Layer);
-            //Assert.IsFalse(ifElseObj3.Else);
-            //Assert.IsFalse(ifElseObj3.Nested);
-            //Assert.AreEqual("if (c > 1) { c++; }", ifElseObj3.Input);
+            //Assert.AreEqual(2, clauses.Count, "Expected 2 if-else clauses.");
         }
 
         /// <summary>
@@ -280,58 +246,5 @@ namespace InterpreteTests
 
             Trace.WriteLine(result.ToString());
         }
-
-        //[TestMethod]
-        //public void TestParseIfElseClausesNestedIfElse()
-        //{
-        //    // Arrange
-        //    string code = "if(condition1) { if(condition2) { /* nested code */ } else { /* nested else code */ } } else { /* outer else code */ }";
-
-        //    // Act
-        //    var clauses = IrtParserIfElse.ParseIfElseClauses(code);
-
-        //    // Assert
-        //    Assert.AreEqual(2, clauses.Count, "Expected 2 if-else clauses.");
-
-        //    // Check the first clause (Layer 0)
-        //    Assert.AreEqual(0, clauses[0].Layer, "Layer of the first clause should be 0.");
-        //    Assert.IsTrue(clauses[0].IfClause.Contains("if(condition2)"), "IfClause should contain the nested if.");
-        //    Assert.IsNotNull(clauses[0].ElseClause, "ElseClause should not be null.");
-
-        //    // Check the second clause (Layer 1)
-        //    Assert.AreEqual(1, clauses[1].Layer, "Layer of the second clause should be 1.");
-        //    Assert.AreEqual("else { /* nested else code */ }", clauses[1].ElseClause);
-
-
-        //    var clause = IrtParserIfElse.CategorizeIfElseClauses(clauses);
-
-        //    foreach (var item in clause)
-        //    {
-        //        Console.WriteLine($"Category: {item.Category}, Clause: {item.Clause}, Parent: {item.ParentCategory}");
-        //    }
-        //}
-
-        //[TestMethod]
-        //public void TestParseIfClausesNestedIf()
-        //{
-        //    // Arrange
-        //    var code = "if (condition1){command1; if (condition2){command2;}}";
-
-        //    // Act
-        //    var clauses = IrtParserIfElse.ParseIfElseClauses(code);
-
-        //    // Assert
-        //    Assert.AreEqual(2, clauses.Count, "Expected 2 if-else clauses.");
-        //    //TODO error here:
-        //    //look here: https://stackoverflow.com/questions/9283288/parsing-if-else-if-statement-algorithm
-        //    Assert.AreEqual(1, clauses[1].Layer, "Layer of the second clause should be 1.");
-
-        //    var clause = IrtParserIfElse.CategorizeIfElseClauses(clauses);
-
-        //    foreach (var item in clause)
-        //    {
-        //        Console.WriteLine($"Category: {item.Category}, Clause: {item.Clause}, Parent: {item.ParentCategory}");
-        //    }
-        //}
     }
 }
