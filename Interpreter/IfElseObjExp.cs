@@ -1,17 +1,19 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Interpreter
 {
-    internal static class IfElseObjExp
+    public static class IfElseObjExp
     {
         /// <summary>
         ///     Parses the given code string to extract all If-Else clauses.
         /// </summary>
         /// <param name="input"></param>
         /// <returns>A list of IfElseClause objects representing each If-Else clause found.</returns>
-        internal static Dictionary<int, IfElseObj> ParseIfElseClauses(string input)
+        public static Dictionary<int, IfElseObj> ParseIfElseClauses(string input)
         {
-            if(string.IsNullOrEmpty(input)) return null;
+            if (string.IsNullOrEmpty(input)) return null;
+
             var master = new Dictionary<int, IfElseObj>();
             ProcessInput(input, false, -1, -1, 0, master);
             return master;
@@ -26,8 +28,8 @@ namespace Interpreter
         /// <param name="layer">The layer.</param>
         /// <param name="position">The position.</param>
         /// <param name="master">The master.</param>
-        internal static void ProcessInput(string input, bool isElse, int parentId, int layer, int position,
-            Dictionary<int, IfElseObj> master)
+        public static void ProcessInput(string input, bool isElse, int parentId, int layer, int position,
+            IDictionary<int, IfElseObj> master)
         {
             var obj = new IfElseObj
             {
@@ -52,7 +54,21 @@ namespace Interpreter
             obj.Nested = true;
 
             obj.Commands = IrtKernel.GetBlocks(input);
+
+
             master.Add(obj.Id, obj);
+
+            foreach (var command in obj.Commands)
+            {
+                //we should either remove the first if or else or ignore the first else
+                check = IrtKernel.ContainsKeywordWithOpenParenthesis(command.Value, "if");
+                if (check) continue;
+
+                var category = command.Category;
+
+                var isElseBlock = category.Equals("Else", StringComparison.OrdinalIgnoreCase);
+                ProcessInput(command.Value, isElseBlock, obj.Id, obj.Layer, command.Key, master);
+            }
         }
     }
 }
