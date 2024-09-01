@@ -575,17 +575,120 @@ namespace Interpreter
             return formattedBlocks;
         }
 
-        /// <summary>
-        ///     Gets the type of the command.
-        /// </summary>
-        /// <param name="command">The command.</param>
-        /// <returns>The Command Type</returns>
-        internal static string GetCommandType(string command)
+
+        internal static CategorizedDictionary<int, string> GetBlocksNew(string input)
         {
-            command = command.Trim();
-            var keywordIndex = GetCommandIndex(command, IrtConst.InternContainerCommands);
-            return keywordIndex == -1 ? "Command" : IrtConst.InternContainerCommands[keywordIndex].Command;
+            var formattedBlocks = new CategorizedDictionary<int, string>();
+            var keepParsing = true;
+
+            while (keepParsing)
+            {
+                var ifIndex = FindFirstKeywordIndex(input, IrtConst.InternalIf);
+
+                if (ifIndex == IrtConst.Error)
+                {
+                    if (!string.IsNullOrWhiteSpace(input))
+                    {
+                        GenerateCommandBlock(input, ref formattedBlocks);
+                    }
+
+                    keepParsing = false;
+                }
+                else
+                {
+                    var beforeIf = input.Substring(0, ifIndex).Trim();
+
+                    if (!string.IsNullOrWhiteSpace(beforeIf))
+                    {
+                        GenerateCommandBlock(beforeIf, ref formattedBlocks);
+                        // Remove the beginning part before the "if" keyword:
+                        input = input.Substring(ifIndex);
+                    }
+
+                    var (ifElseBlock, elsePosition) = ExtractFirstIfElse(input);
+
+                    if (ifElseBlock != null)
+                    {
+                        // Extract the condition from the if statement
+                        var condition = ExtractCondition(ifElseBlock, "if");
+
+                        // Add the condition to the formatted blocks
+                        formattedBlocks.Add("If_Condition", formattedBlocks.Count, condition);
+
+                        // Add the current if block, if no else exists
+                        if (elsePosition == IrtConst.Error)
+                        {
+                            // Extract the code inside the "if" block (between braces or till the next statement)
+                            var ifCode = ExtractCodeBlock(ifElseBlock, "if");
+                            formattedBlocks.Add("If", formattedBlocks.Count, ifCode);
+                        }
+                        else
+                        {
+                            // Extract the code inside the "if" branch (before the else)
+                            var ifBranch = ExtractCodeBlock(ifElseBlock.Substring(0, elsePosition).Trim(), "if");
+
+                            // Extract the code inside the "else" branch
+                            var elseBranch = ExtractCodeBlock(ifElseBlock.Substring(elsePosition).Trim(), "else");
+
+                            // Add the branches to the formatted blocks
+                            formattedBlocks.Add("If", formattedBlocks.Count, ifBranch);
+                            formattedBlocks.Add("Else", formattedBlocks.Count, elseBranch);
+                        }
+
+                        // Remove the processed block from the input string
+                        input = input.Substring(ifElseBlock.Length).Trim();
+                        // Continue the loop with reduced input
+                    }
+                    else
+                    {
+                        formattedBlocks.Add("Error", formattedBlocks.Count, input);
+                        input = string.Empty;
+                    }
+                }
+            }
+
+            return formattedBlocks;
         }
+
+        internal static string ExtractCodeBlock(string input, string keyword)
+        {
+            // Find the keyword and remove it
+            input = input.Trim();
+            if (input.StartsWith(keyword, StringComparison.OrdinalIgnoreCase))
+                input = input.Substring(keyword.Length).Trim();
+
+            // Remove the condition part if it's an if-statement
+            if (keyword.Equals("if", StringComparison.OrdinalIgnoreCase))
+            {
+                if (input.StartsWith(IrtConst.BaseOpen.ToString(), StringComparison.Ordinal))
+                    input = RemoveFirstOccurrence(input, IrtConst.BaseOpen).Trim();
+
+                if (input.Contains(IrtConst.BaseClose, StringComparison.Ordinal))
+                    input = CutLastOccurrence(input, IrtConst.BaseClose).Trim();
+            }
+
+            // Now, we're left with the code block or statement
+            // Check if it's enclosed in braces
+            if (input.StartsWith("{", StringComparison.Ordinal) && input.EndsWith("}", StringComparison.Ordinal))
+            {
+                // Remove the braces
+                input = input.Substring(1, input.Length - 2).Trim();
+            }
+            else
+            {
+                // Find the first semicolon or the end of the statement
+                var endIndex = input.IndexOf(';');
+                if (endIndex != -1)
+                {
+                    input = input.Substring(0, endIndex + 1).Trim();
+                }
+            }
+
+            return input;
+        }
+
+
+
 
         /// <summary>
         ///     Determines the command index based on the input string and a dictionary of commands.
@@ -649,17 +752,26 @@ namespace Interpreter
             }
 
             // Check if the string starts with "if(" and ends with ")"
-            if (input.StartsWith(IrtConst.InternalIf, StringComparison.CurrentCultureIgnoreCase) &&
-                !input.EndsWith(IrtConst.BaseClose.ToString(), StringComparison.Ordinal))
-            {
-                // Extract the content between "if(" and ")"
-                var condition = ExtractCondition(input, IrtConst.InternalIf);
+            if (!input.StartsWith(IrtConst.InternalIf, StringComparison.CurrentCultureIgnoreCase) ||
+                input.EndsWith(IrtConst.BaseClose.ToString(), StringComparison.Ordinal)) return false;
 
-                // Check if the extracted content is not empty
-                return !string.IsNullOrEmpty(condition);
-            }
+            // Extract the content between "if(" and ")"
+            var condition = ExtractCondition(input, IrtConst.InternalIf);
 
-            return false;
+            // Check if the extracted content is not empty
+            return !string.IsNullOrEmpty(condition);
+        }
+
+        /// <summary>
+        ///     Gets the type of the command.
+        /// </summary>
+        /// <param name="command">The command.</param>
+        /// <returns>The Command Type</returns>
+        private static string GetCommandType(string command)
+        {
+            command = command.Trim();
+            var keywordIndex = GetCommandIndex(command, IrtConst.InternContainerCommands);
+            return keywordIndex == -1 ? "Command" : IrtConst.InternContainerCommands[keywordIndex].Command;
         }
 
         /// <summary>
