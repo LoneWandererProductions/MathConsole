@@ -931,7 +931,7 @@ namespace InterpreteTests
             };
 
             // Act
-            var result = IrtKernel.GetBlocks(input);
+            var result = IrtKernel.GetBlocksNew(input);
 
             // Assert
             var areEqual = AreEqual(expected, result, out var message);
@@ -949,12 +949,13 @@ namespace InterpreteTests
             var expected = new CategorizedDictionary<int, string>
             {
                 { "Command", 0, "Command1" },
-                { "If", 1, "if (condition) { Command2; }" },
-                { "Command", 2, "Command3" }
+                { "If_Condition", 1, "condition" },
+                { "If", 2, "Command2;" },
+                { "Command", 3, "Command3" }
             };
 
             // Act
-            var result = IrtKernel.GetBlocks(input);
+            var result = IrtKernel.GetBlocksNew(input);
 
             // Assert
             var areEqual = AreEqual(expected, result, out var message);
@@ -973,13 +974,15 @@ namespace InterpreteTests
             var expected = new CategorizedDictionary<int, string>
             {
                 { "Command", 0, "Command1" },
-                { "If", 1, "if( condition1) { Command2; }" },
-                { "Else", 2, "else { Command3; }" },
-                { "If", 3, "if (condition2 ) { Command4; }" }
+                { "If_Condition", 1, "condition1" },
+                {"If", 2 , "Command2;"},
+                { "Else", 3, "Command3;" },
+                { "If_Condition", 4, "condition2" },
+                { "If", 5, "Command4;" }
             };
 
             // Act
-            var result = IrtKernel.GetBlocks(input);
+            var result = IrtKernel.GetBlocksNew(input);
 
             // Assert
             var areEqual = AreEqual(expected, result, out var message);
@@ -997,7 +1000,7 @@ namespace InterpreteTests
             var expected = new CategorizedDictionary<int, string>();
 
             // Act
-            var result = IrtKernel.GetBlocks(input);
+            var result = IrtKernel.GetBlocksNew(input);
 
             // Assert
             var areEqual = AreEqual(expected, result, out var message);
@@ -1018,7 +1021,7 @@ namespace InterpreteTests
             };
 
             // Act
-            var result = IrtKernel.GetBlocks(input);
+            var result = IrtKernel.GetBlocksNew(input);
 
             // Assert
             var areEqual = AreEqual(expected, result, out var message);
@@ -1041,7 +1044,7 @@ namespace InterpreteTests
             };
 
             // Act
-            var result = IrtKernel.GetBlocks(input);
+            var result = IrtKernel.GetBlocksNew(input);
 
             // Assert
             var areEqual = AreEqual(expected, result, out var message);
@@ -1059,11 +1062,12 @@ namespace InterpreteTests
             var expected = new CategorizedDictionary<int, string>
             {
                 { "Command", 0, "Command1" },
-                { "If", 1, "if (condition) { Command2; }" }
+                { "If_Condition", 1, "condition}" },
+                { "If", 1, "Command2;" }
             };
 
             // Act
-            var result = IrtKernel.GetBlocks(input);
+            var result = IrtKernel.GetBlocksNew(input);
 
             // Assert
             var areEqual = AreEqual(expected, result, out var message);
@@ -1086,7 +1090,7 @@ namespace InterpreteTests
             };
 
             // Act
-            var result = IrtKernel.GetBlocks(input);
+            var result = IrtKernel.GetBlocksNew(input);
 
             // Assert
             var areEqual = AreEqual(expected, result, out var message);

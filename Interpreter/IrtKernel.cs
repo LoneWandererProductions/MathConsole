@@ -10,6 +10,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Eventing.Reader;
 using System.Linq;
 using System.Text.RegularExpressions;
 using ExtendedSystemObjects;
@@ -166,7 +167,7 @@ namespace Interpreter
         }
 
         /// <summary>
-        ///     Removes at the last machted symbol.
+        ///     Removes at the last matched symbol.
         /// </summary>
         /// <param name="input">The input.</param>
         /// <param name="symbol">The symbol.</param>
@@ -180,20 +181,20 @@ namespace Interpreter
         ///     Removes specified part of String
         /// </summary>
         /// <param name="remove">Keyword to remove</param>
-        /// <param name="target">target string</param>
+        /// <param name="input">input string</param>
         /// <returns>Parameter Part without the Keyword at the front</returns>
-        internal static string RemoveWord(string remove, string target)
+        internal static string RemoveWord(string remove, string input)
         {
             // Find the index of remove in target, ignoring case
-            var index = target.IndexOf(remove, StringComparison.OrdinalIgnoreCase);
+            var index = input.IndexOf(remove, StringComparison.OrdinalIgnoreCase);
 
             // If remove is found, remove it from target
-            if (index >= 0)
+            if (index != IrtConst.Error)
             {
-                target = target.Remove(index, remove.Length);
+                input = input.Remove(index, remove.Length);
             }
 
-            return target.Trim();
+            return input.Trim();
         }
 
         /// <summary>
@@ -575,7 +576,6 @@ namespace Interpreter
             return formattedBlocks;
         }
 
-
         internal static CategorizedDictionary<int, string> GetBlocksNew(string input)
         {
             var formattedBlocks = new CategorizedDictionary<int, string>();
@@ -601,7 +601,7 @@ namespace Interpreter
                     if (!string.IsNullOrWhiteSpace(beforeIf))
                     {
                         GenerateCommandBlock(beforeIf, ref formattedBlocks);
-                        // Remove the beginning part before the "if" keyword:
+                        //remove the beginning:
                         input = input.Substring(ifIndex);
                     }
 
@@ -609,35 +609,34 @@ namespace Interpreter
 
                     if (ifElseBlock != null)
                     {
-                        // Extract the condition from the if statement
-                        var condition = ExtractCondition(ifElseBlock, "if");
-
-                        // Add the condition to the formatted blocks
-                        formattedBlocks.Add("If_Condition", formattedBlocks.Count, condition);
-
                         // Add the current if block, if no else exists
                         if (elsePosition == IrtConst.Error)
                         {
-                            // Extract the code inside the "if" block (between braces or till the next statement)
-                            var ifCode = ExtractCodeBlock(ifElseBlock, "if");
-                            formattedBlocks.Add("If", formattedBlocks.Count, ifCode);
+                            var condition = ExtractCondition(ifElseBlock, "if");
+                            formattedBlocks.Add("If_Condition", formattedBlocks.Count, condition);
+                            var ifBlock = RemoveCondition(ifElseBlock, "If");
+                            ifBlock = RemoveParenthesis(ifBlock, IrtConst.AdvancedOpen, IrtConst.AdvancedClose);
+                            formattedBlocks.Add("If", formattedBlocks.Count, ifBlock);
                         }
+                        //break it into if and else blocks
                         else
                         {
-                            // Extract the code inside the "if" branch (before the else)
-                            var ifBranch = ExtractCodeBlock(ifElseBlock.Substring(0, elsePosition).Trim(), "if");
+                            var ifBranch = ifElseBlock.Substring(0, elsePosition).Trim();
+                            var condition = ExtractCondition(ifBranch, "if");
+                            formattedBlocks.Add("If_Condition", formattedBlocks.Count, condition);
+                            var ifBlock = RemoveCondition(ifBranch, "If");
+                            ifBlock = RemoveParenthesis(ifBlock, IrtConst.AdvancedOpen, IrtConst.AdvancedClose);
+                            formattedBlocks.Add("If", formattedBlocks.Count, ifBlock);
 
-                            // Extract the code inside the "else" branch
-                            var elseBranch = ExtractCodeBlock(ifElseBlock.Substring(elsePosition).Trim(), "else");
-
-                            // Add the branches to the formatted blocks
-                            formattedBlocks.Add("If", formattedBlocks.Count, ifBranch);
+                            var elseBranch = ifElseBlock.Substring(elsePosition).Trim();
+                            elseBranch = RemoveWord("else", elseBranch);
+                            elseBranch = RemoveParenthesis(elseBranch, IrtConst.AdvancedOpen, IrtConst.AdvancedClose);
                             formattedBlocks.Add("Else", formattedBlocks.Count, elseBranch);
                         }
 
                         // Remove the processed block from the input string
                         input = input.Substring(ifElseBlock.Length).Trim();
-                        // Continue the loop with reduced input
+                        //continue the loop with an reduced Input
                     }
                     else
                     {
@@ -649,46 +648,6 @@ namespace Interpreter
 
             return formattedBlocks;
         }
-
-        internal static string ExtractCodeBlock(string input, string keyword)
-        {
-            // Find the keyword and remove it
-            input = input.Trim();
-            if (input.StartsWith(keyword, StringComparison.OrdinalIgnoreCase))
-                input = input.Substring(keyword.Length).Trim();
-
-            // Remove the condition part if it's an if-statement
-            if (keyword.Equals("if", StringComparison.OrdinalIgnoreCase))
-            {
-                if (input.StartsWith(IrtConst.BaseOpen.ToString(), StringComparison.Ordinal))
-                    input = RemoveFirstOccurrence(input, IrtConst.BaseOpen).Trim();
-
-                if (input.Contains(IrtConst.BaseClose, StringComparison.Ordinal))
-                    input = CutLastOccurrence(input, IrtConst.BaseClose).Trim();
-            }
-
-            // Now, we're left with the code block or statement
-            // Check if it's enclosed in braces
-            if (input.StartsWith("{", StringComparison.Ordinal) && input.EndsWith("}", StringComparison.Ordinal))
-            {
-                // Remove the braces
-                input = input.Substring(1, input.Length - 2).Trim();
-            }
-            else
-            {
-                // Find the first semicolon or the end of the statement
-                var endIndex = input.IndexOf(';');
-                if (endIndex != -1)
-                {
-                    input = input.Substring(0, endIndex + 1).Trim();
-                }
-            }
-
-            return input;
-        }
-
-
-
 
         /// <summary>
         ///     Determines the command index based on the input string and a dictionary of commands.
@@ -732,6 +691,27 @@ namespace Interpreter
                 formattedBlocks.Add(type, formattedBlocks.Count, command);
             }
         }
+
+        private static string RemoveCondition(string input, string keyword)
+        {
+            // Step 1: Remove the keyword (e.g., "if" or "do")
+            input = RemoveWord(keyword, input);
+
+            // Step 2: Find and remove the first set of parentheses and the condition within it
+            var openParenIndex = input.IndexOf('(');
+            if (openParenIndex == IrtConst.Error) return input;
+
+            var closeParenIndex = input.IndexOf(')', openParenIndex);
+
+            if (closeParenIndex != IrtConst.Error)
+            {
+                // Remove everything from the open parenthesis to the close parenthesis
+                input = input.Remove(openParenIndex, closeParenIndex - openParenIndex + 1).Trim();
+            }
+
+            return input;
+        }
+
 
         /// <summary>
         ///     Determines whether [is valid if statement] [the specified input].
