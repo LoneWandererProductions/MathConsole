@@ -579,75 +579,69 @@ namespace Interpreter
         internal static CategorizedDictionary<int, string> GetBlocksNew(string input)
         {
             var formattedBlocks = new CategorizedDictionary<int, string>();
-            var keepParsing = true;
 
-            while (keepParsing)
+            while (!string.IsNullOrWhiteSpace(input))
             {
                 var ifIndex = FindFirstKeywordIndex(input, IrtConst.InternalIf);
 
                 if (ifIndex == IrtConst.Error)
                 {
-                    if (!string.IsNullOrWhiteSpace(input))
-                    {
-                        GenerateCommandBlock(input, ref formattedBlocks);
-                    }
-
-                    keepParsing = false;
+                    // Handle remaining input as a block
+                    GenerateCommandBlock(input, ref formattedBlocks);
+                    break;
                 }
-                else
+
+                // Process content before the 'if'
+                var beforeIf = input.Substring(0, ifIndex).Trim();
+                if (!string.IsNullOrWhiteSpace(beforeIf))
                 {
-                    var beforeIf = input.Substring(0, ifIndex).Trim();
+                    GenerateCommandBlock(beforeIf, ref formattedBlocks);
+                }
 
-                    if (!string.IsNullOrWhiteSpace(beforeIf))
+                // Update input to start from the 'if'
+                input = input.Substring(ifIndex);
+
+                var (ifElseBlock, elsePosition) = ExtractFirstIfElse(input);
+                if (ifElseBlock != null)
+                {
+                    if (elsePosition == IrtConst.Error)
                     {
-                        GenerateCommandBlock(beforeIf, ref formattedBlocks);
-                        //remove the beginning:
-                        input = input.Substring(ifIndex);
-                    }
-
-                    var (ifElseBlock, elsePosition) = ExtractFirstIfElse(input);
-
-                    if (ifElseBlock != null)
-                    {
-                        // Add the current if block, if no else exists
-                        if (elsePosition == IrtConst.Error)
-                        {
-                            var condition = ExtractCondition(ifElseBlock, "if");
-                            formattedBlocks.Add("If_Condition", formattedBlocks.Count, condition);
-                            var ifBlock = RemoveCondition(ifElseBlock, "If");
-                            ifBlock = RemoveParenthesis(ifBlock, IrtConst.AdvancedOpen, IrtConst.AdvancedClose);
-                            formattedBlocks.Add("If", formattedBlocks.Count, ifBlock);
-                        }
-                        //break it into if and else blocks
-                        else
-                        {
-                            var ifBranch = ifElseBlock.Substring(0, elsePosition).Trim();
-                            var condition = ExtractCondition(ifBranch, "if");
-                            formattedBlocks.Add("If_Condition", formattedBlocks.Count, condition);
-                            var ifBlock = RemoveCondition(ifBranch, "If");
-                            ifBlock = RemoveParenthesis(ifBlock, IrtConst.AdvancedOpen, IrtConst.AdvancedClose);
-                            formattedBlocks.Add("If", formattedBlocks.Count, ifBlock);
-
-                            var elseBranch = ifElseBlock.Substring(elsePosition).Trim();
-                            elseBranch = RemoveWord("else", elseBranch);
-                            elseBranch = RemoveParenthesis(elseBranch, IrtConst.AdvancedOpen, IrtConst.AdvancedClose);
-                            formattedBlocks.Add("Else", formattedBlocks.Count, elseBranch);
-                        }
-
-                        // Remove the processed block from the input string
-                        input = input.Substring(ifElseBlock.Length).Trim();
-                        //continue the loop with an reduced Input
+                        // Handle 'if' block
+                        var condition = ExtractCondition(ifElseBlock, "if");
+                        formattedBlocks.Add("If_Condition", formattedBlocks.Count, condition);
+                        var ifBlock = RemoveCondition(ifElseBlock, "If");
+                        ifBlock = RemoveParenthesis(ifBlock, IrtConst.AdvancedOpen, IrtConst.AdvancedClose);
+                        formattedBlocks.Add("If", formattedBlocks.Count, ifBlock);
                     }
                     else
                     {
-                        formattedBlocks.Add("Error", formattedBlocks.Count, input);
-                        input = string.Empty;
+                        // Handle 'if' and 'else' blocks
+                        var ifBranch = ifElseBlock.Substring(0, elsePosition).Trim();
+                        var condition = ExtractCondition(ifBranch, "if");
+                        formattedBlocks.Add("If_Condition", formattedBlocks.Count, condition);
+                        var ifBlock = RemoveCondition(ifBranch, "If");
+                        ifBlock = RemoveParenthesis(ifBlock, IrtConst.AdvancedOpen, IrtConst.AdvancedClose);
+                        formattedBlocks.Add("If", formattedBlocks.Count, ifBlock);
+
+                        var elseBranch = ifElseBlock.Substring(elsePosition).Trim();
+                        elseBranch = RemoveWord("else", elseBranch);
+                        elseBranch = RemoveParenthesis(elseBranch, IrtConst.AdvancedOpen, IrtConst.AdvancedClose);
+                        formattedBlocks.Add("Else", formattedBlocks.Count, elseBranch);
                     }
+
+                    // Update input to remove processed block
+                    input = input.Substring(ifElseBlock.Length).Trim();
+                }
+                else
+                {
+                    formattedBlocks.Add("Error", formattedBlocks.Count, input);
+                    input = string.Empty;
                 }
             }
 
             return formattedBlocks;
         }
+
 
         /// <summary>
         ///     Determines the command index based on the input string and a dictionary of commands.
@@ -695,7 +689,7 @@ namespace Interpreter
         private static string RemoveCondition(string input, string keyword)
         {
             // Step 1: Remove the keyword (e.g., "if" or "do")
-            input = RemoveWord(keyword, input);
+            input = RemoveWord(keyword, input).Trim();
 
             // Step 2: Find and remove the first set of parentheses and the condition within it
             var openParenIndex = input.IndexOf('(');
