@@ -1062,8 +1062,8 @@ namespace InterpreteTests
             var expected = new CategorizedDictionary<int, string>
             {
                 { "Command", 0, "Command1" },
-                { "If_Condition", 1, "condition}" },
-                { "If", 1, "Command2;" }
+                { "If_Condition", 1, "condition" },
+                { "If", 2, "Command2;" }
             };
 
             // Act
