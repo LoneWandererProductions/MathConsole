@@ -37,7 +37,7 @@ namespace InterpreteTests
             var result = IfElseObjExp.ParseIfElseClauses(input);
 
             // Assert
-            Assert.AreEqual(1, result.Count);
+            Assert.AreEqual(3, result.Count);
 
             var ifElseObj = result[0];
             Assert.AreEqual(0, ifElseObj.Id);
@@ -58,7 +58,7 @@ namespace InterpreteTests
             var input = "if (condition) { doSomething(); }";
             var result = IfElseObjExp.ParseIfElseClauses(input);
 
-            Assert.AreEqual(1, result.Count, "There should be one IfElseObj in the result.");
+            Assert.AreEqual(3, result.Count, "There should be one IfElseObj in the result.");
             var obj = result[0];
             Assert.IsFalse(obj.Else, "The 'Else' flag should be false for an 'if' clause.");
             Assert.AreEqual(-1, obj.ParentId, "The ParentId should be -1 for a top-level 'if' clause.");

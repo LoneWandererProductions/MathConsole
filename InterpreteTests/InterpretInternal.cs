@@ -931,7 +931,7 @@ namespace InterpreteTests
             };
 
             // Act
-            var result = IrtKernel.GetBlocksNew(input);
+            var result = IrtKernel.GetBlocks(input);
 
             // Assert
             var areEqual = AreEqual(expected, result, out var message);
@@ -955,7 +955,7 @@ namespace InterpreteTests
             };
 
             // Act
-            var result = IrtKernel.GetBlocksNew(input);
+            var result = IrtKernel.GetBlocks(input);
 
             // Assert
             var areEqual = AreEqual(expected, result, out var message);
@@ -982,7 +982,7 @@ namespace InterpreteTests
             };
 
             // Act
-            var result = IrtKernel.GetBlocksNew(input);
+            var result = IrtKernel.GetBlocks(input);
 
             // Assert
             var areEqual = AreEqual(expected, result, out var message);
@@ -1000,7 +1000,7 @@ namespace InterpreteTests
             var expected = new CategorizedDictionary<int, string>();
 
             // Act
-            var result = IrtKernel.GetBlocksNew(input);
+            var result = IrtKernel.GetBlocks(input);
 
             // Assert
             var areEqual = AreEqual(expected, result, out var message);
@@ -1021,7 +1021,7 @@ namespace InterpreteTests
             };
 
             // Act
-            var result = IrtKernel.GetBlocksNew(input);
+            var result = IrtKernel.GetBlocks(input);
 
             // Assert
             var areEqual = AreEqual(expected, result, out var message);
@@ -1044,7 +1044,7 @@ namespace InterpreteTests
             };
 
             // Act
-            var result = IrtKernel.GetBlocksNew(input);
+            var result = IrtKernel.GetBlocks(input);
 
             // Assert
             var areEqual = AreEqual(expected, result, out var message);
@@ -1067,7 +1067,7 @@ namespace InterpreteTests
             };
 
             // Act
-            var result = IrtKernel.GetBlocksNew(input);
+            var result = IrtKernel.GetBlocks(input);
 
             // Assert
             var areEqual = AreEqual(expected, result, out var message);
@@ -1090,7 +1090,7 @@ namespace InterpreteTests
             };
 
             // Act
-            var result = IrtKernel.GetBlocksNew(input);
+            var result = IrtKernel.GetBlocks(input);
 
             // Assert
             var areEqual = AreEqual(expected, result, out var message);

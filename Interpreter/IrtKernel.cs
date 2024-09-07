@@ -516,68 +516,6 @@ namespace Interpreter
         internal static CategorizedDictionary<int, string> GetBlocks(string input)
         {
             var formattedBlocks = new CategorizedDictionary<int, string>();
-            var keepParsing = true;
-
-            while (keepParsing)
-            {
-                var ifIndex = FindFirstKeywordIndex(input, IrtConst.InternalIf);
-
-                if (ifIndex == IrtConst.Error)
-                {
-                    if (!string.IsNullOrWhiteSpace(input))
-                    {
-                        GenerateCommandBlock(input, ref formattedBlocks);
-                    }
-
-                    keepParsing = false;
-                }
-                else
-                {
-                    var beforeIf = input.Substring(0, ifIndex).Trim();
-
-                    if (!string.IsNullOrWhiteSpace(beforeIf))
-                    {
-                        GenerateCommandBlock(beforeIf, ref formattedBlocks);
-                        //remove the beginning:
-                        input = input.Substring(ifIndex);
-                    }
-
-                    var (ifElseBlock, elsePosition) = ExtractFirstIfElse(input);
-
-                    if (ifElseBlock != null)
-                    {
-                        // Add the current if block, if no else exists
-                        if (elsePosition == IrtConst.Error)
-                        {
-                            formattedBlocks.Add("If", formattedBlocks.Count, ifElseBlock);
-                        }
-                        //break it into if and else blocks
-                        else
-                        {
-                            var ifBranch = ifElseBlock.Substring(0, elsePosition).Trim();
-                            var elseBranch = ifElseBlock.Substring(elsePosition).Trim();
-                            formattedBlocks.Add("If", formattedBlocks.Count, ifBranch);
-                            formattedBlocks.Add("Else", formattedBlocks.Count, elseBranch);
-                        }
-
-                        // Remove the processed block from the input string
-                        input = input.Substring(ifElseBlock.Length).Trim();
-                        //continue the loop with an reduced Input
-                    }
-                    else
-                    {
-                        formattedBlocks.Add("Error", formattedBlocks.Count, input);
-                        input = string.Empty;
-                    }
-                }
-            }
-
-            return formattedBlocks;
-        }
-
-        internal static CategorizedDictionary<int, string> GetBlocksNew(string input)
-        {
-            var formattedBlocks = new CategorizedDictionary<int, string>();
 
             while (!string.IsNullOrWhiteSpace(input))
             {
