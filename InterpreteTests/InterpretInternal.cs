@@ -846,6 +846,19 @@ namespace InterpreteTests
         }
 
         /// <summary>
+        /// Extracts the condition non if keyword.
+        /// </summary>
+        [TestMethod]
+        public void ExtractConditionNonIfKeyword()
+        {
+            // Act
+            var result = IrtKernel.ExtractCondition("while (condition) something", "while");
+
+            // Assert
+            Assert.AreEqual("condition", result);
+        }
+
+        /// <summary>
         /// Extracts the condition no condition.
         /// </summary>
         [TestMethod]
@@ -856,6 +869,34 @@ namespace InterpreteTests
 
             // Assert
             Assert.AreEqual(string.Empty, result);
+        }
+
+        /// <summary>
+        /// Extracts the condition multiple conditions.
+        /// Not supported right now!
+        /// </summary>
+        [TestMethod]
+        public void ExtractConditionMultipleConditions()
+        {
+            // Act
+            var result = IrtKernel.ExtractCondition("if (condition1 && condition2) something", "if");
+
+            // Assert
+            Assert.AreEqual("condition1 && condition2", result);
+        }
+
+
+        /// <summary>
+        /// Extracts the condition keyword case insensitive.
+        /// </summary>
+        [TestMethod]
+        public void ExtractConditionKeywordCaseInsensitive()
+        {
+            // Act
+            var result = IrtKernel.ExtractCondition("IF (condition) something", "if");
+
+            // Assert
+            Assert.AreEqual("condition", result);
         }
 
 
