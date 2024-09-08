@@ -373,19 +373,22 @@ namespace Interpreter
             // Trim leading and trailing whitespace from the input
             input = input.Trim();
 
-            // Remove the keyword if it appears at the start of the input
+            // Remove the keyword if it appears at the start of the input (e.g., "if")
             if (input.StartsWith(keyword, StringComparison.OrdinalIgnoreCase))
                 input = input.Substring(keyword.Length).Trim();
 
-            // Remove the opening parenthesis if present
-            if (input.StartsWith(IrtConst.BaseOpen.ToString(), StringComparison.Ordinal))
-                input = RemoveFirstOccurrence(input, IrtConst.BaseOpen).Trim();
+            // Find the opening and closing parenthesis around the condition
+            var openParenIndex = input.IndexOf(IrtConst.BaseOpen);  // '('
+            var closeParenIndex = input.IndexOf(IrtConst.BaseClose); // ')'
 
-            // Remove the closing parenthesis if present, and everything after
-            if (input.Contains(IrtConst.BaseClose, StringComparison.Ordinal))
-                input = CutLastOccurrence(input, IrtConst.BaseClose).Trim();
+            // If either of the parentheses are missing, return an empty condition
+            if (openParenIndex == IrtConst.Error || closeParenIndex == IrtConst.Error || closeParenIndex < openParenIndex)
+            {
+                return string.Empty;
+            }
 
-            return input;
+            // Extract the condition between the parentheses
+            return input.Substring(openParenIndex + 1, closeParenIndex - openParenIndex - 1).Trim();
         }
 
         /// <summary>
@@ -578,7 +581,6 @@ namespace Interpreter
 
             return formattedBlocks;
         }
-
 
         /// <summary>
         ///     Determines the command index based on the input string and a dictionary of commands.

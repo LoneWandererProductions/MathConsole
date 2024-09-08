@@ -15,6 +15,7 @@ namespace Interpreter
         public bool Nested { get; set; }
 
         public CategorizedDictionary<int, string> Commands { get; set; }
+
         public string Input { get; init; }
     }
 }

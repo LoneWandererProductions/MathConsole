@@ -846,6 +846,20 @@ namespace InterpreteTests
         }
 
         /// <summary>
+        /// Extracts the condition no condition.
+        /// </summary>
+        [TestMethod]
+        public void ExtractConditionNoCondition()
+        {
+            // Act
+            var result = IrtKernel.ExtractCondition("if () something", "if");
+
+            // Assert
+            Assert.AreEqual(string.Empty, result);
+        }
+
+
+        /// <summary>
         ///     Finds the first if index finds keyword.
         /// </summary>
         [TestMethod]
@@ -1096,6 +1110,30 @@ namespace InterpreteTests
             var areEqual = AreEqual(expected, result, out var message);
             Assert.IsTrue(areEqual, message);
         }
+
+        /// <summary>
+        /// Gets the error sample.
+        /// </summary>
+        [TestMethod]
+        public void GetErrorSample()
+        {
+            // Arrange
+            const string input = "if (condition) { doSomething(); } else { doSomething2(); }";
+            var expected = new CategorizedDictionary<int, string>
+            {
+                { "If_Condition", 0, "condition" },  // This is the content inside the 'if' block
+                { "If", 1, "doSomething();" },  // This is the content inside the 'if' block
+                { "Else", 2, "doSomething2();" } // This is the content inside the 'else' block
+            };
+
+            // Act
+            var result = IrtKernel.GetBlocks(input);
+
+            // Assert
+            var areEqual = AreEqual(expected, result, out var message);
+            Assert.IsTrue(areEqual, message);
+        }
+
 
         /// <summary>
         ///     Checks the multiple parenthesis balanced parentheses returns true.

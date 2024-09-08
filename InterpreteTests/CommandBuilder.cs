@@ -81,15 +81,15 @@ namespace InterpreteTests
 
             // Check the 'if' clause
             var ifObj = result[0];
-            //Assert.IsFalse(ifObj.Else, "The 'Else' flag should be false for the 'if' clause.");
-            //Assert.AreEqual(-1, ifObj.ParentId, "The ParentId should be -1 for a top-level 'if' clause.");
-            //Assert.AreEqual(0, ifObj.Layer, "The Layer should be 0 for a top-level 'if' clause.");
-            //Assert.AreEqual(0, ifObj.Position, "The Position should be 0 for a top-level 'if' clause.");
+            Assert.IsFalse(ifObj.Else, "The 'Else' flag should be false for the 'if' clause.");
+            Assert.AreEqual(-1, ifObj.ParentId, "The ParentId should be -1 for a top-level 'if' clause.");
+            Assert.AreEqual(0, ifObj.Layer, "The Layer should be 0 for a top-level 'if' clause.");
+            Assert.AreEqual(0, ifObj.Position, "The Position should be 0 for a top-level 'if' clause.");
             //Assert.AreEqual("if (condition) { doSomething(); } else { doSomethingElse(); }", ifObj.Input, "The Input string should match the whole clause.");
-            //var ifClause = ifObj.Commands.Get(0);
+            var ifClause = ifObj.Commands.Get(0);
             //Assert.AreEqual("if (condition) { doSomething(); }", ifClause, "The Input string should match the 'if' clause.");
 
-            //ifClause = ifObj.Commands.Get(1);
+            ifClause = ifObj.Commands.Get(1);
             //Assert.AreEqual("else { doSomethingElse(); }", ifClause, "The Input string should match for the 'else' clause.");
         }
 
