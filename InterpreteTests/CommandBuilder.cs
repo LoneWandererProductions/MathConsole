@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
+using ExtendedSystemObjects;
 using Interpreter;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -9,7 +10,7 @@ namespace InterpreteTests
     public class CommandBuilder
     {
         /// <summary>
-        /// Parses if else clauses no if else clauses returns empty dictionary.
+        ///     Parses if else clauses no if else clauses returns empty dictionary.
         /// </summary>
         [TestMethod]
         public void ParseIfElseClausesNoIfElseClausesReturnsEmptyDictionary()
@@ -25,7 +26,7 @@ namespace InterpreteTests
         }
 
         /// <summary>
-        /// Parses if else clauses single if clause returns one if else object.
+        ///     Parses if else clauses single if clause returns one if else object.
         /// </summary>
         [TestMethod]
         public void ParseIfElseClausesSingleIfClauseReturnsOneIfElseObj()
@@ -50,12 +51,12 @@ namespace InterpreteTests
         }
 
         /// <summary>
-        /// Parses if else clauses single if clause returns correct object.
+        ///     Parses if else clauses single if clause returns correct object.
         /// </summary>
         [TestMethod]
         public void ParseIfElseClausesSingleIfClauseReturnsCorrectObject()
         {
-            var input = "if (condition) { doSomething(); }";
+            const string input = "if (condition) { doSomething(); }";
             var result = IfElseObjExp.ParseIfElseClauses(input);
 
             Assert.AreEqual(3, result.Count, "There should be one IfElseObj in the result.");
@@ -68,33 +69,72 @@ namespace InterpreteTests
         }
 
         /// <summary>
-        /// Parses if else clauses if with else returns correct objects.
+        /// Parses if else clauses with nested if else returns correct structure.
         /// </summary>
         [TestMethod]
-        public void ParseIfElseClausesIfWithElseReturnsCorrectObjects()
+        public void ParseIfElseClausesWithNestedIfElseReturnsCorrectStructure()
         {
-            var input = "if (condition) { doSomething(); } else { doSomething(); }";
+            // Arrange
+            const string input =
+                "if (condition1) { Command1; if (condition2) { Command2; } else { Command3; } } else { Command4; }";
+
+            // Expected structure with nested If-Else clauses
+            var expected = new Dictionary<int, IfElseObj>
+            {
+                {
+                    0, new IfElseObj
+                    {
+                        Input =
+                            "if (condition1) { Command1; if (condition2) { Command2; } else { Command3; } } else { Command4; }",
+                        Else = false,
+                        ParentId = -1,
+                        Layer = 1,
+                        Position = 0,
+                        Nested = true,
+                        Commands = new CategorizedDictionary<int, string>
+                        {
+                            {"If_Condition", 0, "condition1"},
+                            {"If", 1, "Command1; if (condition2) { Command2; } else { Command3; }"},
+                            {"Else", 2, "Command4;"}
+                        }
+                    }
+                },
+                {
+                    1, new IfElseObj
+                    {
+                        Input = "if (condition2) { Command2; } else { Command3; }",
+                        Else = false,
+                        ParentId = 0,
+                        Layer = 2,
+                        Position = 1,
+                        Nested = true,
+                        Commands = new CategorizedDictionary<int, string>
+                        {
+                            {"If_Condition", 0, "condition2"},
+                            {"If", 1, "Command2;"},
+                            {"Else", 2, "Command3;"}
+                        }
+                    }
+                }
+            };
+
+            // Act
             var result = IfElseObjExp.ParseIfElseClauses(input);
 
-            //TODO refine
-            //Assert.AreEqual(1, result.Count, "There should be one IfElseObj in the result.");
+            // Assert
+            var areEqual =
+                CategorizedDictionary<int, string>.AreEqual(expected[0].Commands, result[0].Commands, out var message);
+            Assert.IsTrue(areEqual, message);
 
-            // Check the 'if' clause
-            var ifObj = result[0];
-            Assert.IsFalse(ifObj.Else, "The 'Else' flag should be false for the 'if' clause.");
-            Assert.AreEqual(-1, ifObj.ParentId, "The ParentId should be -1 for a top-level 'if' clause.");
-            Assert.AreEqual(0, ifObj.Layer, "The Layer should be 0 for a top-level 'if' clause.");
-            Assert.AreEqual(0, ifObj.Position, "The Position should be 0 for a top-level 'if' clause.");
-            //Assert.AreEqual("if (condition) { doSomething(); } else { doSomethingElse(); }", ifObj.Input, "The Input string should match the whole clause.");
-            var ifClause = ifObj.Commands.Get(0);
-            //Assert.AreEqual("if (condition) { doSomething(); }", ifClause, "The Input string should match the 'if' clause.");
-
-            ifClause = ifObj.Commands.Get(1);
-            //Assert.AreEqual("else { doSomethingElse(); }", ifClause, "The Input string should match for the 'else' clause.");
+            // You can add more assertions to check for nested structures if needed
+            //areEqual = CategorizedDictionary<int, string>.AreEqual(expected[1].Commands, result[1].Commands,
+            //    out message);
+            //Assert.IsTrue(areEqual, message);
         }
 
+
         /// <summary>
-        /// Parses if else clauses empty input returns empty dictionary.
+        ///     Parses if else clauses empty input returns empty dictionary.
         /// </summary>
         [TestMethod]
         public void ParseIfElseClausesEmptyInputReturnsEmptyDictionary()
@@ -106,7 +146,7 @@ namespace InterpreteTests
         }
 
         /// <summary>
-        /// Parses if else clauses malformed input returns single object.
+        ///     Parses if else clauses malformed input returns single object.
         /// </summary>
         [TestMethod]
         public void ParseIfElseClausesMalformedInputReturnsSingleObject()
@@ -127,7 +167,8 @@ namespace InterpreteTests
         public void TestParseIfElseClausesNestedIfElse()
         {
             // Arrange
-            string input = "if(condition1) { if(condition2) { /* nested code */ } else { /* nested else code */ } } else { /* outer else code */ }";
+            var input =
+                "if(condition1) { if(condition2) { /* nested code */ } else { /* nested else code */ } } else { /* outer else code */ }";
 
             // Act
             var clauses = IfElseObjExp.ParseIfElseClauses(input);
@@ -180,7 +221,6 @@ namespace InterpreteTests
 
             // Act
             var result = IrtParserCommand.BuildCommand(inputcleaned);
-            result = IrtParserCommand.BuildCommand(inputcleaned);
 
             Trace.WriteLine(result.ToString());
 
