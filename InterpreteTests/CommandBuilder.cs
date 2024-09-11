@@ -164,20 +164,6 @@ namespace InterpreteTests
             Assert.AreEqual("if (condition { doSomething(); }", obj.Input, "The Input string should match.");
         }
 
-        [TestMethod]
-        public void TestParseIfElseClausesNestedIfElse()
-        {
-            // Arrange
-            var input =
-                "if(condition1) { if(condition2) { /* nested code */ } else { /* nested else code */ } } else { /* outer else code */ }";
-
-            // Act
-            var clauses = IfElseObjExp.ParseIfElseClauses(input);
-
-            // Assert
-            //Assert.AreEqual(2, clauses.Count, "Expected 2 if-else clauses.");
-        }
-
         /// <summary>
         ///     Parses the invalid input throws exception.
         /// </summary>

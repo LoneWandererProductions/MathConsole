@@ -54,21 +54,23 @@ namespace Interpreter
 
             obj.Nested = true;
 
-            obj.Commands = IrtKernel.GetBlocks(input);
-
+            var commands = IrtKernel.GetBlocks(input);
+            obj.Commands ??= new CategorizedDictionary<int, string>();  // Initialize Commands if null
 
             master.Add(obj.Id, obj);
 
-            foreach (var command in obj.Commands)
+            foreach (var (key, category, value) in commands)
             {
-                //we should either remove the first if or else or ignore the first else
-                check = IrtKernel.ContainsKeywordWithOpenParenthesis(command.Value, "if");
-                if (check) continue;
-
-                var category = command.Category;
+                // We should either remove the first if or else or ignore the first else
+                check = IrtKernel.ContainsKeywordWithOpenParenthesis(value, "if");
+                if (!check)
+                {
+                    obj.Commands.Add(category, key, value);
+                    continue;
+                }
 
                 var isElseBlock = category.Equals("Else", StringComparison.OrdinalIgnoreCase);
-                ProcessInput(command.Value, isElseBlock, obj.Id, obj.Layer, command.Key, master);
+                ProcessInput(value, isElseBlock, obj.Id, obj.Layer, key, master);
             }
         }
     }
