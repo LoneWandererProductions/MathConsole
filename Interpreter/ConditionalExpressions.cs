@@ -25,7 +25,7 @@ using ExtendedSystemObjects;
 
 namespace Interpreter
 {
-    public static class IfElseObjExp
+    internal static class ConditionalExpressions
     {
         /// <summary>
         ///     Parses the given code string to extract all If-Else clauses.

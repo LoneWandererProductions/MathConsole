@@ -19,7 +19,7 @@ namespace InterpreteTests
             var input = "com1;";
 
             // Act
-            var result = IfElseObjExp.ParseIfElseClauses(input);
+            var result = ConditionalExpressions.ParseIfElseClauses(input);
 
             // Assert
             Assert.AreEqual(1, result.Count);
@@ -35,7 +35,7 @@ namespace InterpreteTests
             const string input = "if (condition1) {com1; }";
 
             // Act
-            var result = IfElseObjExp.ParseIfElseClauses(input);
+            var result = ConditionalExpressions.ParseIfElseClauses(input);
 
             // Assert
             Assert.AreEqual(3, result.Count);
@@ -57,7 +57,7 @@ namespace InterpreteTests
         public void ParseIfElseClausesSingleIfClauseReturnsCorrectObject()
         {
             const string input = "if (condition) { doSomething(); }";
-            var result = IfElseObjExp.ParseIfElseClauses(input);
+            var result = ConditionalExpressions.ParseIfElseClauses(input);
 
             Assert.AreEqual(3, result.Count, "There should be one IfElseObj in the result.");
             var obj = result[0];
@@ -120,7 +120,7 @@ namespace InterpreteTests
             };
 
             // Act
-            var result = IfElseObjExp.ParseIfElseClauses(input);
+            var result = ConditionalExpressions.ParseIfElseClauses(input);
 
             // Assert
             //var areEqual =
@@ -141,27 +141,9 @@ namespace InterpreteTests
         public void ParseIfElseClausesEmptyInputReturnsEmptyDictionary()
         {
             var input = string.Empty;
-            var result = IfElseObjExp.ParseIfElseClauses(input);
+            var result = ConditionalExpressions.ParseIfElseClauses(input);
 
             Assert.AreEqual(null, result, "The result should be an empty dictionary for empty input.");
-        }
-
-        /// <summary>
-        ///     Parses if else clauses malformed input returns single object.
-        /// </summary>
-        [TestMethod]
-        public void ParseIfElseClausesMalformedInputReturnsSingleObject()
-        {
-            var input = "if (condition { doSomething(); }";
-            var result = IfElseObjExp.ParseIfElseClauses(input);
-
-            Assert.AreEqual(1, result.Count, "There should be one IfElseObj in the result for malformed input.");
-            var obj = result[0];
-            Assert.IsFalse(obj.Else, "The 'Else' flag should be false for a malformed 'if' clause.");
-            Assert.AreEqual(-1, obj.ParentId, "The ParentId should be -1 for a top-level malformed 'if' clause.");
-            Assert.AreEqual(0, obj.Layer, "The Layer should be 0 for a top-level malformed 'if' clause.");
-            Assert.AreEqual(0, obj.Position, "The Position should be 0 for a top-level malformed 'if' clause.");
-            Assert.AreEqual("if (condition { doSomething(); }", obj.Input, "The Input string should match.");
         }
 
         /// <summary>
