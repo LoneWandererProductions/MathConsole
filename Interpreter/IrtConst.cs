@@ -647,5 +647,11 @@ namespace Interpreter
                 $"{InternContainerCommands[3].Command} : {InternContainerCommands[3].Description}"
             );
         }
+
+        //TODO add repeat as internal replacement for while
+        //TODO add while
+        //TODO add void Sub Procedure.
+        //TODO add string Sub Procedure.
+        //TODO add bool Sub Procedure.
     }
 }
