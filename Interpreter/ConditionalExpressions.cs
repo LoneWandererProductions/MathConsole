@@ -1,5 +1,9 @@
 ﻿/*
- * TODO: Implement loop handling with translation to if-else:
+ * COPYRIGHT:   See COPYING in the top level directory
+ * PROJECT:     Interpreter
+ * FILE:        Interpreter/ConditionalExpressions.cs
+ * PURPOSE:     Handle all logical Operations of the parser
+ * PROGRAMMER:  Peter Geinitz (Wayfarer)
  * 
  * 1. Translate while(condition) {...} to if(condition) {...} else {repeat}:
  *    - Use a custom "repeat" command to return to the if clause.
@@ -18,13 +22,16 @@
  *    - Follow the same approach as "repeat" to manage these in the workflow.
  */
 
-
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using ExtendedSystemObjects;
 
 namespace Interpreter
 {
+    /// <summary>
+    /// Create Category Dictionary and handle nested structures
+    /// </summary>
     internal static class ConditionalExpressions
     {
         /// <summary>
@@ -47,7 +54,7 @@ namespace Interpreter
         private static void ProcessInput(string input, bool isElse, int parentId, int layer, int position,
             IDictionary<int, IfElseObj> ifElseClauses)
         {
-            var obj = CreateIfElseObj(input, isElse, parentId, layer, position);
+            var obj = CreateIfElseObj(input, isElse, parentId, layer, position, ifElseClauses);
             ifElseClauses.Add(obj.Id, obj);
 
             var commands = IrtKernel.GetBlocks(input);
@@ -56,15 +63,17 @@ namespace Interpreter
             // Process each block of commands
             foreach (var (key, category, value) in commands)
             {
-                var containsIf = IrtKernel.ContainsKeywordWithOpenParenthesis(value, "if");
+                var containsIf = IrtKernel.ContainsKeywordWithOpenParenthesis(value, IrtConst.InternalIf);
                 if (!containsIf)
                 {
-                    obj.Commands.Add(category, key, value); // Add the block if it doesn't contain 'if'
+                    obj.Commands.Add(category, key, position.ToString()); // Add the block if it doesn't contain 'if'
                     continue;
                 }
 
-                // Recursively process if we find a new 'if' block
-                var isElseBlock = category.Equals("Else", StringComparison.OrdinalIgnoreCase);
+                // Add a reference to the current block as a nested "if" block
+                obj.Commands.Add(ConditionalResources.CategoryNested, obj.Commands.Count, value);
+                obj.Nested = true;
+                var isElseBlock = category.Equals(IrtConst.InternalElse, StringComparison.OrdinalIgnoreCase);
                 ProcessInput(value, isElseBlock, obj.Id, obj.Layer, key, ifElseClauses);
             }
         }
@@ -72,14 +81,15 @@ namespace Interpreter
         /// <summary>
         /// Helper method to create an IfElseObj instance.
         /// </summary>
-        private static IfElseObj CreateIfElseObj(string input, bool isElse, int parentId, int layer, int position)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static IfElseObj CreateIfElseObj(string input, bool isElse, int parentId, int layer, int position, IDictionary<int, IfElseObj> master)
         {
-            return new IfElseObj
+            return new()
             {
                 Input = input,
                 Else = isElse,
                 ParentId = parentId,
-                Id = Guid.NewGuid().GetHashCode(), // Replace with master.Count for simple sequential id
+                Id = master.Count, // Use master.Count for sequential id
                 Layer = layer + 1,
                 Position = position
             };
