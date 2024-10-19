@@ -122,6 +122,8 @@ namespace InterpreteTests
             // Act
             var result = ConditionalExpressions.ParseIfElseClauses(input);
 
+            Trace.WriteLine(result.ToString());
+
             // Assert
             //var areEqual =
             //    CategorizedDictionary<int, string>.AreEqual(expected[0].Commands, result[0].Commands, out var message);
