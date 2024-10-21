@@ -179,15 +179,15 @@ namespace InterpreteTests
 
             var expectedResults = new List<(int Key, string Category, string Value)>
             {
-                (1, "COMMAND", "Print(hello World)"),
-                (2, "IF", "if(condition) { if(innerCondition) { com1; } else { com2; } }"),
-                (3, "ELSE", "else { com3; }"),
-                (5, "LABEL", "Label(one)"),
-                (6, "COMMAND", "Print(passed label one)"),
-                (7, "GOTO", "goto(two)"),
-                (8, "COMMAND", "Print(Should not be printed)"),
-                (9, "LABEL", "Label(two)"),
-                (10, "COMMAND", "Print(Finish)")
+                (0, "Command", "Print(hello World)"),
+                (1, "IF", "if(condition) { if(innerCondition) { com1; } else { com2; } }"),
+                (2, "ELSE", "else { com3; }"),
+                (3, "LABEL", "Label(one)"),
+                (4, "COMMAND", "Print(passed label one)"),
+                (5, "GOTO", "goto(two)"),
+                (6, "COMMAND", "Print(Should not be printed)"),
+                (7, "LABEL", "Label(two)"),
+                (8, "COMMAND", "Print(Finish)")
             };
 
             // Act
@@ -196,16 +196,19 @@ namespace InterpreteTests
             Trace.WriteLine(result.ToString());
 
             //// Assert
-            //foreach (var expected in expectedResults)
-            //{
-            //    var (key, category, value) = expected;
-            //    Assert.IsTrue(result.TryGetCategory(key, out var actualCategory));
-            //    Assert.AreEqual(category, actualCategory, $"Category mismatch for key {key}");
-            //    Assert.IsTrue(result.TryGetValue(key, out var actualValue));
-            //    Assert.AreEqual(value, actualValue, $"Value mismatch for key {key}");
-            //}
+            foreach (var expected in expectedResults)
+            {
+                var (key, category, value) = expected;
+                //Assert.IsTrue(result.TryGetCategory(key, out var actualCategory));
+
+                //Assert.AreEqual(category, actualCategory, $"Category mismatch for key {key}");
+                //Assert.IsTrue(result.TryGetValue(key, out var actualValue));
+                //TODO error here
+                //Assert.AreEqual(value, actualValue, $"Value mismatch for key {key}");
+            }
 
             Trace.WriteLine(result.ToString());
+            Trace.WriteLine(expectedResults.ToString());
 
             inputcleaned = "{" +
                            "Print(hello World);" +
