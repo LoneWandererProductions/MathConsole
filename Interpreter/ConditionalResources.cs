@@ -5,6 +5,6 @@
         /// <summary>
         /// The category nested. Value: "Nested".
         /// </summary>
-        internal const string CategoryNested = "Nested";
+        internal const string InternalCategoryNested = "Nested";
     }
 }

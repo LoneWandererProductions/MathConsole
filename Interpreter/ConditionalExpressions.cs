@@ -71,7 +71,7 @@ namespace Interpreter
                 }
 
                 // Add a reference to the current block as a nested "if" block
-                obj.Commands.Add(ConditionalResources.CategoryNested, obj.Commands.Count, value);
+                obj.Commands.Add(ConditionalResources.InternalCategoryNested, obj.Commands.Count, value);
                 obj.Nested = true;
                 var isElseBlock = category.Equals(IrtConst.InternalElse, StringComparison.OrdinalIgnoreCase);
                 ProcessInput(value, isElseBlock, obj.Id, obj.Layer, key, ifElseClauses);
