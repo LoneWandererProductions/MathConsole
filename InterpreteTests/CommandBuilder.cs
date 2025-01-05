@@ -38,16 +38,18 @@ namespace InterpreteTests
             var result = ConditionalExpressions.ParseIfElseClauses(input);
 
             // Assert
-            //Assert.AreEqual(3, result.Count);
+            Assert.AreEqual(1, result.Count);
 
-            //var ifElseObj = result[0];
-            //Assert.AreEqual(0, ifElseObj.Id);
-            //Assert.AreEqual(-1, ifElseObj.ParentId);
-            //Assert.AreEqual(0, ifElseObj.Position);
-            //Assert.AreEqual(0, ifElseObj.Layer);
-            //Assert.IsFalse(ifElseObj.Else);
-            //Assert.IsTrue(ifElseObj.Nested);
-            //Assert.AreEqual("if (condition1) {com1; }", ifElseObj.Input);
+            var ifElseObj = result[0];
+            Assert.AreEqual(0, ifElseObj.Id);
+            Assert.AreEqual(-1, ifElseObj.ParentId);
+            Assert.AreEqual(0, ifElseObj.Position);
+            Assert.AreEqual(0, ifElseObj.Layer);
+            Assert.IsFalse(ifElseObj.Else);
+            Assert.IsFalse(ifElseObj.Nested);
+            Assert.AreEqual("if (condition1) {com1; }", ifElseObj.Input);
+
+            Trace.WriteLine(result.ToString());
         }
 
         /// <summary>
