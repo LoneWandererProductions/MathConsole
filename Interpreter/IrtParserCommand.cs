@@ -63,7 +63,7 @@ namespace Interpreter
                         var rest = IrtParserIfElse.GenerateIfElseCommands(block);
                         break;
                     default: // Handling regular commands and splitting by new command separator
-                        commandRegister.Add(command, commandRegister.Count, command);
+                        commandRegister.Add(command, commandRegister.Count, block);
                         break;
                 }
             }

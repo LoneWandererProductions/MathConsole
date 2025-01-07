@@ -49,7 +49,33 @@ namespace InterpreteTests
             Assert.IsFalse(ifElseObj.Nested);
             Assert.AreEqual("if (condition1) {com1; }", ifElseObj.Input);
 
-            Trace.WriteLine(result.ToString());
+            foreach (var value in result)
+            {
+                Trace.WriteLine(value.ToString());
+            }
+
+
+            var commands = IrtParserCommand.BuildCommand(input);
+
+            Trace.WriteLine(commands.ToString());
+
+            var expectedResults = new List<(int Key, string Category, string Value)>
+            {
+                (0, "IF", "condition1"),
+                (1, "COMMAND", "com1"),
+            };
+
+            //// Assert
+            foreach (var expected in expectedResults)
+            {
+                var (key, category, value) = expected;
+                //Assert.IsTrue(result.TryGetCategory(key, out var actualCategory));
+
+                //Assert.AreEqual(category, actualCategory, $"Category mismatch for key {key}");
+                //Assert.IsTrue(result.TryGetValue(key, out var actualValue));
+                //TODO error here
+                //Assert.AreEqual(value, actualValue, $"Value mismatch for key {key}");
+            }
         }
 
         /// <summary>
