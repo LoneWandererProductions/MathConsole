@@ -61,8 +61,9 @@ namespace InterpreteTests
 
             var expectedResults = new List<(int Key, string Category, string Value)>
             {
-                (0, "IF", "condition1"),
+                (0, "IF_1", "condition1"),
                 (1, "COMMAND", "com1"),
+                (2, "IF_1_END_NOELSE", "")
             };
 
             //// Assert
